@@ -1,4 +1,4 @@
-namespace Nexo.Server.Modules.Restaurant.Features.GetContext;
+namespace Nexo.Shared.Restaurant;
 
 public sealed record RestaurantContextResponse(
     Guid CompanyId,
