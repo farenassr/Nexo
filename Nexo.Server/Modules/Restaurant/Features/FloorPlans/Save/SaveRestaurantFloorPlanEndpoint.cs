@@ -1,0 +1,56 @@
+using FastEndpoints;
+using Nexo.Server.Modules.Restaurant.Authorization;
+using Nexo.Shared.Restaurant;
+
+namespace Nexo.Server.Modules.Restaurant.Features.FloorPlans.Save;
+
+public sealed class SaveRestaurantFloorPlanEndpoint(
+    RestaurantAccessService accessService,
+    RestaurantFloorPlanService floorPlanService) : Endpoint<SaveRestaurantFloorPlanEndpointRequest, object>
+{
+    public override void Configure()
+    {
+        Put("/v1/restaurant/floor-plans/{FloorPlanId}");
+        AllowAnonymous();
+        Summary(summary =>
+        {
+            summary.Summary = "Saves restaurant floor plan layouts.";
+            summary.Description = "Updates floor plan metadata and replaces area, table, and seat layouts.";
+        });
+    }
+
+    public override async Task HandleAsync(
+        SaveRestaurantFloorPlanEndpointRequest request,
+        CancellationToken cancellationToken)
+    {
+        var access = await accessService.RequireAsync(RestaurantPermissions.FloorPlanManage, cancellationToken);
+        if (!access.Succeeded)
+        {
+            await Send.ForbiddenAsync(cancellationToken);
+            return;
+        }
+
+        var result = await floorPlanService.SaveAsync(
+            request.FloorPlanId,
+            new SaveRestaurantFloorPlanRequest(
+                request.Name,
+                request.CanvasWidth,
+                request.CanvasHeight,
+                request.GridSize,
+                request.IsActive,
+                request.AreaLayouts,
+                request.TableLayouts),
+            cancellationToken);
+
+        if (!result.Succeeded)
+        {
+            await Send.ResponseAsync(
+                RestaurantFloorPlanEndpointResponses.FromFloorPlanFailure(result),
+                RestaurantFloorPlanEndpointResponses.ToStatusCode(result.FailureCode),
+                cancellationToken);
+            return;
+        }
+
+        await Send.OkAsync(result.FloorPlan!, cancellationToken);
+    }
+}
