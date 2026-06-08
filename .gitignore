@@ -427,3 +427,7 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Project-local generated/planning artifacts
+template/
+docs/restaurant-mvp-premium-phases.md

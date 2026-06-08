@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="frontend/frontend.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="Nexo.AppHost/Nexo.AppHost.csproj" />
+  <Project Path="Nexo.Server/Nexo.Server.csproj" />
+</Solution>

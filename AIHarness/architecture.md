@@ -1,0 +1,87 @@
+# Nexo Architecture
+
+This is the architecture reference for agents. `AGENTS.md` is the normative
+root guide; this file explains module boundaries and runtime shape.
+
+## Runtime Shape
+
+Nexo is a .NET Aspire modular monolith:
+
+```text
+frontend (React + Vite)
+  -> Nexo.Server (FastEndpoints API)
+       resolves active company context, validates membership, permissions, and
+       active modules, then executes the feature slice
+  -> PostgreSQL + Redis + Keycloak + external providers
+```
+
+`Nexo.AppHost` orchestrates the local runtime. `Nexo.Server` hosts all modules
+behind one API surface. There is no worker or queue tier in the current shape.
+
+## Project Responsibilities
+
+| Project | Responsibility |
+| --- | --- |
+| `Nexo.AppHost` | Aspire orchestration for PostgreSQL, Redis, Keycloak, `Nexo.Server`, and `frontend`. |
+| `Nexo.Server` | FastEndpoints API, vertical-slice modules, `NexoDbContext`, tenant/module/permission resolution, DI, health checks, and telemetry wiring. |
+| `frontend` | React + Vite + TypeScript SPA served through `frontend.esproj`; consumes `/v1/...` endpoints and mirrors module/permission gating for UX. |
+
+Extract shared projects only when a boundary becomes load-bearing. Do not
+create empty shared projects in advance.
+
+## Module Layout
+
+Vertical slices live under:
+
+```text
+Nexo.Server/Modules/<Module>/Features/<UseCase>/
+```
+
+A mature module may use:
+
+```text
+Nexo.Server/Modules/<Module>/
+  Abstractions/
+  Data/
+    Configurations/
+    Extensions/
+  Features/
+  Integrations/
+```
+
+Namespaces should mirror folder segments.
+
+## Dependency Direction
+
+Planned direction as the modular layout solidifies:
+
+```text
+Feature endpoint/handler
+  -> module abstractions and persistence
+  -> integration implementation
+  -> external provider
+```
+
+Business workflows must not reference provider SDKs directly. Provider details
+belong behind ports and integration implementations.
+
+## Non-Negotiable Checks
+
+- Modular monolith for the MVP; no microservice split.
+- FastEndpoints only; no MVC controllers.
+- Mediator only; no MediatR.
+- EF Core directly through `NexoDbContext`; no generic repositories or custom
+  Unit of Work.
+- Company isolation through `company_id` and EF Core global query filters.
+- PostgreSQL schemas are per module, never per company.
+- Backend module activation checks are required for gated features.
+- No agent-applied migrations.
+- No raw secrets in repository files or credential rows.
+
+## Review Questions
+
+- Does the change respect module boundaries and vertical-slice placement?
+- Does it preserve company isolation?
+- Does it enforce backend module activation and permission checks where needed?
+- Are provider details behind ports?
+- Are tests and docs proportionate to the risk?
