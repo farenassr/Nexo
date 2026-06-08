@@ -45,12 +45,14 @@ function Get-ProductionFile {
 # projects are extracted, add them here and to $allowedProjectReferences.
 $productionProjects = @(
     "Nexo.AppHost",
-    "Nexo.Server"
+    "Nexo.Server",
+    "Nexo.Shared"
 )
 
 $allowedProjectReferences = @{
     "Nexo.AppHost" = @("Nexo.Server")
-    "Nexo.Server"  = @()
+    "Nexo.Server"  = @("Nexo.Shared")
+    "Nexo.Shared"  = @()
 }
 
 foreach ($projectDirectory in $productionProjects) {

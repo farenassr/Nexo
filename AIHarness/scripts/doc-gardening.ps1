@@ -24,9 +24,9 @@ function Test-IgnoredMarkdownPath {
     param([string]$Path)
 
     $relativePath = Get-RepoRelativePath -Path $Path
-    return $relativePath -match "^(bin|obj|TestResults|\.git)[\\/]" -or
+    return $relativePath -match "^(bin|obj|TestResults|\.git|node_modules)[\\/]" -or
         $relativePath -match "^\.codex[\\/]skills[\\/]" -or
-        $relativePath -match "[\\/]bin[\\/]|[\\/]obj[\\/]|[\\/]TestResults[\\/]"
+        $relativePath -match "[\\/]bin[\\/]|[\\/]obj[\\/]|[\\/]TestResults[\\/]|[\\/]node_modules[\\/]"
 }
 
 $markdownFiles = Get-ChildItem -LiteralPath $repoRoot -Recurse -File -Filter "*.md" |
