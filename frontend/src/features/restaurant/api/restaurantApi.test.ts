@@ -3,10 +3,13 @@ import {
   createRestaurantReservation,
   cancelRestaurantReservation,
   listRestaurantReservations,
+  listRestaurantTableReservations,
   RestaurantApiError,
+  saveRestaurantFloorPlan,
   searchRestaurantAvailability,
+  updateRestaurantTableLayout,
 } from './restaurantApi';
-import { RestaurantReservationSource, RestaurantReservationStatus } from '../types';
+import { RestaurantReservationSource, RestaurantReservationStatus, RestaurantTableShape } from '../types';
 
 describe('restaurantApi', () => {
   it('lists reservations with branch, date, and optional status query parameters', async () => {
@@ -113,6 +116,121 @@ describe('restaurantApi', () => {
         method: 'POST',
         body: JSON.stringify({ reason: 'Guest requested cancellation' }),
       }),
+    );
+  });
+
+  it('uses Phase 4 floor-plan editor route contracts', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ id: 'floor-plan-1' }))
+      .mockResolvedValueOnce(jsonResponse({ id: 'floor-plan-1' }))
+      .mockResolvedValueOnce(jsonResponse([]));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await saveRestaurantFloorPlan('floor-plan-1', {
+      name: 'Cena principal',
+      canvasWidth: 1200,
+      canvasHeight: 760,
+      gridSize: 20,
+      isActive: true,
+      areaLayouts: [
+        {
+          areaId: 'area-1',
+          x: 20,
+          y: 20,
+          width: 520,
+          height: 320,
+          rotationDegrees: 0,
+          zIndex: 1,
+        },
+      ],
+      tableLayouts: [
+        {
+          tableId: 'table-1',
+          x: 120,
+          y: 160,
+          width: 96,
+          height: 72,
+          rotationDegrees: 0,
+          shape: RestaurantTableShape.Rectangle,
+          zIndex: 4,
+          seatLayouts: [{ seatNumber: 1, x: 10, y: 12, rotationDegrees: 0 }],
+        },
+      ],
+    });
+
+    await updateRestaurantTableLayout('floor-plan-1', 'table-1', {
+      x: 140,
+      y: 180,
+      width: 96,
+      height: 72,
+      rotationDegrees: 15,
+      shape: RestaurantTableShape.Rectangle,
+      zIndex: 4,
+      seatLayouts: [{ seatNumber: 1, x: 10, y: 12, rotationDegrees: 0 }],
+    });
+
+    await listRestaurantTableReservations('table-1', '2026-06-08');
+
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      1,
+      '/v1/restaurant/floor-plans/floor-plan-1',
+      expect.objectContaining({
+        method: 'PUT',
+        body: JSON.stringify({
+          name: 'Cena principal',
+          canvasWidth: 1200,
+          canvasHeight: 760,
+          gridSize: 20,
+          isActive: true,
+          areaLayouts: [
+            {
+              areaId: 'area-1',
+              x: 20,
+              y: 20,
+              width: 520,
+              height: 320,
+              rotationDegrees: 0,
+              zIndex: 1,
+            },
+          ],
+          tableLayouts: [
+            {
+              tableId: 'table-1',
+              x: 120,
+              y: 160,
+              width: 96,
+              height: 72,
+              rotationDegrees: 0,
+              shape: RestaurantTableShape.Rectangle,
+              zIndex: 4,
+              seatLayouts: [{ seatNumber: 1, x: 10, y: 12, rotationDegrees: 0 }],
+            },
+          ],
+        }),
+      }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      '/v1/restaurant/floor-plans/floor-plan-1/tables/table-1/layout',
+      expect.objectContaining({
+        method: 'PUT',
+        body: JSON.stringify({
+          x: 140,
+          y: 180,
+          width: 96,
+          height: 72,
+          rotationDegrees: 15,
+          shape: RestaurantTableShape.Rectangle,
+          zIndex: 4,
+          seatLayouts: [{ seatNumber: 1, x: 10, y: 12, rotationDegrees: 0 }],
+        }),
+      }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      3,
+      '/v1/restaurant/tables/table-1/reservations?date=2026-06-08',
+      expect.objectContaining({ method: 'GET' }),
     );
   });
 });

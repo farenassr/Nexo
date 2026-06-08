@@ -8,6 +8,7 @@ import type {
   RestaurantReservationDetail,
   RestaurantReservationSource,
   RestaurantReservationStatus,
+  RestaurantTableShape,
 } from '../types';
 
 export class RestaurantApiError extends Error {
@@ -49,6 +50,47 @@ export interface UpdateRestaurantReservationStatusInput {
   status: RestaurantReservationStatus;
   reason: string | null;
 }
+
+export interface SaveRestaurantFloorPlanInput {
+  name: string;
+  canvasWidth: number;
+  canvasHeight: number;
+  gridSize: number | null;
+  isActive: boolean;
+  areaLayouts: SaveRestaurantAreaLayoutInput[];
+  tableLayouts: SaveRestaurantTableLayoutInput[];
+}
+
+export interface SaveRestaurantAreaLayoutInput {
+  areaId: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotationDegrees: number;
+  zIndex: number;
+}
+
+export interface SaveRestaurantTableSeatLayoutInput {
+  seatNumber: number;
+  x: number;
+  y: number;
+  rotationDegrees: number;
+}
+
+export interface SaveRestaurantTableLayoutInput {
+  tableId: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotationDegrees: number;
+  shape: RestaurantTableShape;
+  zIndex: number;
+  seatLayouts: SaveRestaurantTableSeatLayoutInput[];
+}
+
+export type UpdateRestaurantTableLayoutInput = Omit<SaveRestaurantTableLayoutInput, 'tableId'>;
 
 export async function getRestaurantContext(): Promise<RestaurantContextResponse> {
   return apiFetch('/v1/restaurant/context');
@@ -108,6 +150,14 @@ export async function cancelRestaurantReservation(
   });
 }
 
+export async function listRestaurantTableReservations(
+  tableId: string,
+  date: string,
+): Promise<RestaurantReservationDetail[]> {
+  const search = new URLSearchParams({ date });
+  return apiFetch(`/v1/restaurant/tables/${tableId}/reservations?${search.toString()}`);
+}
+
 export async function listRestaurantFloorPlans(
   branchId: string,
   floorId: string,
@@ -131,6 +181,27 @@ export async function getRestaurantFloorPlanStatusMap(
   }
 
   return apiFetch(`/v1/restaurant/floor-plans/${floorPlanId}/status-map?${search.toString()}`);
+}
+
+export async function saveRestaurantFloorPlan(
+  floorPlanId: string,
+  input: SaveRestaurantFloorPlanInput,
+): Promise<RestaurantFloorPlanDetail> {
+  return apiFetch(`/v1/restaurant/floor-plans/${floorPlanId}`, {
+    method: 'PUT',
+    body: JSON.stringify(input),
+  });
+}
+
+export async function updateRestaurantTableLayout(
+  floorPlanId: string,
+  tableId: string,
+  input: UpdateRestaurantTableLayoutInput,
+): Promise<RestaurantFloorPlanDetail> {
+  return apiFetch(`/v1/restaurant/floor-plans/${floorPlanId}/tables/${tableId}/layout`, {
+    method: 'PUT',
+    body: JSON.stringify(input),
+  });
 }
 
 async function apiFetch<TResponse>(path: string, init: RequestInit = {}): Promise<TResponse> {
