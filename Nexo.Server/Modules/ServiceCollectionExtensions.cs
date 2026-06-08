@@ -1,3 +1,4 @@
+using Nexo.Server.Data;
 using Nexo.Server.Modules.Core.CompanyContext;
 using Nexo.Server.Modules.Core.ModuleGating;
 using Nexo.Server.Modules.Restaurant.Authorization;
@@ -10,6 +11,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        services.AddNexoPersistence(configuration);
         services.AddCompanyContext(configuration);
         services.AddModuleGating(configuration);
         services.AddRestaurantModule(configuration);
