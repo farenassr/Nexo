@@ -19,5 +19,12 @@ describe('restaurantQueryKeys', () => {
       '2026-06-08T18:30:00.000Z',
       null,
     ]);
+
+    expect(restaurantQueryKeys.tableReservations('table-1', '2026-06-08')).toEqual([
+      'restaurant',
+      'table-reservations',
+      'table-1',
+      '2026-06-08',
+    ]);
   });
 });

@@ -1,0 +1,86 @@
+{
+  "app": {
+    "eyebrow": "Nexo Restaurant",
+    "title": "Plano operativo",
+    "contextFallback": "Restaurante",
+    "contextBlocked": "Contexto bloqueado"
+  },
+  "setup": {
+    "branchId": "Sucursal",
+    "floorId": "Piso",
+    "date": "Fecha",
+    "time": "Hora",
+    "floorPlan": "Plano",
+    "floorPlanId": "ID del plano",
+    "areaFilter": "Zona",
+    "allAreas": "Todas"
+  },
+  "actions": {
+    "refresh": "Actualizar",
+    "search": "Buscar mesas",
+    "create": "Crear reserva",
+    "saveLayout": "Guardar plano",
+    "edit": "Editar",
+    "live": "En vivo",
+    "cancel": "Cancelar",
+    "confirmed": "Confirmar",
+    "seated": "Sentar",
+    "completed": "Completar"
+  },
+  "sections": {
+    "floor": "Plano en vivo",
+    "selectedTable": "Mesa seleccionada",
+    "reservations": "Reservas del dia",
+    "booking": "Nueva reserva",
+    "layout": "Propiedades"
+  },
+  "states": {
+    "branchRequired": "Selecciona una sucursal",
+    "floorRequired": "Selecciona un piso",
+    "floorPlanRequired": "Selecciona un plano",
+    "noReservations": "Sin reservas",
+    "noTableSelected": "Selecciona una mesa",
+    "noTableReservations": "Sin reservas para esta mesa",
+    "syncing": "Sincronizando",
+    "dirty": "Cambios sin guardar"
+  },
+  "fields": {
+    "party": "Comensales",
+    "duration": "Duracion",
+    "guest": "Cliente",
+    "phone": "Telefono",
+    "email": "Email",
+    "notes": "Notas",
+    "reason": "Motivo",
+    "x": "X",
+    "y": "Y",
+    "width": "Ancho",
+    "height": "Alto",
+    "rotation": "Rotacion"
+  },
+  "status": {
+    "pending": "Pendiente",
+    "confirmed": "Confirmada",
+    "seated": "Sentada",
+    "completed": "Completada",
+    "cancelled": "Cancelada",
+    "noShow": "No show",
+    "available": "Disponible",
+    "reserved": "Reservada",
+    "occupied": "Ocupada",
+    "blocked": "Bloqueada",
+    "cleaning": "Limpieza",
+    "inactive": "Inactiva"
+  },
+  "toasts": {
+    "created": "Reserva creada",
+    "statusUpdated": "Estado actualizado",
+    "cancelled": "Reserva cancelada",
+    "layoutSaved": "Plano guardado",
+    "availabilityFailed": "Fallo la busqueda",
+    "createFailed": "No se pudo crear la reserva",
+    "statusFailed": "No se pudo cambiar el estado",
+    "cancelFailed": "No se pudo cancelar",
+    "layoutFailed": "No se pudo guardar el plano"
+  }
+}
