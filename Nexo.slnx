@@ -5,4 +5,5 @@
   </Project>
   <Project Path="Nexo.AppHost/Nexo.AppHost.csproj" />
   <Project Path="Nexo.Server/Nexo.Server.csproj" />
+  <Project Path="tests/Nexo.Server.Tests/Nexo.Server.Tests.csproj" />
 </Solution>
