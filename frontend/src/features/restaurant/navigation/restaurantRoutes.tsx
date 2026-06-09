@@ -5,12 +5,13 @@ import { RestaurantFloorPlanEditorPage } from '../pages/RestaurantFloorPlanEdito
 import { RestaurantFloorPlanLivePage } from '../pages/RestaurantFloorPlanLivePage';
 import { RestaurantReservationsPage } from '../pages/RestaurantReservationsPage';
 import { RestaurantSetupPage } from '../pages/RestaurantSetupPage';
+import { restaurantDefaultRoute } from './restaurantNavigation';
 
 export function createRestaurantRoutes(rootRoute: AnyRoute) {
   const indexRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/',
-    component: () => <Navigate to={'/restaurant/floor-plan' as never} replace />,
+    component: () => <Navigate to={restaurantDefaultRoute as never} replace />,
   });
 
   const restaurantRoute = createRoute({

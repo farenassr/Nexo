@@ -1,6 +1,8 @@
 import { BarChart3, CalendarDays, Map, PenTool, Settings } from 'lucide-react';
 import labels from '../labels.es.json';
 
+export const restaurantDefaultRoute = '/restaurant/floor-plan';
+
 export const restaurantNavigationItems = [
   {
     label: labels.navigation.dashboard,
@@ -40,3 +42,7 @@ export const restaurantSetupNavigationItems = [
   labels.setupNavigation.durationRules,
   labels.setupNavigation.turnoverBuffer,
 ] as const;
+
+export function isRestaurantSetupRoute(pathname: string) {
+  return pathname.startsWith('/restaurant/setup');
+}
