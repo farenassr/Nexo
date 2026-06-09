@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import {
   getRestaurantContext,
   getRestaurantFloorPlan,
+  getRestaurantSetup,
   listRestaurantFloorPlans,
   RestaurantApiError,
   saveRestaurantFloorPlan,
@@ -19,9 +20,12 @@ import { FloorPlanShapePalette } from '../components/floorPlanEditor/FloorPlanSh
 import { EmptyState, Field, InlineError, PanelHeader, SkeletonRows } from '../components/restaurantUi';
 import {
   applyEditorChange,
+  addAreaLayoutFromSetup,
+  addTableLayoutFromSetup,
   changeTableChairCount,
   changeTableShape,
   createFloorPlanEditorState,
+  moveAreaLayout,
   moveTableLayout,
   redoEditorChange,
   resizeTableLayout,
@@ -32,7 +36,13 @@ import {
 } from '../floorPlanEditor';
 import labels from '../labels.es.json';
 import { restaurantQueryKeys } from '../queryKeys';
-import { readStoredSelectedTableId, updateSetup, useStoredSetup, type DragState } from '../state/restaurantWorkspaceState';
+import {
+  isGuid,
+  readStoredSelectedTableId,
+  updateSetup,
+  useStoredSetup,
+  type DragState,
+} from '../state/restaurantWorkspaceState';
 import { type RestaurantFloorPlanDetail, type RestaurantTableLayoutDetail } from '../types';
 
 export function RestaurantFloorPlanEditorPage() {
@@ -45,7 +55,7 @@ export function RestaurantFloorPlanEditorPage() {
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [zoom, setZoom] = useState(1);
 
-  const hasFloorContext = setup.branchId.trim().length > 0 && setup.floorId.trim().length > 0;
+  const hasFloorContext = isGuid(setup.branchId) && isGuid(setup.floorId);
 
   const contextQuery = useQuery({
     queryKey: restaurantQueryKeys.context(),
@@ -68,8 +78,42 @@ export function RestaurantFloorPlanEditorPage() {
   const floorPlanQuery = useQuery({
     queryKey: restaurantQueryKeys.floorPlan(setup.floorPlanId),
     queryFn: () => getRestaurantFloorPlan(setup.floorPlanId),
-    enabled: setup.floorPlanId.trim().length > 0,
+    enabled: isGuid(setup.floorPlanId),
   });
+
+  const setupQuery = useQuery({
+    queryKey: restaurantQueryKeys.setup(),
+    queryFn: getRestaurantSetup,
+  });
+
+  const setupBranches = setupQuery.data?.branches ?? [];
+  const setupFloors = useMemo(
+    () => setupQuery.data?.floors.filter((floor) => floor.branchId === setup.branchId) ?? [],
+    [setup.branchId, setupQuery.data],
+  );
+
+  useEffect(() => {
+    if (!setupQuery.data) {
+      return;
+    }
+
+    const nextBranchId = setupQuery.data.branches.some((branch) => branch.id === setup.branchId)
+      ? setup.branchId
+      : (setupQuery.data.branches[0]?.id ?? '');
+    const nextFloors = setupQuery.data.floors.filter((floor) => floor.branchId === nextBranchId);
+    const nextFloorId = nextFloors.some((floor) => floor.id === setup.floorId)
+      ? setup.floorId
+      : (nextFloors[0]?.id ?? '');
+
+    if (nextBranchId !== setup.branchId || nextFloorId !== setup.floorId) {
+      updateSetup(setSetup, {
+        branchId: nextBranchId,
+        floorId: nextFloorId,
+        floorPlanId: '',
+        areaId: '',
+      });
+    }
+  }, [setSetup, setup.branchId, setup.floorId, setupQuery.data]);
 
   useEffect(() => {
     if (!floorPlanQuery.data) {
@@ -125,10 +169,20 @@ export function RestaurantFloorPlanEditorPage() {
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
     setSelectedTableId(tableId);
-    setDragState({ tableId, startClientX: event.clientX, startClientY: event.clientY });
+    setDragState({ itemKind: 'table', itemId: tableId, startClientX: event.clientX, startClientY: event.clientY });
   }
 
-  function moveTableDrag(event: ReactPointerEvent<HTMLButtonElement>) {
+  function beginAreaDrag(event: ReactPointerEvent<HTMLDivElement>, areaId: string) {
+    if (activeTool !== 'move' || !floorPlan) {
+      return;
+    }
+
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragState({ itemKind: 'area', itemId: areaId, startClientX: event.clientX, startClientY: event.clientY });
+  }
+
+  function moveLayoutDrag(event: ReactPointerEvent<HTMLButtonElement | HTMLDivElement>) {
     if (!dragState || !floorPlan || !canvasRef.current) {
       return;
     }
@@ -136,11 +190,15 @@ export function RestaurantFloorPlanEditorPage() {
     const rect = canvasRef.current.getBoundingClientRect();
     const deltaX = ((event.clientX - dragState.startClientX) / rect.width) * floorPlan.canvasWidth;
     const deltaY = ((event.clientY - dragState.startClientY) / rect.height) * floorPlan.canvasHeight;
-    applyFloorPlanChange((current) => moveTableLayout(current, dragState.tableId, deltaX, deltaY));
+    applyFloorPlanChange((current) =>
+      dragState.itemKind === 'area'
+        ? moveAreaLayout(current, dragState.itemId, deltaX, deltaY)
+        : moveTableLayout(current, dragState.itemId, deltaX, deltaY),
+    );
     setDragState({ ...dragState, startClientX: event.clientX, startClientY: event.clientY });
   }
 
-  function endTableDrag(event: ReactPointerEvent<HTMLButtonElement>) {
+  function endLayoutDrag(event: ReactPointerEvent<HTMLButtonElement | HTMLDivElement>) {
     if (dragState) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
@@ -148,12 +206,68 @@ export function RestaurantFloorPlanEditorPage() {
   }
 
   function handleToolChange(tool: FloorPlanEditorTool) {
-    if (tool === 'add-table' || tool === 'add-area') {
-      toast.message(labels.editor.setupRequiredForCreation);
+    if (tool === 'add-area') {
+      addNextSetupAreaLayout();
+      return;
+    }
+
+    if (tool === 'add-table') {
+      addNextSetupTableLayout();
       return;
     }
 
     setActiveTool(tool);
+  }
+
+  function addNextSetupAreaLayout() {
+    if (!editorState || !isGuid(setup.branchId) || !isGuid(setup.floorId)) {
+      toast.message(labels.editor.setupRequiredForCreation);
+      return;
+    }
+
+    const nextArea = setupQuery.data?.areas.find(
+      (area) =>
+        area.branchId === setup.branchId &&
+        area.floorId === setup.floorId &&
+        !editorState.floorPlan.areaLayouts.some((layout) => layout.areaId === area.id),
+    );
+
+    if (!nextArea) {
+      toast.message(labels.editor.noSetupAreasAvailable);
+      return;
+    }
+
+    setEditorState((current) =>
+      current ? applyEditorChange(current, (floorPlanDetail) => addAreaLayoutFromSetup(floorPlanDetail, nextArea)) : current,
+    );
+    updateSetup(setSetup, { areaId: nextArea.id });
+    setActiveTool('select');
+  }
+
+  function addNextSetupTableLayout() {
+    if (!editorState || !isGuid(setup.branchId) || !isGuid(setup.floorId)) {
+      toast.message(labels.editor.setupRequiredForCreation);
+      return;
+    }
+
+    const nextTable = setupQuery.data?.tables.find(
+      (table) =>
+        table.branchId === setup.branchId &&
+        table.floorId === setup.floorId &&
+        (!setup.areaId || table.areaId === setup.areaId) &&
+        !editorState.floorPlan.tableLayouts.some((layout) => layout.tableId === table.id),
+    );
+
+    if (!nextTable) {
+      toast.message(labels.editor.noSetupTablesAvailable);
+      return;
+    }
+
+    setEditorState((current) =>
+      current ? applyEditorChange(current, (floorPlanDetail) => addTableLayoutFromSetup(floorPlanDetail, nextTable)) : current,
+    );
+    setSelectedTableId(nextTable.id);
+    setActiveTool('move');
   }
 
   function changeSelectedTableShape(shape: RestaurantTableLayoutDetail['shape']) {
@@ -182,18 +296,34 @@ export function RestaurantFloorPlanEditorPage() {
 
       <section className="setup-panel" aria-label={labels.app.contextFallback}>
         <Field label={labels.setup.branchId}>
-          <input
+          <select
             value={setup.branchId}
-            onChange={(event) => updateSetup(setSetup, { branchId: event.target.value, floorPlanId: '' })}
-            placeholder="00000000-0000-7000-8000-000000000101"
-          />
+            onChange={(event) =>
+              updateSetup(setSetup, { branchId: event.target.value, floorId: '', floorPlanId: '', areaId: '' })
+            }
+            disabled={setupQuery.isPending || setupBranches.length === 0}
+          >
+            <option value="">{labels.states.branchRequired}</option>
+            {setupBranches.map((branch) => (
+              <option key={branch.id} value={branch.id}>
+                {branch.name}
+              </option>
+            ))}
+          </select>
         </Field>
         <Field label={labels.setup.floorId}>
-          <input
+          <select
             value={setup.floorId}
             onChange={(event) => updateSetup(setSetup, { floorId: event.target.value, floorPlanId: '', areaId: '' })}
-            placeholder="00000000-0000-7000-8000-000000000201"
-          />
+            disabled={!setup.branchId || setupFloors.length === 0}
+          >
+            <option value="">{labels.states.floorRequired}</option>
+            {setupFloors.map((floor) => (
+              <option key={floor.id} value={floor.id}>
+                {floor.name}
+              </option>
+            ))}
+          </select>
         </Field>
         <Field label={labels.setup.floorPlan}>
           <select
@@ -256,9 +386,10 @@ export function RestaurantFloorPlanEditorPage() {
                     isEditingLayout={activeTool === 'move'}
                     isFetchingStatus={false}
                     onSelectTable={setSelectedTableId}
+                    onBeginAreaDrag={beginAreaDrag}
                     onBeginDrag={beginTableDrag}
-                    onMoveDrag={moveTableDrag}
-                    onEndDrag={endTableDrag}
+                    onMoveDrag={moveLayoutDrag}
+                    onEndDrag={endLayoutDrag}
                   />
                 </div>
               </div>

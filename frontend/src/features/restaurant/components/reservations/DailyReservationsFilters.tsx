@@ -1,11 +1,21 @@
 import { Search } from 'lucide-react';
 import labels from '../../labels.es.json';
 import type { DailyReservationFilters } from '../../reservationFilters';
-import { RestaurantReservationStatus } from '../../types';
+import {
+  RestaurantReservationStatus,
+  type RestaurantAreaLayoutDetail,
+  type RestaurantBranchDetail,
+  type RestaurantFloorDetail,
+  type RestaurantTableLayoutDetail,
+} from '../../types';
 import { Field } from '../restaurantUi';
 
 export function DailyReservationsFilters({
   branchId,
+  branches,
+  floors,
+  areas,
+  tables,
   date,
   status,
   filters,
@@ -15,6 +25,10 @@ export function DailyReservationsFilters({
   onFiltersChange,
 }: {
   branchId: string;
+  branches: RestaurantBranchDetail[];
+  floors: RestaurantFloorDetail[];
+  areas: RestaurantAreaLayoutDetail[];
+  tables: RestaurantTableLayoutDetail[];
   date: string;
   status: RestaurantReservationStatus | null;
   filters: DailyReservationFilters;
@@ -26,7 +40,14 @@ export function DailyReservationsFilters({
   return (
     <section className="setup-panel reservations-filter-panel" aria-label={labels.reservations.filters}>
       <Field label={labels.setup.branchId}>
-        <input value={branchId} onChange={(event) => onBranchChange(event.target.value)} placeholder="branch-id" />
+        <select value={branchId} onChange={(event) => onBranchChange(event.target.value)} disabled={branches.length === 0}>
+          <option value="">{labels.states.branchRequired}</option>
+          {branches.map((branch) => (
+            <option key={branch.id} value={branch.id}>
+              {branch.name}
+            </option>
+          ))}
+        </select>
       </Field>
       <Field label={labels.setup.date}>
         <input type="date" value={date} onChange={(event) => onDateChange(event.target.value)} />
@@ -50,13 +71,34 @@ export function DailyReservationsFilters({
         </select>
       </Field>
       <Field label={labels.setup.floorId}>
-        <input value={filters.floorId} onChange={(event) => onFiltersChange({ floorId: event.target.value })} />
+        <select value={filters.floorId} onChange={(event) => onFiltersChange({ floorId: event.target.value, areaId: '', tableId: '' })}>
+          <option value="">{labels.setup.allFloors}</option>
+          {floors.map((floor) => (
+            <option key={floor.id} value={floor.id}>
+              {floor.name}
+            </option>
+          ))}
+        </select>
       </Field>
       <Field label={labels.setup.areaFilter}>
-        <input value={filters.areaId} onChange={(event) => onFiltersChange({ areaId: event.target.value })} />
+        <select value={filters.areaId} onChange={(event) => onFiltersChange({ areaId: event.target.value, tableId: '' })}>
+          <option value="">{labels.setup.allAreas}</option>
+          {areas.map((area) => (
+            <option key={area.areaId} value={area.areaId}>
+              {area.areaName}
+            </option>
+          ))}
+        </select>
       </Field>
       <Field label={labels.reservations.tableFilter}>
-        <input value={filters.tableId} onChange={(event) => onFiltersChange({ tableId: event.target.value })} />
+        <select value={filters.tableId} onChange={(event) => onFiltersChange({ tableId: event.target.value })}>
+          <option value="">{labels.setup.allTables}</option>
+          {tables.map((table) => (
+            <option key={table.tableId} value={table.tableId}>
+              {table.tableLabel}
+            </option>
+          ))}
+        </select>
       </Field>
       <Field label={labels.reservations.customerSearch}>
         <div className="filter-search-input">

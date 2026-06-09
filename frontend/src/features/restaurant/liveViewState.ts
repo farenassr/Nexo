@@ -1,7 +1,9 @@
 import {
   RestaurantReservationStatus,
   RestaurantTableVisualStatus,
+  type RestaurantAreaLayoutDetail,
   type RestaurantReservationDetail,
+  type RestaurantTableLayoutDetail,
   type RestaurantTableStatusDetail,
 } from './types';
 
@@ -55,6 +57,18 @@ export function getTableActionState(
 
 export function findActionReservation(reservations: RestaurantReservationDetail[]) {
   return reservations.find((reservation) => !terminalStatuses.has(reservation.status)) ?? null;
+}
+
+export function resolveTableAreaName(
+  table: Pick<RestaurantTableLayoutDetail, 'areaId'>,
+  areas: Pick<RestaurantAreaLayoutDetail, 'areaId' | 'areaName'>[],
+  fallback: string,
+) {
+  if (!table.areaId) {
+    return fallback;
+  }
+
+  return areas.find((area) => area.areaId === table.areaId)?.areaName ?? fallback;
 }
 
 function disabledActions(): TableActionState {

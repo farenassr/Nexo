@@ -2,12 +2,19 @@ import { RefreshCw } from 'lucide-react';
 import type { Dispatch, SetStateAction } from 'react';
 import labels from '../../labels.es.json';
 import { updateSetup, type RestaurantSetup } from '../../state/restaurantWorkspaceState';
-import type { RestaurantAreaLayoutDetail, RestaurantFloorPlanSummary } from '../../types';
+import type {
+  RestaurantAreaLayoutDetail,
+  RestaurantBranchDetail,
+  RestaurantFloorDetail,
+  RestaurantFloorPlanSummary,
+} from '../../types';
 import { Field } from '../restaurantUi';
 
 export function FloorPlanLiveToolbar({
   setup,
   setSetup,
+  branches,
+  floors,
   floorPlans,
   areas,
   isRefreshDisabled,
@@ -16,6 +23,8 @@ export function FloorPlanLiveToolbar({
 }: {
   setup: RestaurantSetup;
   setSetup: Dispatch<SetStateAction<RestaurantSetup>>;
+  branches: RestaurantBranchDetail[];
+  floors: RestaurantFloorDetail[];
   floorPlans: RestaurantFloorPlanSummary[] | undefined;
   areas: RestaurantAreaLayoutDetail[];
   isRefreshDisabled: boolean;
@@ -25,18 +34,32 @@ export function FloorPlanLiveToolbar({
   return (
     <section className="setup-panel live-toolbar" aria-label={labels.live.toolbar}>
       <Field label={labels.setup.branchId}>
-        <input
+        <select
           value={setup.branchId}
-          onChange={(event) => updateSetup(setSetup, { branchId: event.target.value, floorPlanId: '' })}
-          placeholder="00000000-0000-7000-8000-000000000101"
-        />
+          onChange={(event) => updateSetup(setSetup, { branchId: event.target.value, floorId: '', floorPlanId: '', areaId: '' })}
+          disabled={branches.length === 0}
+        >
+          <option value="">{labels.states.branchRequired}</option>
+          {branches.map((branch) => (
+            <option key={branch.id} value={branch.id}>
+              {branch.name}
+            </option>
+          ))}
+        </select>
       </Field>
       <Field label={labels.setup.floorId}>
-        <input
+        <select
           value={setup.floorId}
           onChange={(event) => updateSetup(setSetup, { floorId: event.target.value, floorPlanId: '', areaId: '' })}
-          placeholder="00000000-0000-7000-8000-000000000201"
-        />
+          disabled={!setup.branchId || floors.length === 0}
+        >
+          <option value="">{labels.states.floorRequired}</option>
+          {floors.map((floor) => (
+            <option key={floor.id} value={floor.id}>
+              {floor.name}
+            </option>
+          ))}
+        </select>
       </Field>
       <Field label={labels.setup.floorPlan}>
         <select

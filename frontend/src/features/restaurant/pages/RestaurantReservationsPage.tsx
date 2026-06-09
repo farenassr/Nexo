@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Activity, CalendarDays, CalendarPlus, Loader2, RefreshCw } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
   cancelRestaurantReservation,
   getRestaurantFloorPlan,
   getRestaurantContext,
+  getRestaurantSetup,
   listRestaurantFloorPlans,
   listRestaurantReservations,
   RestaurantApiError,
@@ -21,7 +22,13 @@ import { Metric, PanelHeader } from '../components/restaurantUi';
 import labels from '../labels.es.json';
 import { defaultDailyReservationFilters, filterDailyReservations } from '../reservationFilters';
 import { restaurantQueryKeys } from '../queryKeys';
-import { optionalText, updateSetup, useStoredSetup } from '../state/restaurantWorkspaceState';
+import {
+  isGuid,
+  normalizeRestaurantSetupScope,
+  optionalText,
+  updateSetup,
+  useStoredSetup,
+} from '../state/restaurantWorkspaceState';
 import { RestaurantReservationStatus } from '../types';
 
 export function RestaurantReservationsPage() {
@@ -31,12 +38,35 @@ export function RestaurantReservationsPage() {
   const [statusFilter, setStatusFilter] = useState<RestaurantReservationStatus | null>(null);
   const [actionReason, setActionReason] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const hasRestaurantContext = setup.branchId.trim().length > 0;
+  const hasRestaurantContext = isGuid(setup.branchId);
 
   const contextQuery = useQuery({
     queryKey: restaurantQueryKeys.context(),
     queryFn: getRestaurantContext,
   });
+
+  const setupQuery = useQuery({
+    queryKey: restaurantQueryKeys.setup(),
+    queryFn: getRestaurantSetup,
+  });
+
+  const setupBranches = setupQuery.data?.branches ?? [];
+  const setupFloors = useMemo(
+    () => setupQuery.data?.floors.filter((floor) => floor.branchId === setup.branchId) ?? [],
+    [setup.branchId, setupQuery.data],
+  );
+
+  useEffect(() => {
+    if (!setupQuery.data) {
+      return;
+    }
+
+    const normalized = normalizeRestaurantSetupScope(setup, setupQuery.data.branches, setupQuery.data.floors);
+    if (normalized !== setup) {
+      setSetup(normalized);
+      setFilters((current) => ({ ...current, floorId: '', areaId: '', tableId: '' }));
+    }
+  }, [setSetup, setup, setupQuery.data]);
 
   const reservationsQuery = useQuery({
     queryKey: restaurantQueryKeys.reservations({
@@ -58,14 +88,14 @@ export function RestaurantReservationsPage() {
   const floorPlansQuery = useQuery({
     queryKey: restaurantQueryKeys.floorPlans(setup.branchId, selectedFloorId),
     queryFn: () => listRestaurantFloorPlans(setup.branchId, selectedFloorId),
-    enabled: hasRestaurantContext && selectedFloorId.trim().length > 0 && selectedFloorPlanId.trim().length === 0,
+    enabled: hasRestaurantContext && isGuid(selectedFloorId) && selectedFloorPlanId.trim().length === 0,
   });
 
   const floorPlanId = selectedFloorPlanId || floorPlansQuery.data?.[0]?.id || '';
   const floorPlanQuery = useQuery({
     queryKey: restaurantQueryKeys.floorPlan(floorPlanId),
     queryFn: () => getRestaurantFloorPlan(floorPlanId),
-    enabled: floorPlanId.trim().length > 0,
+    enabled: isGuid(floorPlanId),
   });
 
   const tableContexts = useMemo(
@@ -76,6 +106,14 @@ export function RestaurantReservationsPage() {
         areaId: table.areaId,
       })) ?? [],
     [floorPlanQuery.data, selectedFloorId],
+  );
+  const areaOptions = floorPlanQuery.data?.areaLayouts ?? [];
+  const tableOptions = useMemo(
+    () =>
+      (floorPlanQuery.data?.tableLayouts ?? []).filter(
+        (table) => !filters.areaId || table.areaId === filters.areaId,
+      ),
+    [filters.areaId, floorPlanQuery.data],
   );
 
   const visibleReservations = useMemo(
@@ -125,10 +163,17 @@ export function RestaurantReservationsPage() {
 
       <DailyReservationsFilters
         branchId={setup.branchId}
+        branches={setupBranches}
+        floors={setupFloors}
+        areas={areaOptions}
+        tables={tableOptions}
         date={setup.date}
         status={statusFilter}
         filters={filters}
-        onBranchChange={(branchId) => updateSetup(setSetup, { branchId })}
+        onBranchChange={(branchId) => {
+          updateSetup(setSetup, { branchId, floorId: '', floorPlanId: '', areaId: '' });
+          setFilters((current) => ({ ...current, floorId: '', areaId: '', tableId: '' }));
+        }}
         onDateChange={(date) => updateSetup(setSetup, { date })}
         onStatusChange={setStatusFilter}
         onFiltersChange={(patch) => setFilters((current) => ({ ...current, ...patch }))}

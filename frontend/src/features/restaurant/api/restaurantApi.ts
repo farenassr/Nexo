@@ -1,7 +1,11 @@
 import type {
   RestaurantAvailabilitySearchResult,
+  RestaurantAreaDetail,
+  RestaurantAreaType,
+  RestaurantBranchDetail,
   RestaurantContextResponse,
   RestaurantDashboardSummary,
+  RestaurantFloorDetail,
   RestaurantFloorPlanDetail,
   RestaurantFloorPlanStatusMap,
   RestaurantFloorPlanSummary,
@@ -11,6 +15,8 @@ import type {
   RestaurantReservationStatus,
   RestaurantTableShape,
   RestaurantTableBlockDetail,
+  RestaurantTableDetail,
+  RestaurantSetupSnapshot,
 } from '../types';
 
 export class RestaurantApiError extends Error {
@@ -66,6 +72,47 @@ export interface CreateRestaurantTableBlockInput {
   startAt: string;
   endAt: string;
   reason: string | null;
+}
+
+export interface CreateRestaurantBranchInput {
+  name: string;
+  address: string | null;
+  timeZone: string;
+}
+
+export interface CreateRestaurantFloorInput {
+  branchId: string;
+  name: string;
+  sortOrder: number;
+}
+
+export interface CreateRestaurantAreaInput {
+  branchId: string;
+  floorId: string;
+  name: string;
+  type: RestaurantAreaType;
+  sortOrder: number;
+}
+
+export interface CreateRestaurantTableInput {
+  branchId: string;
+  floorId: string;
+  areaId: string | null;
+  label: string;
+  minCapacity: number;
+  maxCapacity: number;
+  defaultReservationMinutes: number | null;
+  shape: RestaurantTableShape;
+}
+
+export interface CreateRestaurantFloorPlanInput {
+  branchId: string;
+  floorId: string;
+  name: string;
+  canvasWidth: number;
+  canvasHeight: number;
+  gridSize: number | null;
+  isActive: boolean;
 }
 
 export interface GetRestaurantDashboardInput {
@@ -125,6 +172,69 @@ export async function getRestaurantDashboard(input: GetRestaurantDashboardInput)
   });
 
   return apiFetch(`/v1/restaurant/dashboard?${search.toString()}`);
+}
+
+export async function getRestaurantSetup(): Promise<RestaurantSetupSnapshot> {
+  return apiFetch('/v1/restaurant/setup');
+}
+
+export async function createRestaurantBranch(
+  input: CreateRestaurantBranchInput,
+): Promise<RestaurantBranchDetail> {
+  return apiFetch('/v1/restaurant/setup/branches', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
+
+export async function createRestaurantFloor(input: CreateRestaurantFloorInput): Promise<RestaurantFloorDetail> {
+  return apiFetch('/v1/restaurant/setup/floors', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
+
+export async function createRestaurantArea(input: CreateRestaurantAreaInput): Promise<RestaurantAreaDetail> {
+  return apiFetch('/v1/restaurant/setup/areas', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
+
+export async function createRestaurantTable(input: CreateRestaurantTableInput): Promise<RestaurantTableDetail> {
+  return apiFetch('/v1/restaurant/setup/tables', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
+
+export async function createRestaurantFloorPlan(
+  input: CreateRestaurantFloorPlanInput,
+): Promise<RestaurantFloorPlanSummary> {
+  return apiFetch('/v1/restaurant/setup/floor-plans', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
+
+export async function deleteRestaurantBranch(branchId: string): Promise<void> {
+  return apiFetch(`/v1/restaurant/setup/branches/${branchId}`, { method: 'DELETE' });
+}
+
+export async function deleteRestaurantFloor(floorId: string): Promise<void> {
+  return apiFetch(`/v1/restaurant/setup/floors/${floorId}`, { method: 'DELETE' });
+}
+
+export async function deleteRestaurantArea(areaId: string): Promise<void> {
+  return apiFetch(`/v1/restaurant/setup/areas/${areaId}`, { method: 'DELETE' });
+}
+
+export async function deleteRestaurantTable(tableId: string): Promise<void> {
+  return apiFetch(`/v1/restaurant/setup/tables/${tableId}`, { method: 'DELETE' });
+}
+
+export async function deleteRestaurantFloorPlan(floorPlanId: string): Promise<void> {
+  return apiFetch(`/v1/restaurant/setup/floor-plans/${floorPlanId}`, { method: 'DELETE' });
 }
 
 export async function listRestaurantReservations(

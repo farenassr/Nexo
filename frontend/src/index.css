@@ -30,8 +30,9 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-height: 100vh;
-  overflow-x: hidden;
+  height: 100vh;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Remove default Vite styles that conflict with our design */
@@ -51,5 +52,14 @@ button {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 860px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 }

@@ -1,9 +1,13 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
 var cache = builder.AddRedis("cache");
+var postgres = builder.AddPostgres("postgres");
+var database = postgres.AddDatabase("database");
 
 var server = builder.AddProject<Projects.Nexo_Server>("server")
+    .WithReference(database)
     .WithReference(cache)
+    .WaitFor(database)
     .WaitFor(cache)
     .WithHttpHealthCheck("/health")
     .WithExternalHttpEndpoints();

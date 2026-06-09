@@ -1,7 +1,8 @@
 import { CalendarPlus, Check, Clock3, Edit3, ShieldOff, Utensils, XCircle } from 'lucide-react';
-import { getNextTableReservation, type TableActionState } from '../../liveViewState';
+import { getNextTableReservation, resolveTableAreaName, type TableActionState } from '../../liveViewState';
 import labels from '../../labels.es.json';
 import {
+  type RestaurantAreaLayoutDetail,
   RestaurantReservationStatus,
   RestaurantTableVisualStatus,
   type RestaurantReservationDetail,
@@ -12,6 +13,7 @@ import { EmptyState, Field, InlineError, SkeletonRows, visualStatusLabel, visual
 
 export function TableDetailsSidePanel({
   table,
+  areas,
   status,
   reservations,
   serviceInstant,
@@ -30,6 +32,7 @@ export function TableDetailsSidePanel({
   onEditTable,
 }: {
   table: RestaurantTableLayoutDetail | null;
+  areas: RestaurantAreaLayoutDetail[];
   status: RestaurantTableStatusDetail | null;
   reservations: RestaurantReservationDetail[];
   serviceInstant: string;
@@ -53,6 +56,7 @@ export function TableDetailsSidePanel({
 
   const visualStatus = status?.status ?? RestaurantTableVisualStatus.Available;
   const nextReservation = getNextTableReservation(reservations, serviceInstant);
+  const areaName = resolveTableAreaName(table, areas, labels.states.unassigned);
 
   return (
     <div className="selected-table-body live-table-details">
@@ -69,7 +73,7 @@ export function TableDetailsSidePanel({
       <dl className="live-table-facts">
         <div>
           <dt>{labels.live.area}</dt>
-          <dd>{table.areaId ?? labels.states.unassigned}</dd>
+          <dd>{areaName}</dd>
         </div>
         <div>
           <dt>{labels.live.currentStatus}</dt>

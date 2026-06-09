@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
                 options.UseNpgsql(connectionString);
             }
         });
+        services.AddHostedService<DevelopmentDatabaseInitializer>();
 
         return services;
     }

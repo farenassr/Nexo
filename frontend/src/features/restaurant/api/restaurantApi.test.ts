@@ -1,9 +1,20 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  createRestaurantArea,
+  createRestaurantBranch,
+  createRestaurantFloor,
+  createRestaurantFloorPlan,
   createRestaurantReservation,
+  createRestaurantTable,
   cancelRestaurantReservation,
   createRestaurantTableBlock,
+  deleteRestaurantArea,
+  deleteRestaurantBranch,
+  deleteRestaurantFloor,
+  deleteRestaurantFloorPlan,
+  deleteRestaurantTable,
   getRestaurantDashboard,
+  getRestaurantSetup,
   listRestaurantReservations,
   listRestaurantTableReservations,
   RestaurantApiError,
@@ -11,7 +22,7 @@ import {
   searchRestaurantAvailability,
   updateRestaurantTableLayout,
 } from './restaurantApi';
-import { RestaurantReservationSource, RestaurantReservationStatus, RestaurantTableShape } from '../types';
+import { RestaurantAreaType, RestaurantReservationSource, RestaurantReservationStatus, RestaurantTableShape } from '../types';
 
 describe('restaurantApi', () => {
   afterEach(() => {
@@ -51,6 +62,148 @@ describe('restaurantApi', () => {
     expect(fetchMock).toHaveBeenCalledWith(
       '/v1/restaurant/dashboard?branchId=branch-1&date=2026-06-08',
       expect.objectContaining({ method: 'GET' }),
+    );
+  });
+
+  it('uses restaurant setup endpoint contracts', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ branches: [], floors: [], areas: [], tables: [], floorPlans: [] }))
+      .mockResolvedValueOnce(jsonResponse({ id: 'branch-1' }))
+      .mockResolvedValueOnce(jsonResponse({ id: 'floor-1' }))
+      .mockResolvedValueOnce(jsonResponse({ id: 'area-1' }))
+      .mockResolvedValueOnce(jsonResponse({ id: 'table-1' }))
+      .mockResolvedValueOnce(jsonResponse({ id: 'floor-plan-1' }))
+      .mockResolvedValueOnce(emptyResponse())
+      .mockResolvedValueOnce(emptyResponse())
+      .mockResolvedValueOnce(emptyResponse())
+      .mockResolvedValueOnce(emptyResponse())
+      .mockResolvedValueOnce(emptyResponse());
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getRestaurantSetup();
+    await createRestaurantBranch({ name: 'Principal', address: 'Calle 1', timeZone: 'UTC' });
+    await createRestaurantFloor({ branchId: 'branch-1', name: 'Salon', sortOrder: 1 });
+    await createRestaurantArea({
+      branchId: 'branch-1',
+      floorId: 'floor-1',
+      name: 'Comedor',
+      type: RestaurantAreaType.DiningRoom,
+      sortOrder: 1,
+    });
+    await createRestaurantTable({
+      branchId: 'branch-1',
+      floorId: 'floor-1',
+      areaId: 'area-1',
+      label: 'A1',
+      minCapacity: 2,
+      maxCapacity: 4,
+      defaultReservationMinutes: 90,
+      shape: RestaurantTableShape.Rectangle,
+    });
+    await createRestaurantFloorPlan({
+      branchId: 'branch-1',
+      floorId: 'floor-1',
+      name: 'Plano cena',
+      canvasWidth: 1200,
+      canvasHeight: 760,
+      gridSize: 20,
+      isActive: true,
+    });
+    await deleteRestaurantBranch('branch-1');
+    await deleteRestaurantFloor('floor-1');
+    await deleteRestaurantArea('area-1');
+    await deleteRestaurantTable('table-1');
+    await deleteRestaurantFloorPlan('floor-plan-1');
+
+    expect(fetchMock).toHaveBeenNthCalledWith(1, '/v1/restaurant/setup', expect.objectContaining({ method: 'GET' }));
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      2,
+      '/v1/restaurant/setup/branches',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ name: 'Principal', address: 'Calle 1', timeZone: 'UTC' }),
+      }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      3,
+      '/v1/restaurant/setup/floors',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ branchId: 'branch-1', name: 'Salon', sortOrder: 1 }),
+      }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      4,
+      '/v1/restaurant/setup/areas',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({
+          branchId: 'branch-1',
+          floorId: 'floor-1',
+          name: 'Comedor',
+          type: RestaurantAreaType.DiningRoom,
+          sortOrder: 1,
+        }),
+      }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      5,
+      '/v1/restaurant/setup/tables',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({
+          branchId: 'branch-1',
+          floorId: 'floor-1',
+          areaId: 'area-1',
+          label: 'A1',
+          minCapacity: 2,
+          maxCapacity: 4,
+          defaultReservationMinutes: 90,
+          shape: RestaurantTableShape.Rectangle,
+        }),
+      }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      6,
+      '/v1/restaurant/setup/floor-plans',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({
+          branchId: 'branch-1',
+          floorId: 'floor-1',
+          name: 'Plano cena',
+          canvasWidth: 1200,
+          canvasHeight: 760,
+          gridSize: 20,
+          isActive: true,
+        }),
+      }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      7,
+      '/v1/restaurant/setup/branches/branch-1',
+      expect.objectContaining({ method: 'DELETE' }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      8,
+      '/v1/restaurant/setup/floors/floor-1',
+      expect.objectContaining({ method: 'DELETE' }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      9,
+      '/v1/restaurant/setup/areas/area-1',
+      expect.objectContaining({ method: 'DELETE' }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      10,
+      '/v1/restaurant/setup/tables/table-1',
+      expect.objectContaining({ method: 'DELETE' }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(
+      11,
+      '/v1/restaurant/setup/floor-plans/floor-plan-1',
+      expect.objectContaining({ method: 'DELETE' }),
     );
   });
 
@@ -342,4 +495,8 @@ function jsonResponse(body: unknown, status = 200): Response {
     status,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+function emptyResponse(): Response {
+  return new Response(null, { status: 204 });
 }

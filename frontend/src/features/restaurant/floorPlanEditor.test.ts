@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { RestaurantTableShape, type RestaurantFloorPlanDetail } from './types';
 import {
+  addAreaLayoutFromSetup,
+  addTableLayoutFromSetup,
   applyEditorChange,
   buildSeatLayouts,
   changeTableShape,
   createFloorPlanEditorState,
+  moveAreaLayout,
   moveTableLayout,
   resizeTableLayout,
   toSaveFloorPlanInput,
@@ -21,6 +24,18 @@ describe('floorPlanEditor', () => {
       tableId: 'table-1',
       x: 1100,
       y: 680,
+    });
+  });
+
+  it('moves area layouts by canvas delta and clamps them inside the floor plan', () => {
+    const floorPlan = floorPlanFixture();
+
+    const moved = moveAreaLayout(floorPlan, 'area-1', 900, 600);
+
+    expect(moved.areaLayouts[0]).toMatchObject({
+      areaId: 'area-1',
+      x: 680,
+      y: 440,
     });
   });
 
@@ -69,6 +84,81 @@ describe('floorPlanEditor', () => {
       height: 96,
     });
     expect(changed.tableLayouts[0].seatLayouts).toEqual(buildSeatLayouts(RestaurantTableShape.Round, 4));
+  });
+
+  it('adds a visual layout for a setup area that is not on the floor plan yet', () => {
+    const floorPlan = floorPlanFixture();
+
+    const changed = addAreaLayoutFromSetup(floorPlan, {
+      id: 'area-2',
+      branchId: 'branch-1',
+      floorId: 'floor-1',
+      name: 'Terraza',
+      type: 1,
+      sortOrder: 2,
+      isActive: true,
+    });
+
+    expect(changed.areaLayouts).toHaveLength(2);
+    expect(changed.areaLayouts[1]).toMatchObject({
+      areaId: 'area-2',
+      areaName: 'Terraza',
+      x: 80,
+      y: 80,
+      width: 520,
+      height: 320,
+      rotationDegrees: 0,
+      zIndex: 2,
+    });
+  });
+
+  it('does not add duplicate visual layouts for a setup area already on the floor plan', () => {
+    const floorPlan = floorPlanFixture();
+
+    const changed = addAreaLayoutFromSetup(floorPlan, {
+      id: 'area-1',
+      branchId: 'branch-1',
+      floorId: 'floor-1',
+      name: 'Salon',
+      type: 0,
+      sortOrder: 1,
+      isActive: true,
+    });
+
+    expect(changed).toEqual(floorPlan);
+  });
+
+  it('adds a visual layout for a setup table that is not on the floor plan yet', () => {
+    const floorPlan = floorPlanFixture();
+
+    const changed = addTableLayoutFromSetup(floorPlan, {
+      id: 'table-2',
+      companyId: 'company-1',
+      branchId: 'branch-1',
+      floorId: 'floor-1',
+      areaId: 'area-1',
+      label: 'A2',
+      minCapacity: 2,
+      maxCapacity: 4,
+      defaultReservationMinutes: 90,
+      shape: RestaurantTableShape.Round,
+      isActive: true,
+    });
+
+    expect(changed.tableLayouts).toHaveLength(2);
+    expect(changed.tableLayouts[1]).toMatchObject({
+      tableId: 'table-2',
+      tableLabel: 'A2',
+      areaId: 'area-1',
+      x: 210,
+      y: 190,
+      width: 96,
+      height: 96,
+      rotationDegrees: 0,
+      shape: RestaurantTableShape.Round,
+      zIndex: 5,
+    });
+    expect(changed.tableLayouts[1].seatLayouts).toEqual(buildSeatLayouts(RestaurantTableShape.Round, 4));
   });
 
   it('generates bar seat layouts in a single service row', () => {

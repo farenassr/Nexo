@@ -431,3 +431,7 @@ FodyWeavers.xsd
 # Project-local generated/planning artifacts
 template/
 docs/restaurant-mvp-premium-phases.md
+docs/CODE_REVIEW/
+docs/superpowers/
+docs/prompt.txt
+docs/restaurant-phase6-dependency-decision.md

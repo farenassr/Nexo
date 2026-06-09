@@ -2,6 +2,7 @@ using Nexo.Server.Modules.Restaurant.Features.Availability;
 using Nexo.Server.Modules.Restaurant.Features.Dashboard;
 using Nexo.Server.Modules.Restaurant.Features.FloorPlans;
 using Nexo.Server.Modules.Restaurant.Features.Reservations;
+using Nexo.Server.Modules.Restaurant.Features.Setup;
 using Nexo.Server.Modules.Restaurant.Features.TableBlocks;
 
 namespace Nexo.Server.Modules.Restaurant.Authorization;
@@ -22,6 +23,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<RestaurantDashboardService>();
         services.AddScoped<RestaurantFloorPlanService>();
         services.AddScoped<RestaurantReservationService>();
+        services.AddScoped<RestaurantSetupService>();
         services.AddScoped<RestaurantTableBlockService>();
         services.AddSingleton<RestaurantReservationConsistencyGuard>();
         services.AddSingleton(TimeProvider.System);
