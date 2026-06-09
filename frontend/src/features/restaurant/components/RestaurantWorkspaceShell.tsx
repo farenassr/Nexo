@@ -1,11 +1,15 @@
 import { Link, Outlet, useRouterState } from '@tanstack/react-router';
 import labels from '../labels.es.json';
-import { restaurantNavigationItems, restaurantSetupNavigationItems } from '../navigation/restaurantNavigation';
+import {
+  isRestaurantSetupRoute,
+  restaurantNavigationItems,
+  restaurantSetupNavigationItems,
+} from '../navigation/restaurantNavigation';
 import { RestaurantContextBar } from './RestaurantContextBar';
 
 export function RestaurantWorkspaceShell() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const showSetupNavigation = pathname.startsWith('/restaurant/setup');
+  const showSetupNavigation = isRestaurantSetupRoute(pathname);
 
   return (
     <div className="restaurant-workspace-shell">
