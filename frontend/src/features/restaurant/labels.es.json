@@ -2,8 +2,32 @@
   "app": {
     "eyebrow": "Nexo Restaurant",
     "title": "Plano operativo",
+    "workspaceTitle": "Restaurant",
+    "company": "Grupo Nexo",
+    "branchPlaceholder": "Sucursal principal",
+    "searchPlaceholder": "Buscar reservas, mesas o clientes",
+    "notifications": "Notificaciones",
+    "userMenu": "Menu de usuario",
     "contextFallback": "Restaurante",
     "contextBlocked": "Contexto bloqueado"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "floorPlan": "Plano en vivo",
+    "reservations": "Reservas",
+    "floorPlanEditor": "Editor de plano",
+    "setup": "Setup"
+  },
+  "setupNavigation": {
+    "cities": "Ciudades",
+    "branches": "Sucursales",
+    "floors": "Pisos",
+    "areas": "Zonas",
+    "tables": "Mesas",
+    "openingHours": "Horarios",
+    "specialDays": "Feriados / dias especiales",
+    "durationRules": "Reglas de duracion",
+    "turnoverBuffer": "Buffer de rotacion"
   },
   "setup": {
     "branchId": "Sucursal",
@@ -28,10 +52,13 @@
     "completed": "Completar"
   },
   "sections": {
+    "dashboard": "Dashboard",
     "floor": "Plano en vivo",
+    "floorEditor": "Editor de plano",
     "selectedTable": "Mesa seleccionada",
     "reservations": "Reservas del dia",
     "booking": "Nueva reserva",
+    "setup": "Setup restaurante",
     "layout": "Propiedades"
   },
   "availability": {
