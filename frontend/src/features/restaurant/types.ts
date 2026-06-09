@@ -45,6 +45,18 @@ export const RestaurantTableShape = {
 
 export type RestaurantTableShape = (typeof RestaurantTableShape)[keyof typeof RestaurantTableShape];
 
+export const RestaurantAreaType = {
+  DiningRoom: 0,
+  Terrace: 1,
+  Bar: 2,
+  PrivateRoom: 3,
+  Outdoor: 4,
+  Takeaway: 5,
+  Other: 6,
+} as const;
+
+export type RestaurantAreaType = (typeof RestaurantAreaType)[keyof typeof RestaurantAreaType];
+
 export interface RestaurantContextResponse {
   companyId: string;
   moduleKey: string;
@@ -116,6 +128,56 @@ export interface RestaurantFloorPlanSummary {
   canvasHeight: number;
   gridSize: number | null;
   isActive: boolean;
+}
+
+export interface RestaurantBranchDetail {
+  id: string;
+  companyId: string;
+  name: string;
+  address: string | null;
+  timeZone: string;
+  isActive: boolean;
+}
+
+export interface RestaurantFloorDetail {
+  id: string;
+  branchId: string;
+  name: string;
+  sortOrder: number;
+  isActive: boolean;
+}
+
+export interface RestaurantAreaDetail {
+  id: string;
+  branchId: string;
+  floorId: string;
+  name: string;
+  type: RestaurantAreaType;
+  sortOrder: number;
+  isActive: boolean;
+}
+
+export interface RestaurantTableDetail {
+  id: string;
+  companyId: string;
+  branchId: string;
+  floorId: string;
+  areaId: string | null;
+  label: string;
+  minCapacity: number;
+  maxCapacity: number;
+  defaultReservationMinutes: number | null;
+  shape: RestaurantTableShape;
+  isActive: boolean;
+}
+
+export interface RestaurantSetupSnapshot {
+  companyId: string;
+  branches: RestaurantBranchDetail[];
+  floors: RestaurantFloorDetail[];
+  areas: RestaurantAreaDetail[];
+  tables: RestaurantTableDetail[];
+  floorPlans: RestaurantFloorPlanSummary[];
 }
 
 export interface RestaurantAreaLayoutDetail {

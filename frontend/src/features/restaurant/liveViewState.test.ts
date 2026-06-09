@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getNextTableReservation, getTableActionState } from './liveViewState';
+import { getNextTableReservation, getTableActionState, resolveTableAreaName } from './liveViewState';
 import { RestaurantReservationSource, RestaurantReservationStatus, RestaurantTableVisualStatus } from './types';
 
 describe('liveViewState', () => {
@@ -38,6 +38,24 @@ describe('liveViewState', () => {
       canMarkCompleted: false,
       canCancelReservation: true,
     });
+  });
+
+  it('resolves a selected table area id to a visible area name', () => {
+    expect(
+      resolveTableAreaName(
+        { areaId: 'area-1' },
+        [{ areaId: 'area-1', areaName: 'Comedor' }],
+        'No asignada',
+      ),
+    ).toBe('Comedor');
+
+    expect(
+      resolveTableAreaName(
+        { areaId: null },
+        [],
+        'No asignada',
+      ),
+    ).toBe('No asignada');
   });
 });
 

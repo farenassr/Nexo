@@ -1,5 +1,12 @@
 import type { SaveRestaurantFloorPlanInput } from './api/restaurantApi';
-import { RestaurantTableShape, type RestaurantFloorPlanDetail, type RestaurantTableLayoutDetail } from './types';
+import {
+  RestaurantTableShape,
+  type RestaurantAreaDetail,
+  type RestaurantAreaLayoutDetail,
+  type RestaurantFloorPlanDetail,
+  type RestaurantTableDetail,
+  type RestaurantTableLayoutDetail,
+} from './types';
 
 const minimumTableSize = 44;
 
@@ -140,6 +147,79 @@ export function changeTableChairCount(
   }));
 }
 
+export function moveAreaLayout(
+  floorPlan: RestaurantFloorPlanDetail,
+  areaId: string,
+  deltaX: number,
+  deltaY: number,
+): RestaurantFloorPlanDetail {
+  return {
+    ...floorPlan,
+    areaLayouts: floorPlan.areaLayouts.map((area) =>
+      area.areaId === areaId ? moveLayoutInsideCanvas(area, floorPlan.canvasWidth, floorPlan.canvasHeight, deltaX, deltaY) : area,
+    ),
+  };
+}
+
+export function addAreaLayoutFromSetup(
+  floorPlan: RestaurantFloorPlanDetail,
+  area: RestaurantAreaDetail,
+): RestaurantFloorPlanDetail {
+  if (floorPlan.areaLayouts.some((layout) => layout.areaId === area.id)) {
+    return floorPlan;
+  }
+
+  const offset = Math.max(0, floorPlan.areaLayouts.length - 1) * 60;
+  return {
+    ...floorPlan,
+    areaLayouts: [
+      ...floorPlan.areaLayouts,
+      {
+        areaId: area.id,
+        areaName: area.name,
+        x: clamp(80 + offset, 0, Math.max(0, floorPlan.canvasWidth - 520)),
+        y: clamp(80 + offset, 0, Math.max(0, floorPlan.canvasHeight - 320)),
+        width: Math.min(520, floorPlan.canvasWidth),
+        height: Math.min(320, floorPlan.canvasHeight),
+        rotationDegrees: 0,
+        zIndex: nextAreaZIndex(floorPlan),
+      },
+    ],
+  };
+}
+
+export function addTableLayoutFromSetup(
+  floorPlan: RestaurantFloorPlanDetail,
+  table: RestaurantTableDetail,
+): RestaurantFloorPlanDetail {
+  if (floorPlan.tableLayouts.some((layout) => layout.tableId === table.id)) {
+    return floorPlan;
+  }
+
+  const dimensions = defaultDimensionsForShape(table.shape, 96, 72);
+  const offset = floorPlan.tableLayouts.length * 60;
+  const chairCount = Math.max(table.minCapacity, Math.min(table.maxCapacity, 4));
+  return {
+    ...floorPlan,
+    tableLayouts: [
+      ...floorPlan.tableLayouts,
+      {
+        tableId: table.id,
+        tableLabel: table.label,
+        areaId: table.areaId,
+        x: clamp(150 + offset, 0, Math.max(0, floorPlan.canvasWidth - dimensions.width)),
+        y: clamp(Math.round(150 + offset * 0.67), 0, Math.max(0, floorPlan.canvasHeight - dimensions.height)),
+        width: dimensions.width,
+        height: dimensions.height,
+        rotationDegrees: 0,
+        shape: table.shape,
+        zIndex: nextZIndex(floorPlan),
+        seatLayouts: buildSeatLayouts(table.shape, chairCount),
+      },
+    ],
+  };
+}
+
 export function rotateTableLayout(
   floorPlan: RestaurantFloorPlanDetail,
   tableId: string,
@@ -250,10 +330,20 @@ function moveTableInsideCanvas(
   deltaX: number,
   deltaY: number,
 ): RestaurantTableLayoutDetail {
+  return moveLayoutInsideCanvas(table, canvasWidth, canvasHeight, deltaX, deltaY);
+}
+
+function moveLayoutInsideCanvas<TLayout extends RestaurantAreaLayoutDetail | RestaurantTableLayoutDetail>(
+  layout: TLayout,
+  canvasWidth: number,
+  canvasHeight: number,
+  deltaX: number,
+  deltaY: number,
+): TLayout {
   return {
-    ...table,
-    x: clamp(table.x + deltaX, 0, canvasWidth - table.width),
-    y: clamp(table.y + deltaY, 0, canvasHeight - table.height),
+    ...layout,
+    x: clamp(layout.x + deltaX, 0, canvasWidth - layout.width),
+    y: clamp(layout.y + deltaY, 0, canvasHeight - layout.height),
   };
 }
 
@@ -308,6 +398,18 @@ function cloneFloorPlan(floorPlan: RestaurantFloorPlanDetail): RestaurantFloorPl
 
 function floorPlansEqual(left: RestaurantFloorPlanDetail, right: RestaurantFloorPlanDetail) {
   return JSON.stringify(left) === JSON.stringify(right);
+}
+
+function nextZIndex(floorPlan: RestaurantFloorPlanDetail) {
+  const zIndexes = [
+    ...floorPlan.areaLayouts.map((area) => area.zIndex),
+    ...floorPlan.tableLayouts.map((table) => table.zIndex),
+  ];
+  return Math.max(0, ...zIndexes) + 1;
+}
+
+function nextAreaZIndex(floorPlan: RestaurantFloorPlanDetail) {
+  return Math.max(0, ...floorPlan.areaLayouts.map((area) => area.zIndex)) + 1;
 }
 
 function clamp(value: number, min: number, max: number) {

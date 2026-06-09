@@ -19,7 +19,8 @@ export interface ReservationFormState {
 }
 
 export interface DragState {
-  tableId: string;
+  itemKind: 'area' | 'table';
+  itemId: string;
   startClientX: number;
   startClientY: number;
 }
@@ -61,7 +62,7 @@ export function readStoredSetup(stored: string | null): RestaurantSetup {
   }
 
   try {
-    return { ...defaultSetup, ...(JSON.parse(stored) as Partial<RestaurantSetup>) };
+    return sanitizeSetup({ ...defaultSetup, ...(JSON.parse(stored) as Partial<RestaurantSetup>) });
   } catch {
     return defaultSetup;
   }
@@ -75,6 +76,28 @@ export function patchRestaurantSetup(current: RestaurantSetup, patch: Partial<Re
   return { ...current, ...patch };
 }
 
+export function normalizeRestaurantSetupScope(
+  setup: RestaurantSetup,
+  branches: ReadonlyArray<{ id: string }>,
+  floors: ReadonlyArray<{ id: string; branchId: string }>,
+): RestaurantSetup {
+  const branchId = branches.some((branch) => branch.id === setup.branchId) ? setup.branchId : (branches[0]?.id ?? '');
+  const branchFloors = floors.filter((floor) => floor.branchId === branchId);
+  const floorId = branchFloors.some((floor) => floor.id === setup.floorId) ? setup.floorId : (branchFloors[0]?.id ?? '');
+
+  if (branchId === setup.branchId && floorId === setup.floorId) {
+    return setup;
+  }
+
+  return {
+    ...setup,
+    branchId,
+    floorId,
+    floorPlanId: '',
+    areaId: '',
+  };
+}
+
 export function combineDateAndTime(date: string, time: string) {
   return new Date(`${date}T${time || '00:00'}:00`).toISOString();
 }
@@ -82,6 +105,10 @@ export function combineDateAndTime(date: string, time: string) {
 export function optionalText(value: string) {
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;
+}
+
+export function isGuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.trim());
 }
 
 export function storeSelectedTableId(tableId: string, storage: Storage = window.localStorage) {
@@ -94,4 +121,19 @@ export function readStoredSelectedTableId(storage: Storage = window.localStorage
 
 function todayIsoDate() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function sanitizeSetup(setup: RestaurantSetup): RestaurantSetup {
+  return {
+    ...setup,
+    branchId: sanitizeGuid(setup.branchId),
+    floorId: sanitizeGuid(setup.floorId),
+    floorPlanId: sanitizeGuid(setup.floorPlanId),
+    areaId: sanitizeGuid(setup.areaId),
+  };
+}
+
+function sanitizeGuid(value: string) {
+  const trimmed = value.trim();
+  return isGuid(trimmed) ? trimmed : '';
 }

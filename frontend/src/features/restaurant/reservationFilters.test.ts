@@ -64,7 +64,7 @@ describe('reservationFilters', () => {
   it('keeps create disabled until branch, time, party, guest, and a table are present', () => {
     expect(
       canSubmitReservationModal({
-        branchId: 'branch-1',
+        branchId: '00000000-0000-7000-8000-000000000101',
         date: '2026-06-08',
         serviceTime: '18:30',
         partySize: 2,
@@ -75,10 +75,21 @@ describe('reservationFilters', () => {
 
     expect(
       canSubmitReservationModal({
-        branchId: 'branch-1',
+        branchId: '00000000-0000-7000-8000-000000000101',
         date: '2026-06-08',
         serviceTime: '18:30',
         partySize: 0,
+        customerFullName: 'Ava Chen',
+        selectedTableIds: ['table-1'],
+      }),
+    ).toBe(false);
+
+    expect(
+      canSubmitReservationModal({
+        branchId: 'branch-1',
+        date: '2026-06-08',
+        serviceTime: '18:30',
+        partySize: 2,
         customerFullName: 'Ava Chen',
         selectedTableIds: ['table-1'],
       }),

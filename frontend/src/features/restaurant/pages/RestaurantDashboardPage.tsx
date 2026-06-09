@@ -9,13 +9,13 @@ import { OccupancyByHourChart } from '../components/dashboard/OccupancyByHourCha
 import { UpcomingReservationsPanel } from '../components/dashboard/UpcomingReservationsPanel';
 import { CreateReservationModal } from '../components/reservations/CreateReservationModal';
 import { restaurantQueryKeys } from '../queryKeys';
-import { useStoredSetup } from '../state/restaurantWorkspaceState';
+import { isGuid, useStoredSetup } from '../state/restaurantWorkspaceState';
 import type { RestaurantDashboardMetric } from '../types';
 
 export function RestaurantDashboardPage() {
   const [setup] = useStoredSetup();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const canLoadDashboard = setup.branchId.length > 0 && setup.date.length > 0;
+  const canLoadDashboard = isGuid(setup.branchId) && setup.date.length > 0;
   const dashboardQuery = useQuery({
     queryKey: restaurantQueryKeys.dashboard(setup.branchId, setup.date),
     queryFn: () => getRestaurantDashboard({ branchId: setup.branchId, date: setup.date }),

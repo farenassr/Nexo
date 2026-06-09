@@ -9,6 +9,7 @@ import {
   getRestaurantContext,
   getRestaurantFloorPlan,
   getRestaurantFloorPlanStatusMap,
+  getRestaurantSetup,
   listRestaurantFloorPlans,
   listRestaurantTableReservations,
   RestaurantApiError,
@@ -25,6 +26,8 @@ import labels from '../labels.es.json';
 import { restaurantQueryKeys } from '../queryKeys';
 import {
   combineDateAndTime,
+  isGuid,
+  normalizeRestaurantSetupScope,
   optionalText,
   storeSelectedTableId,
   updateSetup,
@@ -48,7 +51,7 @@ export function RestaurantFloorPlanLivePage() {
     endAt.setMinutes(endAt.getMinutes() + 90);
     return endAt.toISOString();
   }, [serviceInstant]);
-  const hasFloorContext = setup.branchId.trim().length > 0 && setup.floorId.trim().length > 0;
+  const hasFloorContext = isGuid(setup.branchId) && isGuid(setup.floorId);
 
   const contextQuery = useQuery({
     queryKey: restaurantQueryKeys.context(),
@@ -61,6 +64,28 @@ export function RestaurantFloorPlanLivePage() {
     enabled: hasFloorContext,
   });
 
+  const setupQuery = useQuery({
+    queryKey: restaurantQueryKeys.setup(),
+    queryFn: getRestaurantSetup,
+  });
+
+  const setupBranches = setupQuery.data?.branches ?? [];
+  const setupFloors = useMemo(
+    () => setupQuery.data?.floors.filter((floor) => floor.branchId === setup.branchId) ?? [],
+    [setup.branchId, setupQuery.data],
+  );
+
+  useEffect(() => {
+    if (!setupQuery.data) {
+      return;
+    }
+
+    const normalized = normalizeRestaurantSetupScope(setup, setupQuery.data.branches, setupQuery.data.floors);
+    if (normalized !== setup) {
+      setSetup(normalized);
+    }
+  }, [setSetup, setup, setupQuery.data]);
+
   useEffect(() => {
     const firstFloorPlanId = floorPlansQuery.data?.[0]?.id;
     if (!setup.floorPlanId && firstFloorPlanId) {
@@ -71,13 +96,13 @@ export function RestaurantFloorPlanLivePage() {
   const floorPlanQuery = useQuery({
     queryKey: restaurantQueryKeys.floorPlan(setup.floorPlanId),
     queryFn: () => getRestaurantFloorPlan(setup.floorPlanId),
-    enabled: setup.floorPlanId.trim().length > 0,
+    enabled: isGuid(setup.floorPlanId),
   });
 
   const statusMapQuery = useQuery({
     queryKey: restaurantQueryKeys.statusMap(setup.floorPlanId, serviceInstant, optionalText(setup.areaId)),
     queryFn: () => getRestaurantFloorPlanStatusMap(setup.floorPlanId, serviceInstant, optionalText(setup.areaId)),
-    enabled: setup.floorPlanId.trim().length > 0,
+    enabled: isGuid(setup.floorPlanId),
   });
 
   const selectedTableReservationsQuery = useQuery({
@@ -241,9 +266,11 @@ export function RestaurantFloorPlanLivePage() {
       <FloorPlanLiveToolbar
         setup={setup}
         setSetup={setSetup}
+        branches={setupBranches}
+        floors={setupFloors}
         floorPlans={floorPlansQuery.data}
         areas={floorPlan?.areaLayouts ?? []}
-        isRefreshDisabled={!setup.floorPlanId}
+        isRefreshDisabled={!isGuid(setup.floorPlanId)}
         isRefreshing={statusMapQuery.isFetching}
         onRefresh={() => void statusMapQuery.refetch()}
       />
@@ -280,6 +307,7 @@ export function RestaurantFloorPlanLivePage() {
             <PanelHeader icon={<Utensils size={18} />} title={labels.sections.selectedTable} />
             <TableDetailsSidePanel
               table={selectedTable}
+              areas={floorPlan?.areaLayouts ?? []}
               status={selectedStatus}
               reservations={selectedTableReservations}
               serviceInstant={serviceInstant}

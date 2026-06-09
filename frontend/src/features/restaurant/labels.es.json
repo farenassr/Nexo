@@ -37,7 +37,41 @@
     "floorPlan": "Plano",
     "floorPlanId": "ID del plano",
     "areaFilter": "Zona",
-    "allAreas": "Todas"
+    "allAreas": "Todas",
+    "allFloors": "Todos",
+    "allTables": "Todas",
+    "area": "Zona",
+    "areaType": "Tipo de zona",
+    "branch": "Sucursal",
+    "canvas": "Lienzo",
+    "floor": "Piso",
+    "gridSize": "Grilla",
+    "mainBranch": "Sucursal principal",
+    "mainFloor": "Salon principal",
+    "mainArea": "Comedor",
+    "mainPlan": "Plano principal",
+    "name": "Nombre",
+    "address": "Direccion",
+    "timeZone": "Zona horaria",
+    "sortOrder": "Orden",
+    "table": "Mesa",
+    "tableLabel": "Etiqueta",
+    "minCapacity": "Capacidad min.",
+    "maxCapacity": "Capacidad max.",
+    "defaultDuration": "Duracion default",
+    "createBranch": "Crear sucursal",
+    "createFloor": "Crear piso",
+    "createArea": "Crear zona",
+    "createTable": "Crear mesa",
+    "createFloorPlan": "Crear plano",
+    "branches": "Sucursales",
+    "floors": "Pisos",
+    "areas": "Zonas",
+    "tables": "Mesas",
+    "floorPlans": "Planos",
+    "currentSetup": "Setup actual",
+    "noSetup": "Sin setup creado",
+    "confirmDelete": "Eliminar {name}? Esta accion no se puede deshacer."
   },
   "actions": {
     "refresh": "Actualizar",
@@ -52,7 +86,8 @@
     "confirmed": "Confirmar",
     "seated": "Sentar",
     "completed": "Completar",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "delete": "Eliminar"
   },
   "editor": {
     "activeManagedBySetup": "Activa, gestionada desde Setup",
@@ -66,6 +101,8 @@
     "maxCapacity": "Capacidad max.",
     "minCapacity": "Capacidad min.",
     "move": "Mover",
+    "noSetupAreasAvailable": "No hay zonas pendientes de colocar en este plano.",
+    "noSetupTablesAvailable": "No hay mesas pendientes de colocar en este plano.",
     "preferredCapacity": "Capacidad pref.",
     "properties": "Propiedades de mesa",
     "redo": "Rehacer",
@@ -179,6 +216,10 @@
     "cancelFailed": "No se pudo cancelar",
     "blockCreated": "Mesa bloqueada",
     "blockFailed": "No se pudo bloquear la mesa",
-    "layoutFailed": "No se pudo guardar el plano"
+    "layoutFailed": "No se pudo guardar el plano",
+    "setupCreated": "Setup creado",
+    "setupCreateFailed": "No se pudo crear el setup",
+    "setupDeleted": "Setup eliminado",
+    "setupDeleteFailed": "No se pudo eliminar el setup"
   }
 }

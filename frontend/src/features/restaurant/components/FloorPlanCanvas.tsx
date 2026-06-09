@@ -43,6 +43,7 @@ export function FloorPlanCanvas({
   isFetchingStatus,
   showQuickTooltip = false,
   onSelectTable,
+  onBeginAreaDrag,
   onBeginDrag,
   onMoveDrag,
   onEndDrag,
@@ -56,9 +57,10 @@ export function FloorPlanCanvas({
   isFetchingStatus: boolean;
   showQuickTooltip?: boolean;
   onSelectTable: (tableId: string) => void;
+  onBeginAreaDrag?: (event: ReactPointerEvent<HTMLDivElement>, areaId: string) => void;
   onBeginDrag: (event: ReactPointerEvent<HTMLButtonElement>, tableId: string) => void;
-  onMoveDrag: (event: ReactPointerEvent<HTMLButtonElement>) => void;
-  onEndDrag: (event: ReactPointerEvent<HTMLButtonElement>) => void;
+  onMoveDrag: (event: ReactPointerEvent<HTMLButtonElement | HTMLDivElement>) => void;
+  onEndDrag: (event: ReactPointerEvent<HTMLButtonElement | HTMLDivElement>) => void;
 }) {
   return (
     <div className="floor-wrap">
@@ -72,7 +74,12 @@ export function FloorPlanCanvas({
           <div
             key={area.areaId}
             className="floor-area"
+            data-editing={isEditingLayout}
             style={layoutStyle(area, floorPlan.canvasWidth, floorPlan.canvasHeight)}
+            onPointerDown={(event) => onBeginAreaDrag?.(event, area.areaId)}
+            onPointerMove={onMoveDrag}
+            onPointerUp={onEndDrag}
+            onPointerCancel={onEndDrag}
           >
             {area.areaName}
           </div>

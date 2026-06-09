@@ -1,4 +1,5 @@
 import type { RestaurantReservationDetail, RestaurantReservationStatus } from './types';
+import { isGuid } from './state/restaurantWorkspaceState';
 
 export interface DailyReservationFilters {
   serviceTime: string;
@@ -89,7 +90,7 @@ function toLocalTime(value: string) {
 
 export function canSubmitReservationModal(input: CreateReservationValidationInput) {
   return (
-    input.branchId.trim().length > 0 &&
+    isGuid(input.branchId) &&
     input.date.trim().length > 0 &&
     input.serviceTime.trim().length > 0 &&
     input.partySize > 0 &&

@@ -10,7 +10,13 @@ import {
 } from '../../api/restaurantApi';
 import labels from '../../labels.es.json';
 import { canSubmitReservationModal } from '../../reservationFilters';
-import { combineDateAndTime, defaultReservationForm, optionalText, type RestaurantSetup } from '../../state/restaurantWorkspaceState';
+import {
+  combineDateAndTime,
+  defaultReservationForm,
+  isGuid,
+  optionalText,
+  type RestaurantSetup,
+} from '../../state/restaurantWorkspaceState';
 import {
   RestaurantReservationSource,
   type RestaurantAvailabilitySearchResult,
@@ -76,7 +82,7 @@ export function CreateReservationModal({
     .map((tableId) => availabilityResult?.availableTables.find((table) => table.tableId === tableId)?.label ?? tableId)
     .join(', ');
   const canSearchAvailability =
-    setup.branchId.trim().length > 0 && reservationForm.partySize > 0 && Boolean(setup.date && setup.serviceTime);
+    isGuid(setup.branchId) && reservationForm.partySize > 0 && Boolean(setup.date && setup.serviceTime);
   const canCreateReservation = canSubmitReservationModal({
     branchId: setup.branchId,
     date: setup.date,
@@ -88,6 +94,10 @@ export function CreateReservationModal({
 
   function handleAvailabilitySearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!canSearchAvailability) {
+      return;
+    }
+
     availabilityMutation.mutate({
       branchId: setup.branchId,
       partySize: reservationForm.partySize,
@@ -98,6 +108,10 @@ export function CreateReservationModal({
 
   function handleCreateReservation(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!canCreateReservation) {
+      return;
+    }
+
     const payload: CreateRestaurantReservationInput = {
       branchId: setup.branchId,
       tableIds: selectedTableIds,
