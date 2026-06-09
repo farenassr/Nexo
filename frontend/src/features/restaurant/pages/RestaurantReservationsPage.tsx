@@ -235,7 +235,7 @@ export function RestaurantReservationsPage() {
   const saveLayoutMutation = useMutation({
     mutationFn: async () => {
       if (!draftFloorPlan) {
-        throw new Error('No floor plan selected.');
+        throw new Error(labels.states.floorPlanRequired);
       }
 
       return saveRestaurantFloorPlan(draftFloorPlan.id, toSaveFloorPlanInput(draftFloorPlan));
@@ -359,7 +359,7 @@ export function RestaurantReservationsPage() {
         </div>
       </header>
 
-      <section className="setup-panel" aria-label="Restaurant setup">
+      <section className="setup-panel" aria-label={labels.app.contextFallback}>
         <Field label={labels.setup.branchId}>
           <input
             value={setup.branchId}
@@ -428,7 +428,9 @@ export function RestaurantReservationsPage() {
             }
           />
           <StatusLegend />
+          {floorPlansQuery.isError && <InlineError error={floorPlansQuery.error} />}
           {floorPlanQuery.isError && <InlineError error={floorPlanQuery.error} />}
+          {statusMapQuery.isError && <InlineError error={statusMapQuery.error} />}
           {floorPlanQuery.isPending && setup.floorPlanId && <SkeletonRows count={3} />}
           {floorPlan && (
             <FloorPlanCanvas
@@ -460,6 +462,7 @@ export function RestaurantReservationsPage() {
                 onReasonChange={setActionReason}
                 isMutating={statusMutation.isPending || cancelMutation.isPending}
                 isLoadingReservations={selectedTableReservationsQuery.isPending}
+                reservationsError={selectedTableReservationsQuery.error}
                 isEditingLayout={isEditingLayout}
                 onStatus={(reservationId, status) =>
                   statusMutation.mutate({
@@ -517,7 +520,7 @@ export function RestaurantReservationsPage() {
               <div className="availability-results">
                 <div className="metric-strip">
                   <Metric label={labels.status.available} value={availabilityResult.availableTables.length} />
-                  <Metric label="Rechazadas" value={availabilityResult.rejections.length} />
+                  <Metric label={labels.availability.rejected} value={availabilityResult.rejections.length} />
                 </div>
                 <div className="table-options">
                   {availabilityResult.availableTables.map((table) => {
@@ -677,7 +680,7 @@ function EmptyState({ icon, title }: { icon: ReactNode; title: string }) {
 }
 
 function InlineError({ error }: { error: unknown }) {
-  const message = error instanceof Error ? error.message : 'Request failed';
+  const message = error instanceof Error ? error.message : labels.states.requestFailed;
   return (
     <div className="inline-error" role="alert">
       <CircleAlert size={17} />
@@ -688,7 +691,7 @@ function InlineError({ error }: { error: unknown }) {
 
 function SkeletonRows({ count }: { count: number }) {
   return (
-    <div className="skeleton-list" role="status" aria-label="Loading">
+    <div className="skeleton-list" role="status" aria-label={labels.states.loading}>
       {Array.from({ length: count }, (_, index) => (
         <span key={index} />
       ))}
@@ -707,7 +710,7 @@ function StatusLegend() {
   ] as const;
 
   return (
-    <div className="status-legend" aria-label="Status legend">
+    <div className="status-legend" aria-label={labels.sections.floor}>
       {items.map(([status, label]) => (
         <span key={status} data-status={visualStatusToken(status)}>
           <i />
@@ -817,6 +820,7 @@ function SelectedTablePanel({
   onReasonChange,
   isMutating,
   isLoadingReservations,
+  reservationsError,
   isEditingLayout,
   onStatus,
   onCancel,
@@ -829,6 +833,7 @@ function SelectedTablePanel({
   onReasonChange: (value: string) => void;
   isMutating: boolean;
   isLoadingReservations: boolean;
+  reservationsError: unknown;
   isEditingLayout: boolean;
   onStatus: (reservationId: string, status: RestaurantReservationStatus) => void;
   onCancel: (reservationId: string) => void;
@@ -860,22 +865,23 @@ function SelectedTablePanel({
               onChange={(rotationDegrees) => onPatchTable({ rotationDegrees })}
             />
           </div>
-          <Field label="Forma">
+          <Field label={labels.fields.shape}>
             <select
               value={table.shape}
               onChange={(event) => onPatchTable({ shape: Number(event.target.value) as RestaurantTableShape })}
             >
-              <option value={RestaurantTableShape.Round}>Round</option>
-              <option value={RestaurantTableShape.Square}>Square</option>
-              <option value={RestaurantTableShape.Rectangle}>Rectangle</option>
-              <option value={RestaurantTableShape.Booth}>Booth</option>
-              <option value={RestaurantTableShape.Bar}>Bar</option>
+              <option value={RestaurantTableShape.Round}>{labels.shapes.round}</option>
+              <option value={RestaurantTableShape.Square}>{labels.shapes.square}</option>
+              <option value={RestaurantTableShape.Rectangle}>{labels.shapes.rectangle}</option>
+              <option value={RestaurantTableShape.Booth}>{labels.shapes.booth}</option>
+              <option value={RestaurantTableShape.Bar}>{labels.shapes.bar}</option>
             </select>
           </Field>
         </div>
       )}
 
       <div className="table-reservations">
+        {reservationsError ? <InlineError error={reservationsError} /> : null}
         {isLoadingReservations && <SkeletonRows count={2} />}
         {!isLoadingReservations && reservations.length === 0 && (
           <EmptyState icon={<Clock3 size={18} />} title={labels.states.noTableReservations} />
@@ -925,13 +931,13 @@ function ReservationCard({
       <div className="reservation-main">
         <div>
           <strong>{reservation.customer.fullName}</strong>
-          <span>{reservation.tables.map((table) => table.label).join(', ') || 'Unassigned'}</span>
+          <span>{reservation.tables.map((table) => table.label).join(', ') || labels.states.unassigned}</span>
         </div>
         <StatusBadge status={reservation.status} />
       </div>
       <dl className="reservation-facts">
         <div>
-          <dt>Hora</dt>
+          <dt>{labels.fields.hour}</dt>
           <dd>
             {formatTime(reservation.startAt)}-{formatTime(reservation.endAt)}
           </dd>
@@ -941,7 +947,7 @@ function ReservationCard({
           <dd>{reservation.partySize}</dd>
         </div>
         <div>
-          <dt>Origen</dt>
+          <dt>{labels.fields.source}</dt>
           <dd>{sourceLabel(reservation.source)}</dd>
         </div>
       </dl>
@@ -1048,17 +1054,17 @@ function statusLabel(status: RestaurantReservationStatus) {
 function sourceLabel(source: RestaurantReservationSource) {
   switch (source) {
     case RestaurantReservationSource.Phone:
-      return 'Phone';
+      return labels.sources.phone;
     case RestaurantReservationSource.WalkIn:
-      return 'Walk In';
+      return labels.sources.walkIn;
     case RestaurantReservationSource.Website:
-      return 'Website';
+      return labels.sources.website;
     case RestaurantReservationSource.Staff:
-      return 'Staff';
+      return labels.sources.staff;
     case RestaurantReservationSource.Partner:
-      return 'Partner';
+      return labels.sources.partner;
     case RestaurantReservationSource.Other:
-      return 'Other';
+      return labels.sources.other;
   }
 }
 

@@ -205,15 +205,20 @@ export async function updateRestaurantTableLayout(
 }
 
 async function apiFetch<TResponse>(path: string, init: RequestInit = {}): Promise<TResponse> {
-  const response = await fetch(path, {
-    method: init.method ?? 'GET',
-    ...init,
-    headers: {
-      Accept: 'application/json',
-      ...(init.body ? { 'Content-Type': 'application/json' } : {}),
-      ...init.headers,
-    },
-  });
+  let response: Response;
+  try {
+    response = await fetch(path, {
+      method: init.method ?? 'GET',
+      ...init,
+      headers: {
+        Accept: 'application/json',
+        ...(init.body ? { 'Content-Type': 'application/json' } : {}),
+        ...init.headers,
+      },
+    });
+  } catch {
+    throw new RestaurantApiError('NetworkError', 'No se pudo conectar con el API de restaurante.', 0);
+  }
 
   if (!response.ok) {
     throw await toApiError(response);
@@ -223,7 +228,11 @@ async function apiFetch<TResponse>(path: string, init: RequestInit = {}): Promis
     return undefined as TResponse;
   }
 
-  return response.json() as Promise<TResponse>;
+  try {
+    return (await response.json()) as TResponse;
+  } catch {
+    throw new RestaurantApiError('InvalidResponse', 'La respuesta del API de restaurante no es valida.', response.status);
+  }
 }
 
 async function toApiError(response: Response): Promise<RestaurantApiError> {

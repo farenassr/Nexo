@@ -34,6 +34,9 @@
     "booking": "Nueva reserva",
     "layout": "Propiedades"
   },
+  "availability": {
+    "rejected": "Rechazadas"
+  },
   "states": {
     "branchRequired": "Selecciona una sucursal",
     "floorRequired": "Selecciona un piso",
@@ -42,7 +45,10 @@
     "noTableSelected": "Selecciona una mesa",
     "noTableReservations": "Sin reservas para esta mesa",
     "syncing": "Sincronizando",
-    "dirty": "Cambios sin guardar"
+    "dirty": "Cambios sin guardar",
+    "loading": "Cargando",
+    "requestFailed": "Solicitud fallida",
+    "unassigned": "No asignada"
   },
   "fields": {
     "party": "Comensales",
@@ -56,7 +62,25 @@
     "y": "Y",
     "width": "Ancho",
     "height": "Alto",
-    "rotation": "Rotacion"
+    "rotation": "Rotacion",
+    "shape": "Forma",
+    "hour": "Hora",
+    "source": "Origen"
+  },
+  "sources": {
+    "phone": "Telefono",
+    "walkIn": "Sin reserva",
+    "website": "Web",
+    "staff": "Personal",
+    "partner": "Partner",
+    "other": "Otro"
+  },
+  "shapes": {
+    "round": "Redonda",
+    "square": "Cuadrada",
+    "rectangle": "Rectangular",
+    "booth": "Booth",
+    "bar": "Barra"
   },
   "status": {
     "pending": "Pendiente",
