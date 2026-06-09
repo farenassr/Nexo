@@ -26,5 +26,12 @@ describe('restaurantQueryKeys', () => {
       'table-1',
       '2026-06-08',
     ]);
+
+    expect(restaurantQueryKeys.tableBlocks('table-1', '2026-06-08')).toEqual([
+      'restaurant',
+      'table-blocks',
+      'table-1',
+      '2026-06-08',
+    ]);
   });
 });

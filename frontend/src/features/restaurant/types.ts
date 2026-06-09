@@ -170,6 +170,18 @@ export interface RestaurantFloorPlanStatusMap {
   tables: RestaurantTableStatusDetail[];
 }
 
+export interface RestaurantTableBlockDetail {
+  id: string;
+  branchId: string;
+  floorId: string | null;
+  areaId: string | null;
+  tableId: string | null;
+  startAt: string;
+  endAt: string;
+  reason: string | null;
+  isActive: boolean;
+}
+
 export interface RestaurantOperationErrorResponse {
   code: string;
   message: string;

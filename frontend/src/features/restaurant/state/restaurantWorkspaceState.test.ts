@@ -5,7 +5,10 @@ import {
   defaultSetup,
   optionalText,
   patchRestaurantSetup,
+  readStoredSelectedTableId,
   readStoredSetup,
+  selectedTableStorageKey,
+  storeSelectedTableId,
 } from './restaurantWorkspaceState';
 
 describe('restaurantWorkspaceState', () => {
@@ -37,4 +40,41 @@ describe('restaurantWorkspaceState', () => {
     expect(optionalText('   ')).toBeNull();
     expect(defaultReservationForm.partySize).toBe(2);
   });
+
+  it('stores selected table workspace state for cross-route editor handoff', () => {
+    const storage = new MemoryStorage();
+
+    storeSelectedTableId('table-1', storage);
+
+    expect(storage.getItem(selectedTableStorageKey)).toBe('table-1');
+    expect(readStoredSelectedTableId(storage)).toBe('table-1');
+  });
 });
+
+class MemoryStorage implements Storage {
+  private readonly values = new Map<string, string>();
+
+  get length() {
+    return this.values.size;
+  }
+
+  clear() {
+    this.values.clear();
+  }
+
+  getItem(key: string) {
+    return this.values.get(key) ?? null;
+  }
+
+  key(index: number) {
+    return Array.from(this.values.keys())[index] ?? null;
+  }
+
+  removeItem(key: string) {
+    this.values.delete(key);
+  }
+
+  setItem(key: string, value: string) {
+    this.values.set(key, value);
+  }
+}

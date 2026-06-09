@@ -32,7 +32,7 @@ import {
 } from '../floorPlanEditor';
 import labels from '../labels.es.json';
 import { restaurantQueryKeys } from '../queryKeys';
-import { updateSetup, useStoredSetup, type DragState } from '../state/restaurantWorkspaceState';
+import { readStoredSelectedTableId, updateSetup, useStoredSetup, type DragState } from '../state/restaurantWorkspaceState';
 import { type RestaurantFloorPlanDetail, type RestaurantTableLayoutDetail } from '../types';
 
 export function RestaurantFloorPlanEditorPage() {
@@ -78,11 +78,14 @@ export function RestaurantFloorPlanEditorPage() {
       return;
     }
 
+    const storedTableId = readStoredSelectedTableId();
     setEditorState(createFloorPlanEditorState(floorPlanQuery.data));
     setSelectedTableId((current) =>
       current && floorPlanQuery.data.tableLayouts.some((table) => table.tableId === current)
         ? current
-        : floorPlanQuery.data.tableLayouts[0]?.tableId ?? null,
+        : storedTableId && floorPlanQuery.data.tableLayouts.some((table) => table.tableId === storedTableId)
+          ? storedTableId
+          : floorPlanQuery.data.tableLayouts[0]?.tableId ?? null,
     );
   }, [floorPlanQuery.data]);
 

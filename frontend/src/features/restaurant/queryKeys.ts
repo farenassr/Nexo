@@ -16,6 +16,7 @@ export const restaurantQueryKeys = {
   reservations: ({ branchId, date, status }: ReservationListKeyInput) =>
     ['restaurant', 'reservations', branchId, date, status] as const,
   tableReservations: (tableId: string, date: string) => ['restaurant', 'table-reservations', tableId, date] as const,
+  tableBlocks: (tableId: string, date: string) => ['restaurant', 'table-blocks', tableId, date] as const,
   availability: (branchId: string, startAt: string, partySize: number, durationMinutes: number | null) =>
     ['restaurant', 'availability', branchId, startAt, partySize, durationMinutes] as const,
 };

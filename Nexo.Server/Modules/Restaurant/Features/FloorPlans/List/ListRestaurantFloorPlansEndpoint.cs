@@ -23,7 +23,7 @@ public sealed class ListRestaurantFloorPlansEndpoint(
         ListRestaurantFloorPlansEndpointRequest request,
         CancellationToken cancellationToken)
     {
-        var access = await accessService.RequireAsync(RestaurantPermissions.ReservationsRead, cancellationToken);
+        var access = await accessService.RequireAsync(RestaurantPermissions.FloorPlanRead, cancellationToken);
         if (!access.Succeeded)
         {
             await Send.ForbiddenAsync(cancellationToken);
