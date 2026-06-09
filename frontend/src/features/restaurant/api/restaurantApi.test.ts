@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   createRestaurantReservation,
   cancelRestaurantReservation,
@@ -12,6 +12,10 @@ import {
 import { RestaurantReservationSource, RestaurantReservationStatus, RestaurantTableShape } from '../types';
 
 describe('restaurantApi', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it('lists reservations with branch, date, and optional status query parameters', async () => {
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse([]));
     vi.stubGlobal('fetch', fetchMock);
@@ -102,6 +106,30 @@ describe('restaurantApi', () => {
         specialRequests: null,
       }),
     ).rejects.toEqual(new RestaurantApiError('Conflict', 'Selected tables are already reserved.', 409));
+  });
+
+  it('normalizes network failures for recovery flows', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+
+    await expect(listRestaurantReservations({ branchId: 'branch-1', date: '2026-06-08', status: null })).rejects.toEqual(
+      new RestaurantApiError('NetworkError', 'No se pudo conectar con el API de restaurante.', 0),
+    );
+  });
+
+  it('normalizes malformed JSON responses from successful requests', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response('{not-json', {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
+    );
+
+    await expect(listRestaurantReservations({ branchId: 'branch-1', date: '2026-06-08', status: null })).rejects.toEqual(
+      new RestaurantApiError('InvalidResponse', 'La respuesta del API de restaurante no es valida.', 200),
+    );
   });
 
   it('uses the backend cancellation route contract', async () => {

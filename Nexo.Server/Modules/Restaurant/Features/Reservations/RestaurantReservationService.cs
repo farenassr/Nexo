@@ -26,6 +26,13 @@ public sealed class RestaurantReservationService(
                 "Customer name and positive party size are required.");
         }
 
+        if (request.TableIds.Count == 0 || request.TableIds.Distinct().Count() != request.TableIds.Count)
+        {
+            return RestaurantReservationOperationResult.Failed(
+                RestaurantReservationFailureCode.InvalidRequest,
+                "Selected tables must be unique.");
+        }
+
         using var consistencyScope = await consistencyGuard.EnterAsync(cancellationToken);
         var validation = await availabilityService.ValidateAssignedTablesAsync(
             new RestaurantTableAvailabilityValidationRequest(

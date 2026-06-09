@@ -265,6 +265,32 @@ public sealed class RestaurantAvailabilityAndReservationServiceTests
     }
 
     [Test]
+    public async Task CreateAsync_RejectsDuplicateTableAssignments()
+    {
+        await using var dbContext = CreateContext();
+        var fixture = SeedRestaurant(dbContext);
+        dbContext.RestaurantOpeningHours.Add(OpenHours(fixture, DayOfWeek.Monday, "09:00", "17:00"));
+        await dbContext.SaveChangesAsync();
+        var service = CreateReservationService(dbContext);
+
+        var result = await service.CreateAsync(new CreateRestaurantReservationRequest(
+            fixture.BranchId,
+            [fixture.TableId, fixture.TableId],
+            2,
+            DateTimeOffset.Parse("2026-06-08T12:00:00Z"),
+            60,
+            "Grace Hopper",
+            null,
+            null,
+            RestaurantReservationSource.Staff,
+            null));
+
+        await Assert.That(result.Succeeded).IsFalse();
+        await Assert.That(result.FailureCode).IsEqualTo(RestaurantReservationFailureCode.InvalidRequest);
+        await Assert.That(await dbContext.RestaurantReservations.CountAsync()).IsEqualTo(0);
+    }
+
+    [Test]
     public async Task UpdateStatusAsync_RecordsHistoryAndRejectsInvalidTerminalTransition()
     {
         await using var dbContext = CreateContext();
