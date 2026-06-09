@@ -33,6 +33,13 @@ describe('restaurantQueryKeys', () => {
       'table-1',
       '2026-06-08',
     ]);
+
+    expect(restaurantQueryKeys.dashboard('branch-1', '2026-06-08')).toEqual([
+      'restaurant',
+      'dashboard',
+      'branch-1',
+      '2026-06-08',
+    ]);
   });
 
   it('keeps UI-only daily reservation filters out of the server reservation key', () => {

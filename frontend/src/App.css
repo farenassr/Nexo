@@ -308,6 +308,126 @@
   margin-bottom: 14px;
 }
 
+.dashboard-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.dashboard-metric-card {
+  min-height: 86px;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-muted);
+}
+
+.dashboard-metric-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--accent-strong);
+}
+
+.dashboard-metric-card div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dashboard-metric-card strong {
+  font-size: 1.5rem;
+  line-height: 1.1;
+}
+
+.dashboard-metric-card span:not(.dashboard-metric-icon) {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.dashboard-insights-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+  gap: 16px;
+}
+
+.dashboard-panel {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fbfcfa;
+}
+
+.occupancy-chart {
+  min-width: 0;
+}
+
+.occupancy-chart p {
+  margin: 0 0 10px;
+  color: var(--text-muted);
+  font-weight: 800;
+}
+
+.occupancy-bars {
+  min-height: 250px;
+  display: grid;
+  grid-template-columns: repeat(24, minmax(18px, 1fr));
+  gap: 6px;
+  align-items: end;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.occupancy-hour {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: 180px auto auto;
+  gap: 5px;
+  text-align: center;
+}
+
+.occupancy-track {
+  display: flex;
+  align-items: flex-end;
+  border-radius: 6px;
+  background: var(--surface-muted);
+  overflow: hidden;
+}
+
+.occupancy-track span {
+  width: 100%;
+  min-height: 4px;
+  border-radius: 6px 6px 0 0;
+  background: var(--accent);
+}
+
+.occupancy-hour strong {
+  font-size: 0.72rem;
+}
+
+.occupancy-hour small {
+  color: var(--text-muted);
+  font-size: 0.66rem;
+  font-weight: 800;
+}
+
+.dashboard-upcoming-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .setup-module-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -1323,6 +1443,8 @@ button:disabled {
   .setup-panel,
   .reservations-filter-panel,
   .live-toolbar,
+  .dashboard-metric-grid,
+  .dashboard-insights-grid,
   .restaurant-grid,
   .operations-grid,
   .live-operations-grid,

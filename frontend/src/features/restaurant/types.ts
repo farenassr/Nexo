@@ -182,6 +182,37 @@ export interface RestaurantTableBlockDetail {
   isActive: boolean;
 }
 
+export interface RestaurantDashboardMetric {
+  key: string;
+  label: string;
+  value: number;
+}
+
+export interface RestaurantOccupancyByHourPoint {
+  hour: number;
+  reservationCount: number;
+  occupiedCovers: number;
+  occupancyPercent: number;
+}
+
+export interface RestaurantUpcomingReservationSummary {
+  reservationId: string;
+  startAt: string;
+  endAt: string;
+  customerName: string;
+  partySize: number;
+  status: RestaurantReservationStatus;
+  tableLabels: string[];
+}
+
+export interface RestaurantDashboardSummary {
+  branchId: string;
+  date: string;
+  metrics: RestaurantDashboardMetric[];
+  occupancyByHour: RestaurantOccupancyByHourPoint[];
+  upcomingReservations: RestaurantUpcomingReservationSummary[];
+}
+
 export interface RestaurantOperationErrorResponse {
   code: string;
   message: string;

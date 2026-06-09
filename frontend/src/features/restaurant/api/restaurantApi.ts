@@ -1,6 +1,7 @@
 import type {
   RestaurantAvailabilitySearchResult,
   RestaurantContextResponse,
+  RestaurantDashboardSummary,
   RestaurantFloorPlanDetail,
   RestaurantFloorPlanStatusMap,
   RestaurantFloorPlanSummary,
@@ -67,6 +68,11 @@ export interface CreateRestaurantTableBlockInput {
   reason: string | null;
 }
 
+export interface GetRestaurantDashboardInput {
+  branchId: string;
+  date: string;
+}
+
 export interface SaveRestaurantFloorPlanInput {
   name: string;
   canvasWidth: number;
@@ -110,6 +116,15 @@ export type UpdateRestaurantTableLayoutInput = Omit<SaveRestaurantTableLayoutInp
 
 export async function getRestaurantContext(): Promise<RestaurantContextResponse> {
   return apiFetch('/v1/restaurant/context');
+}
+
+export async function getRestaurantDashboard(input: GetRestaurantDashboardInput): Promise<RestaurantDashboardSummary> {
+  const search = new URLSearchParams({
+    branchId: input.branchId,
+    date: input.date,
+  });
+
+  return apiFetch(`/v1/restaurant/dashboard?${search.toString()}`);
 }
 
 export async function listRestaurantReservations(
