@@ -28,6 +28,11 @@ export interface ListRestaurantReservationsInput {
   branchId: string;
   date: string;
   status: RestaurantReservationStatus | null;
+  serviceTime?: string;
+  floorId?: string;
+  areaId?: string;
+  tableId?: string;
+  customerSearch?: string;
 }
 
 export interface SearchRestaurantAvailabilityInput {

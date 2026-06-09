@@ -4,6 +4,7 @@ import labels from '../labels.es.json';
 import type { ReservationFormState } from '../state/restaurantWorkspaceState';
 import type { RestaurantAvailabilitySearchResult } from '../types';
 import { Field, Metric } from './restaurantUi';
+import { SuggestedTableCard } from './reservations/SuggestedTableCard';
 
 export function ReservationCreatePanel({
   reservationForm,
@@ -70,24 +71,18 @@ export function ReservationCreatePanel({
             {availabilityResult.availableTables.map((table) => {
               const selected = selectedTableIds.includes(table.tableId);
               return (
-                <button
+                <SuggestedTableCard
                   key={table.tableId}
-                  type="button"
-                  className="table-option"
-                  aria-pressed={selected}
-                  onClick={() =>
+                  table={table}
+                  selected={selected}
+                  onToggle={() =>
                     setSelectedTableIds((current) =>
                       current.includes(table.tableId)
                         ? current.filter((tableId) => tableId !== table.tableId)
                         : [...current, table.tableId],
                     )
                   }
-                >
-                  <span>{table.label}</span>
-                  <small>
-                    {table.minCapacity}-{table.maxCapacity}
-                  </small>
-                </button>
+                />
               );
             })}
           </div>

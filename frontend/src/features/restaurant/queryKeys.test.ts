@@ -34,4 +34,21 @@ describe('restaurantQueryKeys', () => {
       '2026-06-08',
     ]);
   });
+
+  it('keeps UI-only daily reservation filters out of the server reservation key', () => {
+    expect(
+      restaurantQueryKeys.reservations({
+        branchId: 'branch-1',
+        date: '2026-06-08',
+        status: null,
+      }),
+    ).toEqual(['restaurant', 'reservations', 'branch-1', '2026-06-08', null]);
+
+    expect(restaurantQueryKeys.reservationFilters('branch-1', '2026-06-08')).toEqual([
+      'restaurant',
+      'reservation-filters',
+      'branch-1',
+      '2026-06-08',
+    ]);
+  });
 });
