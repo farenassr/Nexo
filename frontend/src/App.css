@@ -269,6 +269,10 @@
   grid-template-columns: minmax(620px, 1.35fr) minmax(360px, 0.8fr) minmax(360px, 0.75fr);
 }
 
+.live-operations-grid {
+  grid-template-columns: minmax(620px, 1fr) minmax(360px, 420px);
+}
+
 .side-stack {
   display: flex;
   flex-direction: column;
@@ -428,6 +432,17 @@
 
 .floor-command-panel {
   min-height: 680px;
+}
+
+.live-toolbar {
+  grid-template-columns:
+    minmax(190px, 1fr) minmax(180px, 0.9fr) minmax(180px, 0.9fr)
+    minmax(150px, 0.8fr) minmax(140px, 0.7fr) minmax(120px, 0.6fr) auto;
+}
+
+.live-refresh-button {
+  align-self: end;
+  min-width: 132px;
 }
 
 .panel-header {
@@ -884,6 +899,38 @@ button:disabled {
   background: var(--neutral-soft);
 }
 
+.table-quick-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  z-index: 5;
+  width: max-content;
+  max-width: 220px;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.floor-table:hover .table-quick-tooltip,
+.floor-table:focus-visible .table-quick-tooltip {
+  display: flex;
+}
+
+.table-quick-tooltip span,
+.table-quick-tooltip small {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
 .chair-layer {
   position: absolute;
   inset: 0;
@@ -976,6 +1023,48 @@ button:disabled {
 
 .table-summary span:not(.status-badge) {
   color: var(--text-muted);
+}
+
+.live-table-facts {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin: 0;
+}
+
+.live-table-facts div {
+  padding: 10px;
+  border-radius: 6px;
+  background: var(--surface-muted);
+}
+
+.live-table-facts dt {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.live-table-facts dd {
+  margin: 2px 0 0;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.live-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.live-action-grid .secondary-button,
+.live-action-grid .danger-button {
+  width: 100%;
+  min-width: 0;
+}
+
+.compact-reservation-card {
+  padding: 12px;
 }
 
 .layout-properties {
@@ -1114,8 +1203,10 @@ button:disabled {
 
   .restaurant-topbar,
   .setup-panel,
+  .live-toolbar,
   .restaurant-grid,
   .operations-grid,
+  .live-operations-grid,
   .editor-layout-grid,
   .form-row,
   .floor-controls {

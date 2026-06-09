@@ -45,7 +45,9 @@
     "create": "Crear reserva",
     "saveLayout": "Guardar plano",
     "edit": "Editar",
+    "editTable": "Editar mesa",
     "live": "En vivo",
+    "blockTable": "Bloquear mesa",
     "cancel": "Cancelar",
     "confirmed": "Confirmar",
     "seated": "Sentar",
@@ -88,6 +90,14 @@
   },
   "availability": {
     "rejected": "Rechazadas"
+  },
+  "live": {
+    "toolbar": "Controles de plano en vivo",
+    "area": "Zona",
+    "currentStatus": "Estado actual",
+    "nextReservation": "Proxima reserva",
+    "linkedReservation": "Reserva vinculada",
+    "reasonPlaceholder": "Motivo opcional"
   },
   "states": {
     "branchRequired": "Selecciona una sucursal",
@@ -157,6 +167,8 @@
     "createFailed": "No se pudo crear la reserva",
     "statusFailed": "No se pudo cambiar el estado",
     "cancelFailed": "No se pudo cancelar",
+    "blockCreated": "Mesa bloqueada",
+    "blockFailed": "No se pudo bloquear la mesa",
     "layoutFailed": "No se pudo guardar el plano"
   }
 }

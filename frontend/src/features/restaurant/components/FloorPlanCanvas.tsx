@@ -8,6 +8,7 @@ import {
   type RestaurantTableLayoutDetail,
   type RestaurantTableStatusDetail,
 } from '../types';
+import { TableQuickTooltip } from './live/TableQuickTooltip';
 import { visualStatusLabel, visualStatusToken } from './restaurantUi';
 
 export function StatusLegend() {
@@ -40,6 +41,7 @@ export function FloorPlanCanvas({
   selectedTableId,
   isEditingLayout,
   isFetchingStatus,
+  showQuickTooltip = false,
   onSelectTable,
   onBeginDrag,
   onMoveDrag,
@@ -52,6 +54,7 @@ export function FloorPlanCanvas({
   selectedTableId: string | null;
   isEditingLayout: boolean;
   isFetchingStatus: boolean;
+  showQuickTooltip?: boolean;
   onSelectTable: (tableId: string) => void;
   onBeginDrag: (event: ReactPointerEvent<HTMLButtonElement>, tableId: string) => void;
   onMoveDrag: (event: ReactPointerEvent<HTMLButtonElement>) => void;
@@ -97,6 +100,7 @@ export function FloorPlanCanvas({
               <TableChairs table={table} />
               <strong>{table.tableLabel}</strong>
               <small>{visualStatusLabel(visualStatus)}</small>
+              {showQuickTooltip && <TableQuickTooltip table={table} status={tableStatus ?? null} />}
             </button>
           );
         })}

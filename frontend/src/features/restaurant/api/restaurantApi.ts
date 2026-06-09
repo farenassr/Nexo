@@ -9,6 +9,7 @@ import type {
   RestaurantReservationSource,
   RestaurantReservationStatus,
   RestaurantTableShape,
+  RestaurantTableBlockDetail,
 } from '../types';
 
 export class RestaurantApiError extends Error {
@@ -48,6 +49,16 @@ export interface CreateRestaurantReservationInput extends SearchRestaurantAvaila
 export interface UpdateRestaurantReservationStatusInput {
   reservationId: string;
   status: RestaurantReservationStatus;
+  reason: string | null;
+}
+
+export interface CreateRestaurantTableBlockInput {
+  branchId: string;
+  floorId: string | null;
+  areaId: string | null;
+  tableId: string | null;
+  startAt: string;
+  endAt: string;
   reason: string | null;
 }
 
@@ -156,6 +167,15 @@ export async function listRestaurantTableReservations(
 ): Promise<RestaurantReservationDetail[]> {
   const search = new URLSearchParams({ date });
   return apiFetch(`/v1/restaurant/tables/${tableId}/reservations?${search.toString()}`);
+}
+
+export async function createRestaurantTableBlock(
+  input: CreateRestaurantTableBlockInput,
+): Promise<RestaurantTableBlockDetail> {
+  return apiFetch('/v1/restaurant/table-blocks', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
 }
 
 export async function listRestaurantFloorPlans(

@@ -25,6 +25,7 @@ export interface DragState {
 }
 
 export const setupStorageKey = 'nexo.restaurant.setup';
+export const selectedTableStorageKey = 'nexo.restaurant.selectedTableId';
 
 export const defaultSetup: RestaurantSetup = {
   branchId: '',
@@ -81,6 +82,14 @@ export function combineDateAndTime(date: string, time: string) {
 export function optionalText(value: string) {
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;
+}
+
+export function storeSelectedTableId(tableId: string, storage: Storage = window.localStorage) {
+  storage.setItem(selectedTableStorageKey, tableId);
+}
+
+export function readStoredSelectedTableId(storage: Storage = window.localStorage) {
+  return storage.getItem(selectedTableStorageKey);
 }
 
 function todayIsoDate() {

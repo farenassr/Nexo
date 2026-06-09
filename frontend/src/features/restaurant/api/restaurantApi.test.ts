@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   createRestaurantReservation,
   cancelRestaurantReservation,
+  createRestaurantTableBlock,
   listRestaurantReservations,
   listRestaurantTableReservations,
   RestaurantApiError,
@@ -259,6 +260,37 @@ describe('restaurantApi', () => {
       3,
       '/v1/restaurant/tables/table-1/reservations?date=2026-06-08',
       expect.objectContaining({ method: 'GET' }),
+    );
+  });
+
+  it('creates scoped table blocks through the operations endpoint', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ id: 'block-1' }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await createRestaurantTableBlock({
+      branchId: 'branch-1',
+      floorId: 'floor-1',
+      areaId: null,
+      tableId: 'table-1',
+      startAt: '2026-06-08T18:30:00.000Z',
+      endAt: '2026-06-08T20:00:00.000Z',
+      reason: 'VIP hold',
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/v1/restaurant/table-blocks',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({
+          branchId: 'branch-1',
+          floorId: 'floor-1',
+          areaId: null,
+          tableId: 'table-1',
+          startAt: '2026-06-08T18:30:00.000Z',
+          endAt: '2026-06-08T20:00:00.000Z',
+          reason: 'VIP hold',
+        }),
+      }),
     );
   });
 });
