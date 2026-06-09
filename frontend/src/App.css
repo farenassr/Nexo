@@ -314,6 +314,118 @@
   text-align: left;
 }
 
+.editor-page-header h1 {
+  font-size: 1.55rem;
+}
+
+.editor-workbench {
+  margin-top: 16px;
+}
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.editor-tool-group,
+.editor-zoom-controls,
+.editor-mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.editor-tool-button {
+  min-width: 0;
+}
+
+.editor-tool-button[data-active='true'] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+.editor-zoom-controls {
+  min-height: 42px;
+  padding: 0 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-muted);
+}
+
+.editor-zoom-controls span,
+.editor-mode-pill,
+.muted-copy {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.editor-mode-pill {
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--neutral-soft);
+}
+
+.editor-layout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  gap: 16px;
+  align-items: start;
+  margin-top: 16px;
+}
+
+.editor-canvas-panel {
+  min-height: 720px;
+  min-width: 0;
+}
+
+.editor-canvas-viewport {
+  overflow: auto;
+  border-radius: 6px;
+}
+
+.editor-canvas-scale {
+  transform-origin: top left;
+  transition: transform 120ms ease;
+}
+
+.shape-palette {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.shape-option {
+  min-height: 72px;
+}
+
+.editor-properties {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.editor-check-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 40px;
+  color: var(--text-muted);
+  font-weight: 800;
+}
+
+.editor-check-row input {
+  width: 18px;
+  min-height: 18px;
+}
+
 .floor-command-panel {
   min-height: 680px;
 }
@@ -1004,6 +1116,7 @@ button:disabled {
   .setup-panel,
   .restaurant-grid,
   .operations-grid,
+  .editor-layout-grid,
   .form-row,
   .floor-controls {
     grid-template-columns: 1fr;
@@ -1024,7 +1137,21 @@ button:disabled {
     justify-content: flex-start;
   }
 
+  .editor-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .editor-tool-button span,
+  .editor-mode-pill {
+    display: none;
+  }
+
   .floor-command-panel {
+    min-height: 0;
+  }
+
+  .editor-canvas-panel {
     min-height: 0;
   }
 

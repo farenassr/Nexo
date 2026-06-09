@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { RestaurantTableShape, type RestaurantFloorPlanDetail } from './types';
-import { moveTableLayout, toSaveFloorPlanInput } from './floorPlanEditor';
+import {
+  applyEditorChange,
+  buildSeatLayouts,
+  changeTableShape,
+  createFloorPlanEditorState,
+  moveTableLayout,
+  resizeTableLayout,
+  toSaveFloorPlanInput,
+  undoEditorChange,
+} from './floorPlanEditor';
 
 describe('floorPlanEditor', () => {
   it('moves table layouts by canvas delta and clamps them inside the floor plan', () => {
@@ -13,6 +22,74 @@ describe('floorPlanEditor', () => {
       x: 1100,
       y: 680,
     });
+  });
+
+  it('marks editor state dirty when a layout edit changes the floor plan', () => {
+    const floorPlan = floorPlanFixture();
+
+    const moved = applyEditorChange(createFloorPlanEditorState(floorPlan), (draft) => resizeTableLayout(draft, 'table-1', 180, 120));
+
+    expect(moved.floorPlan.tableLayouts[0]).toMatchObject({
+      tableId: 'table-1',
+      width: 180,
+      height: 120,
+    });
+    expect(moved.isDirty).toBe(true);
+    expect(moved.past).toHaveLength(1);
+  });
+
+  it('resizes table layouts without letting them overflow the canvas', () => {
+    const floorPlan = floorPlanFixture({
+      table: {
+        x: 1120,
+        y: 700,
+        width: 80,
+        height: 60,
+      },
+    });
+
+    const resized = resizeTableLayout(floorPlan, 'table-1', 220, 140);
+
+    expect(resized.tableLayouts[0]).toMatchObject({
+      x: 980,
+      y: 620,
+      width: 220,
+      height: 140,
+    });
+  });
+
+  it('changes table shape and regenerates seat layouts from chair count', () => {
+    const floorPlan = floorPlanFixture();
+
+    const changed = changeTableShape(floorPlan, 'table-1', RestaurantTableShape.Round, 4);
+
+    expect(changed.tableLayouts[0]).toMatchObject({
+      shape: RestaurantTableShape.Round,
+      width: 96,
+      height: 96,
+    });
+    expect(changed.tableLayouts[0].seatLayouts).toEqual(buildSeatLayouts(RestaurantTableShape.Round, 4));
+  });
+
+  it('generates bar seat layouts in a single service row', () => {
+    expect(buildSeatLayouts(RestaurantTableShape.Bar, 3)).toEqual([
+      { seatNumber: 1, x: 20, y: 92, rotationDegrees: 180 },
+      { seatNumber: 2, x: 50, y: 92, rotationDegrees: 180 },
+      { seatNumber: 3, x: 80, y: 92, rotationDegrees: 180 },
+    ]);
+  });
+
+  it('tracks dirty editor changes and restores clean state after undoing all edits', () => {
+    const state = createFloorPlanEditorState(floorPlanFixture());
+    const changed = applyEditorChange(state, (draft) => resizeTableLayout(draft, 'table-1', 180, 120));
+    const restored = undoEditorChange(changed);
+
+    expect(restored.floorPlan.tableLayouts[0]).toMatchObject({
+      width: 100,
+      height: 80,
+    });
+    expect(restored.isDirty).toBe(false);
+    expect(restored.future).toHaveLength(1);
   });
 
   it('shapes a full floor plan save payload from the editable detail', () => {
@@ -54,7 +131,11 @@ describe('floorPlanEditor', () => {
   });
 });
 
-function floorPlanFixture(): RestaurantFloorPlanDetail {
+function floorPlanFixture({
+  table,
+}: {
+  table?: Partial<RestaurantFloorPlanDetail['tableLayouts'][number]>;
+} = {}): RestaurantFloorPlanDetail {
   return {
     id: 'floor-plan-1',
     branchId: 'branch-1',
@@ -89,6 +170,7 @@ function floorPlanFixture(): RestaurantFloorPlanDetail {
         shape: RestaurantTableShape.Rectangle,
         zIndex: 4,
         seatLayouts: [{ seatNumber: 1, x: 10, y: 12, rotationDegrees: 0 }],
+        ...table,
       },
     ],
   };
