@@ -1,22 +1,16 @@
 import { QueryClientProvider } from '@tanstack/react-query';
-import { createRootRoute, createRoute, createRouter, Outlet, RouterProvider } from '@tanstack/react-router';
+import { createRootRoute, createRouter, Outlet, RouterProvider } from '@tanstack/react-router';
 import { Toaster } from 'sonner';
 import './App.css';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
-import { RestaurantReservationsPage } from './features/restaurant/pages/RestaurantReservationsPage';
+import { createRestaurantRoutes } from './features/restaurant/navigation/restaurantRoutes';
 import { queryClient } from './lib/query/queryClient';
 
 const rootRoute = createRootRoute({
   component: RootLayout,
 });
 
-const restaurantRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/',
-  component: RestaurantReservationsPage,
-});
-
-const routeTree = rootRoute.addChildren([restaurantRoute]);
+const routeTree = rootRoute.addChildren(createRestaurantRoutes(rootRoute));
 
 const router = createRouter({
   routeTree,
