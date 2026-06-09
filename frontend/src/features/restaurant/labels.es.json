@@ -51,7 +51,8 @@
     "cancel": "Cancelar",
     "confirmed": "Confirmar",
     "seated": "Sentar",
-    "completed": "Completar"
+    "completed": "Completar",
+    "close": "Cerrar"
   },
   "editor": {
     "activeManagedBySetup": "Activa, gestionada desde Setup",
@@ -90,6 +91,15 @@
   },
   "availability": {
     "rejected": "Rechazadas"
+  },
+  "reservations": {
+    "filters": "Filtros de reservas",
+    "statusFilter": "Estado",
+    "allStatuses": "Todos",
+    "tableFilter": "Mesa",
+    "customerSearch": "Cliente",
+    "customerSearchPlaceholder": "Nombre, telefono o email",
+    "filteredCount": "Reservas visibles"
   },
   "live": {
     "toolbar": "Controles de plano en vivo",

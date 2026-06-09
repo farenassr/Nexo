@@ -1,7 +1,8 @@
 import { Clock3, DoorOpen, X } from 'lucide-react';
 import labels from '../labels.es.json';
 import { RestaurantReservationStatus, type RestaurantReservationDetail } from '../types';
-import { EmptyState, formatTime, InlineError, sourceLabel, statusLabel, statusToken, SkeletonRows } from './restaurantUi';
+import { EmptyState, formatTime, InlineError, sourceLabel, statusLabel, SkeletonRows } from './restaurantUi';
+import { ReservationStatusBadge } from './reservations/ReservationStatusBadge';
 
 export function DailyReservationList({
   hasRestaurantContext,
@@ -70,7 +71,7 @@ export function ReservationCard({
           <strong>{reservation.customer.fullName}</strong>
           <span>{reservation.tables.map((table) => table.label).join(', ') || labels.states.unassigned}</span>
         </div>
-        <StatusBadge status={reservation.status} />
+        <ReservationStatusBadge status={reservation.status} />
       </div>
       <dl className="reservation-facts">
         <div>
@@ -107,14 +108,6 @@ export function ReservationCard({
         </div>
       )}
     </article>
-  );
-}
-
-function StatusBadge({ status }: { status: RestaurantReservationStatus }) {
-  return (
-    <span className="status-badge" data-status={statusToken(status)}>
-      {statusLabel(status)}
-    </span>
   );
 }
 

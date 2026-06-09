@@ -15,6 +15,7 @@ export const restaurantQueryKeys = {
     ['restaurant', 'floor-plan-status-map', floorPlanId, at, areaId] as const,
   reservations: ({ branchId, date, status }: ReservationListKeyInput) =>
     ['restaurant', 'reservations', branchId, date, status] as const,
+  reservationFilters: (branchId: string, date: string) => ['restaurant', 'reservation-filters', branchId, date] as const,
   tableReservations: (tableId: string, date: string) => ['restaurant', 'table-reservations', tableId, date] as const,
   tableBlocks: (tableId: string, date: string) => ['restaurant', 'table-blocks', tableId, date] as const,
   availability: (branchId: string, startAt: string, partySize: number, durationMinutes: number | null) =>

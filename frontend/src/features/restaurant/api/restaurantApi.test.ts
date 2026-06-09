@@ -33,6 +33,27 @@ describe('restaurantApi', () => {
     );
   });
 
+  it('keeps unsupported daily reservation filters client-side when listing reservations', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse([]));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await listRestaurantReservations({
+      branchId: 'branch-1',
+      date: '2026-06-08',
+      status: null,
+      serviceTime: '18:30',
+      floorId: 'floor-1',
+      areaId: 'area-1',
+      tableId: 'table-1',
+      customerSearch: 'ava',
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/v1/restaurant/reservations?branchId=branch-1&date=2026-06-08',
+      expect.objectContaining({ method: 'GET' }),
+    );
+  });
+
   it('sends availability and reservation requests as backend contract payloads', async () => {
     const fetchMock = vi
       .fn()

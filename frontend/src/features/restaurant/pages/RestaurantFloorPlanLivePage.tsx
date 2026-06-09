@@ -1,11 +1,10 @@
 import { useNavigate } from '@tanstack/react-router';
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { Activity, CalendarPlus, Loader2, Map as MapIcon, Utensils } from 'lucide-react';
-import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
   cancelRestaurantReservation,
-  createRestaurantReservation,
   createRestaurantTableBlock,
   getRestaurantContext,
   getRestaurantFloorPlan,
@@ -13,47 +12,42 @@ import {
   listRestaurantFloorPlans,
   listRestaurantTableReservations,
   RestaurantApiError,
-  searchRestaurantAvailability,
   updateRestaurantReservationStatus,
-  type CreateRestaurantReservationInput,
 } from '../api/restaurantApi';
 import { FloorPlanCanvas } from '../components/FloorPlanCanvas';
-import { ReservationCreatePanel } from '../components/ReservationCreatePanel';
 import { FloorPlanLiveToolbar } from '../components/live/FloorPlanLiveToolbar';
 import { TableDetailsSidePanel } from '../components/live/TableDetailsSidePanel';
 import { TableStatusLegend } from '../components/live/TableStatusLegend';
+import { CreateReservationModal } from '../components/reservations/CreateReservationModal';
 import { EmptyState, InlineError, PanelHeader, SkeletonRows } from '../components/restaurantUi';
 import { findActionReservation, getTableActionState } from '../liveViewState';
 import labels from '../labels.es.json';
 import { restaurantQueryKeys } from '../queryKeys';
 import {
   combineDateAndTime,
-  defaultReservationForm,
   optionalText,
   storeSelectedTableId,
   updateSetup,
   useStoredSetup,
 } from '../state/restaurantWorkspaceState';
-import { RestaurantReservationSource, RestaurantReservationStatus, type RestaurantAvailabilitySearchResult } from '../types';
+import { RestaurantReservationStatus, type RestaurantAvailabilityTableOption } from '../types';
 
 export function RestaurantFloorPlanLivePage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const [setup, setSetup] = useStoredSetup();
-  const [reservationForm, setReservationForm] = useState(defaultReservationForm);
-  const [availabilityResult, setAvailabilityResult] = useState<RestaurantAvailabilitySearchResult | null>(null);
-  const [selectedTableIds, setSelectedTableIds] = useState<string[]>([]);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
   const [actionReason, setActionReason] = useState('');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [modalInitialTable, setModalInitialTable] = useState<RestaurantAvailabilityTableOption | null>(null);
 
   const serviceInstant = useMemo(() => combineDateAndTime(setup.date, setup.serviceTime), [setup.date, setup.serviceTime]);
   const blockEndAt = useMemo(() => {
     const endAt = new Date(serviceInstant);
-    endAt.setMinutes(endAt.getMinutes() + (reservationForm.durationMinutes || 90));
+    endAt.setMinutes(endAt.getMinutes() + 90);
     return endAt.toISOString();
-  }, [reservationForm.durationMinutes, serviceInstant]);
-  const hasRestaurantContext = setup.branchId.trim().length > 0;
+  }, [serviceInstant]);
   const hasFloorContext = setup.branchId.trim().length > 0 && setup.floorId.trim().length > 0;
 
   const contextQuery = useQuery({
@@ -117,28 +111,6 @@ export function RestaurantFloorPlanLivePage() {
   const actionState = getTableActionState(selectedStatus, selectedTableReservations);
   const visibleTables = floorPlan?.tableLayouts.filter((table) => !setup.areaId || table.areaId === setup.areaId) ?? [];
 
-  const availabilityMutation = useMutation({
-    mutationFn: searchRestaurantAvailability,
-    onSuccess: (result) => {
-      setAvailabilityResult(result);
-      const firstOption = result.availableTables[0];
-      setSelectedTableIds(firstOption ? [firstOption.tableId] : selectedTableId ? [selectedTableId] : []);
-    },
-    onError: (error) => showMutationError(error, labels.toasts.availabilityFailed),
-  });
-
-  const createReservationMutation = useMutation({
-    mutationFn: createRestaurantReservation,
-    onSuccess: async () => {
-      toast.success(labels.toasts.created);
-      setReservationForm(defaultReservationForm);
-      setAvailabilityResult(null);
-      setSelectedTableIds([]);
-      await invalidateRestaurantWork(queryClient);
-    },
-    onError: (error) => showMutationError(error, labels.toasts.createFailed),
-  });
-
   const statusMutation = useMutation({
     mutationFn: updateRestaurantReservationStatus,
     onSuccess: async () => {
@@ -170,43 +142,24 @@ export function RestaurantFloorPlanLivePage() {
     onError: (error) => showMutationError(error, labels.toasts.blockFailed),
   });
 
-  const selectedTableLabels = selectedTableIds
-    .map((tableId) => availabilityResult?.availableTables.find((table) => table.tableId === tableId)?.label ?? tableId)
-    .join(', ');
-  const canSearchAvailability = hasRestaurantContext && reservationForm.partySize > 0 && Boolean(setup.date && setup.serviceTime);
-  const canCreateReservation =
-    canSearchAvailability && selectedTableIds.length > 0 && reservationForm.customerFullName.trim().length > 0;
+  const initialReservationTable = useMemo<RestaurantAvailabilityTableOption | null>(() => {
+    if (!selectedTable) {
+      return null;
+    }
+
+    const seatCount = Math.max(selectedTable.seatLayouts.length, 2);
+    return {
+      tableId: selectedTable.tableId,
+      label: selectedTable.tableLabel,
+      minCapacity: 1,
+      maxCapacity: seatCount,
+      startAt: serviceInstant,
+      endAt: blockEndAt,
+    };
+  }, [blockEndAt, selectedTable, serviceInstant]);
 
   function handleSelectTable(tableId: string) {
     setSelectedTableId(tableId);
-  }
-
-  function handleAvailabilitySearch(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    availabilityMutation.mutate({
-      branchId: setup.branchId,
-      partySize: reservationForm.partySize,
-      startAt: serviceInstant,
-      durationMinutes: reservationForm.durationMinutes || null,
-    });
-  }
-
-  function handleCreateReservation(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const payload: CreateRestaurantReservationInput = {
-      branchId: setup.branchId,
-      tableIds: selectedTableIds,
-      partySize: reservationForm.partySize,
-      startAt: serviceInstant,
-      durationMinutes: reservationForm.durationMinutes || null,
-      customerFullName: reservationForm.customerFullName.trim(),
-      customerPhone: optionalText(reservationForm.customerPhone),
-      customerEmail: optionalText(reservationForm.customerEmail),
-      source: RestaurantReservationSource.Staff,
-      specialRequests: optionalText(reservationForm.specialRequests),
-    };
-
-    createReservationMutation.mutate(payload);
   }
 
   function handleStartReservationForSelectedTable() {
@@ -214,20 +167,13 @@ export function RestaurantFloorPlanLivePage() {
       return;
     }
 
-    setSelectedTableIds([selectedTable.tableId]);
-    setAvailabilityResult({
-      availableTables: [
-        {
-          tableId: selectedTable.tableId,
-          label: selectedTable.tableLabel,
-          minCapacity: reservationForm.partySize,
-          maxCapacity: reservationForm.partySize,
-          startAt: serviceInstant,
-          endAt: blockEndAt,
-        },
-      ],
-      rejections: [],
-    });
+    setModalInitialTable(initialReservationTable);
+    setIsCreateModalOpen(true);
+  }
+
+  function handleOpenGenericReservationModal() {
+    setModalInitialTable(null);
+    setIsCreateModalOpen(true);
   }
 
   function handleBlockSelectedTable() {
@@ -354,24 +300,30 @@ export function RestaurantFloorPlanLivePage() {
           </section>
 
           <section className="panel booking-panel" aria-labelledby="booking-heading">
-            <PanelHeader icon={<CalendarPlus size={18} />} title={labels.sections.booking} />
-            <ReservationCreatePanel
-              reservationForm={reservationForm}
-              availabilityResult={availabilityResult}
-              selectedTableIds={selectedTableIds}
-              selectedTableLabels={selectedTableLabels}
-              canSearchAvailability={canSearchAvailability}
-              canCreateReservation={canCreateReservation}
-              isSearchingAvailability={availabilityMutation.isPending}
-              isCreatingReservation={createReservationMutation.isPending}
-              setReservationForm={setReservationForm}
-              setSelectedTableIds={setSelectedTableIds}
-              onAvailabilitySearch={handleAvailabilitySearch}
-              onCreateReservation={handleCreateReservation}
+            <PanelHeader
+              icon={<CalendarPlus size={18} />}
+              title={labels.sections.booking}
+              action={
+                <button type="button" className="primary-button compact-button" onClick={handleOpenGenericReservationModal}>
+                  <CalendarPlus size={16} />
+                  {labels.actions.create}
+                </button>
+              }
             />
+            <EmptyState icon={<CalendarPlus size={22} />} title={labels.states.noTableSelected} />
           </section>
         </aside>
       </div>
+
+      <CreateReservationModal
+        open={isCreateModalOpen}
+        setup={setup}
+        initialTable={modalInitialTable}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setModalInitialTable(null);
+        }}
+      />
     </main>
   );
 }
