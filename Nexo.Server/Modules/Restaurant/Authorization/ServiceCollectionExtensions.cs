@@ -1,4 +1,5 @@
 using Nexo.Server.Modules.Restaurant.Features.Availability;
+using Nexo.Server.Modules.Restaurant.Features.Dashboard;
 using Nexo.Server.Modules.Restaurant.Features.FloorPlans;
 using Nexo.Server.Modules.Restaurant.Features.Reservations;
 using Nexo.Server.Modules.Restaurant.Features.TableBlocks;
@@ -18,6 +19,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRestaurantPermissionAuthorizer, DevelopmentRestaurantPermissionAuthorizer>();
         services.AddScoped<RestaurantAccessService>();
         services.AddScoped<RestaurantAvailabilityService>();
+        services.AddScoped<RestaurantDashboardService>();
         services.AddScoped<RestaurantFloorPlanService>();
         services.AddScoped<RestaurantReservationService>();
         services.AddScoped<RestaurantTableBlockService>();

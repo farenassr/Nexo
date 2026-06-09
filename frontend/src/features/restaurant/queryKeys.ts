@@ -8,6 +8,7 @@ export interface ReservationListKeyInput {
 
 export const restaurantQueryKeys = {
   context: () => ['restaurant', 'context'] as const,
+  dashboard: (branchId: string, date: string) => ['restaurant', 'dashboard', branchId, date] as const,
   floorPlans: (branchId: string, floorId: string) =>
     ['restaurant', 'floor-plans', branchId, floorId] as const,
   floorPlan: (floorPlanId: string) => ['restaurant', 'floor-plan', floorPlanId] as const,

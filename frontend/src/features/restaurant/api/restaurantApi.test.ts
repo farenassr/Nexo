@@ -3,6 +3,7 @@ import {
   createRestaurantReservation,
   cancelRestaurantReservation,
   createRestaurantTableBlock,
+  getRestaurantDashboard,
   listRestaurantReservations,
   listRestaurantTableReservations,
   RestaurantApiError,
@@ -29,6 +30,26 @@ describe('restaurantApi', () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       '/v1/restaurant/reservations?branchId=00000000-0000-7000-8000-000000000101&date=2026-06-08&status=1',
+      expect.objectContaining({ method: 'GET' }),
+    );
+  });
+
+  it('loads the restaurant dashboard with branch and date query parameters', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      jsonResponse({
+        branchId: 'branch-1',
+        date: '2026-06-08',
+        metrics: [],
+        occupancyByHour: [],
+        upcomingReservations: [],
+      }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getRestaurantDashboard({ branchId: 'branch-1', date: '2026-06-08' });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/v1/restaurant/dashboard?branchId=branch-1&date=2026-06-08',
       expect.objectContaining({ method: 'GET' }),
     );
   });
