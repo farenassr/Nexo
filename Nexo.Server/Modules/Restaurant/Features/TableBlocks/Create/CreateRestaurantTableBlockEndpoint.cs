@@ -11,7 +11,6 @@ public sealed class CreateRestaurantTableBlockEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/table-blocks");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Creates a restaurant table block.";

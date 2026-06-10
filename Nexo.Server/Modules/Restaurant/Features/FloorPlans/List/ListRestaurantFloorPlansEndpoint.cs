@@ -11,7 +11,6 @@ public sealed class ListRestaurantFloorPlansEndpoint(
     public override void Configure()
     {
         Get("/v1/restaurant/floor-plans");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Lists restaurant floor plans.";

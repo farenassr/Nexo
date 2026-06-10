@@ -11,7 +11,6 @@ public sealed class CreateRestaurantBranchEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/setup/branches");
-        AllowAnonymous();
         Summary(summary => summary.Summary = "Creates a restaurant branch.");
     }
 

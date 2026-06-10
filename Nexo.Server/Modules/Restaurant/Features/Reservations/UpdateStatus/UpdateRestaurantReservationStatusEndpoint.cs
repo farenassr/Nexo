@@ -12,7 +12,6 @@ public sealed class UpdateRestaurantReservationStatusEndpoint(
     public override void Configure()
     {
         Put("/v1/restaurant/reservations/{ReservationId}/status");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Updates restaurant reservation status.";

@@ -11,7 +11,6 @@ public sealed class GetRestaurantFloorPlanStatusMapEndpoint(
     public override void Configure()
     {
         Get("/v1/restaurant/floor-plans/{FloorPlanId}/status-map");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Gets restaurant floor plan table statuses.";

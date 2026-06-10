@@ -11,7 +11,6 @@ public sealed class CreateRestaurantAreaEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/setup/areas");
-        AllowAnonymous();
         Summary(summary => summary.Summary = "Creates a restaurant area.");
     }
 

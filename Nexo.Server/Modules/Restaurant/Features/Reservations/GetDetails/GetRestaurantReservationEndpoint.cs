@@ -12,7 +12,6 @@ public sealed class GetRestaurantReservationEndpoint(
     public override void Configure()
     {
         Get("/v1/restaurant/reservations/{ReservationId}");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Gets restaurant reservation details.";

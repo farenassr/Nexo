@@ -10,7 +10,6 @@ public sealed class DeleteRestaurantFloorPlanEndpoint(
     public override void Configure()
     {
         Delete("/v1/restaurant/setup/floor-plans/{FloorPlanId}");
-        AllowAnonymous();
         Summary(summary => summary.Summary = "Deletes a restaurant floor plan.");
     }
 

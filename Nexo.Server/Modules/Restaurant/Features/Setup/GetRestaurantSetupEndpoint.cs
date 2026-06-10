@@ -10,7 +10,6 @@ public sealed class GetRestaurantSetupEndpoint(
     public override void Configure()
     {
         Get("/v1/restaurant/setup");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Gets restaurant setup state.";

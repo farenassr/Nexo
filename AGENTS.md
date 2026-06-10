@@ -34,8 +34,8 @@ Do not load the entire `AIHarness/` folder by default.
 
 Nexo is a .NET Aspire modular monolith:
 
-- `Nexo.AppHost`: local Aspire orchestration for PostgreSQL, Redis, Keycloak,
-  `Nexo.Server`, and `frontend`.
+- `Nexo.AppHost`: local Aspire orchestration for PostgreSQL, Redis,
+  `Nexo.Server`, and `frontend`. Keycloak is currently configured externally.
 - `Nexo.Server`: FastEndpoints API surface. Vertical slices live under
   `Nexo.Server/Modules/<Module>/Features/<UseCase>/`.
 - `frontend`: React + Vite + TypeScript SPA served through Aspire
@@ -96,7 +96,8 @@ Run the narrowest useful check first, then broaden when risk warrants it.
   Keycloak organization id and is not generated locally.
 - Use `TimeProvider`; do not call `DateTime.Now` or `DateTime.UtcNow`
   directly.
-- All API routes live under `/v1/` except `/health` and `/alive`.
+- All API routes live under `/v1/` except `/health`, `/alive`, and BFF auth
+  routes under `/auth/`.
 - Keep `Program.cs` minimal; prefer module/service registration extensions.
 
 ## Frontend Rules
@@ -180,8 +181,8 @@ src/
 - Put provider-specific runtime code in `Integrations/<ProviderName>/`.
 - Provider-neutral request/result models stay near the port.
 - Aspire `.WithReference(...)` supplies local runtime connection strings for
-  PostgreSQL, Redis, and Keycloak. Do not move those local references into a
-  secret store.
+  PostgreSQL and Redis. Keep Keycloak values in AppHost user-secrets, Aspire
+  parameters, environment variables, or deployed secret stores.
 
 ## Database And Migrations
 

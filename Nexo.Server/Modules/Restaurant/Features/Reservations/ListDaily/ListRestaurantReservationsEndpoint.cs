@@ -12,7 +12,6 @@ public sealed class ListRestaurantReservationsEndpoint(
     public override void Configure()
     {
         Get("/v1/restaurant/reservations");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Lists restaurant reservations for a day.";

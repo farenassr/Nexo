@@ -11,7 +11,6 @@ public sealed class RestaurantContextEndpoint(
     public override void Configure()
     {
         Get("/v1/restaurant/context");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Returns the server-resolved Restaurant module context.";

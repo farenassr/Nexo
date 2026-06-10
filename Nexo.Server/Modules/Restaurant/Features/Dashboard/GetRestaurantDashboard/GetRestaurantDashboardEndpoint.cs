@@ -11,7 +11,6 @@ public sealed class GetRestaurantDashboardEndpoint(
     public override void Configure()
     {
         Get("/v1/restaurant/dashboard");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Gets restaurant dashboard metrics.";

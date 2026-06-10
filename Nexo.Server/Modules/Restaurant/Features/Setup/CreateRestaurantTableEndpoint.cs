@@ -11,7 +11,6 @@ public sealed class CreateRestaurantTableEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/setup/tables");
-        AllowAnonymous();
         Summary(summary => summary.Summary = "Creates a restaurant table.");
     }
 

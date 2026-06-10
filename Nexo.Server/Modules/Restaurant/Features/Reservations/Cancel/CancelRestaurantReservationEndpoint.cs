@@ -12,7 +12,6 @@ public sealed class CancelRestaurantReservationEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/reservations/{ReservationId}/cancel");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Cancels a restaurant reservation.";
