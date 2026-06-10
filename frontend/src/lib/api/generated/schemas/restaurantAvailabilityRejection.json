@@ -1,0 +1,13 @@
+{
+  "required": ["tableId", "code", "message"],
+  "type": "object",
+  "properties": {
+    "tableId": { "type": ["null", "string"], "format": "uuid" },
+    "code": {
+      "type": "integer",
+      "x-readme-ref-name": "RestaurantAvailabilityFailureCode"
+    },
+    "message": { "type": "string" }
+  },
+  "x-readme-ref-name": "RestaurantAvailabilityRejection"
+}

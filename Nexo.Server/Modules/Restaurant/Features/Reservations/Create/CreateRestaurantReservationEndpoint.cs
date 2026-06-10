@@ -7,7 +7,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.Reservations.Create;
 
 public sealed class CreateRestaurantReservationEndpoint(
     RestaurantAccessService accessService,
-    RestaurantReservationService reservationService) : Endpoint<CreateRestaurantReservationEndpointRequest, object>
+    RestaurantReservationService reservationService) : Endpoint<CreateRestaurantReservationEndpointRequest, RestaurantReservationDetail>
 {
     public override void Configure()
     {
@@ -46,10 +46,10 @@ public sealed class CreateRestaurantReservationEndpoint(
 
         if (!result.Succeeded)
         {
-            await Send.ResponseAsync(
+            await HttpContext.Response.SendAsync(
                 RestaurantEndpointResponses.FromReservationFailure(result),
                 RestaurantEndpointResponses.ToStatusCode(result.FailureCode),
-                cancellationToken);
+                cancellation: cancellationToken);
             return;
         }
 

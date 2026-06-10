@@ -1,0 +1,5 @@
+{
+  "type": "object",
+  "properties": { "reservationId": { "type": "string", "format": "uuid" } },
+  "x-readme-ref-name": "GetRestaurantReservationEndpointRequest"
+}

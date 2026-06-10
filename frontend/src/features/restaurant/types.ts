@@ -1,3 +1,36 @@
+export type {
+  RestaurantAreaDetail,
+  RestaurantAreaLayoutDetail,
+  RestaurantAvailabilityRejection,
+  RestaurantAvailabilitySearchResult,
+  RestaurantAvailabilityTableOption,
+  RestaurantBranchDetail,
+  RestaurantContextResponse,
+  RestaurantDashboardMetric,
+  RestaurantDashboardSummary,
+  RestaurantFloorDetail,
+  RestaurantFloorPlanDetail,
+  RestaurantFloorPlanStatusMap,
+  RestaurantFloorPlanSummary,
+  RestaurantOccupancyByHourPoint,
+  RestaurantReservationCustomerDetail,
+  RestaurantReservationDetail,
+  RestaurantReservationStatusHistoryDetail,
+  RestaurantReservationTableDetail,
+  RestaurantSetupSnapshot,
+  RestaurantTableBlockDetail,
+  RestaurantTableDetail,
+  RestaurantTableLayoutDetail,
+  RestaurantTableSeatLayoutDetail,
+  RestaurantTableStatusDetail,
+  RestaurantUpcomingReservationSummary,
+} from '../../lib/api/generated/types';
+
+export interface RestaurantOperationErrorResponse {
+  code: string;
+  message: string;
+}
+
 export const RestaurantReservationStatus = {
   Pending: 0,
   Confirmed: 1,
@@ -8,7 +41,7 @@ export const RestaurantReservationStatus = {
 } as const;
 
 export type RestaurantReservationStatus =
-  (typeof RestaurantReservationStatus)[keyof typeof RestaurantReservationStatus];
+  number;
 
 export const RestaurantReservationSource = {
   Phone: 0,
@@ -20,7 +53,7 @@ export const RestaurantReservationSource = {
 } as const;
 
 export type RestaurantReservationSource =
-  (typeof RestaurantReservationSource)[keyof typeof RestaurantReservationSource];
+  number;
 
 export const RestaurantTableVisualStatus = {
   Inactive: 0,
@@ -32,7 +65,7 @@ export const RestaurantTableVisualStatus = {
 } as const;
 
 export type RestaurantTableVisualStatus =
-  (typeof RestaurantTableVisualStatus)[keyof typeof RestaurantTableVisualStatus];
+  number;
 
 export const RestaurantTableShape = {
   Round: 0,
@@ -43,7 +76,7 @@ export const RestaurantTableShape = {
   Custom: 5,
 } as const;
 
-export type RestaurantTableShape = (typeof RestaurantTableShape)[keyof typeof RestaurantTableShape];
+export type RestaurantTableShape = number;
 
 export const RestaurantAreaType = {
   DiningRoom: 0,
@@ -55,227 +88,4 @@ export const RestaurantAreaType = {
   Other: 6,
 } as const;
 
-export type RestaurantAreaType = (typeof RestaurantAreaType)[keyof typeof RestaurantAreaType];
-
-export interface RestaurantContextResponse {
-  companyId: string;
-  moduleKey: string;
-  permissionContracts: string[];
-}
-
-export interface RestaurantReservationCustomerDetail {
-  customerId: string;
-  fullName: string;
-  phone: string | null;
-  email: string | null;
-}
-
-export interface RestaurantReservationTableDetail {
-  tableId: string;
-  label: string;
-}
-
-export interface RestaurantReservationStatusHistoryDetail {
-  fromStatus: RestaurantReservationStatus | null;
-  toStatus: RestaurantReservationStatus;
-  reason: string | null;
-  changedAt: string;
-}
-
-export interface RestaurantReservationDetail {
-  reservationId: string;
-  branchId: string;
-  partySize: number;
-  startAt: string;
-  endAt: string;
-  turnoverBufferMinutes: number;
-  status: RestaurantReservationStatus;
-  source: RestaurantReservationSource;
-  specialRequests: string | null;
-  cancelledAt: string | null;
-  cancellationReason: string | null;
-  customer: RestaurantReservationCustomerDetail;
-  tables: RestaurantReservationTableDetail[];
-  statusHistory: RestaurantReservationStatusHistoryDetail[];
-}
-
-export interface RestaurantAvailabilityTableOption {
-  tableId: string;
-  label: string;
-  minCapacity: number;
-  maxCapacity: number;
-  startAt: string;
-  endAt: string;
-}
-
-export interface RestaurantAvailabilityRejection {
-  tableId: string | null;
-  code: number;
-  message: string;
-}
-
-export interface RestaurantAvailabilitySearchResult {
-  availableTables: RestaurantAvailabilityTableOption[];
-  rejections: RestaurantAvailabilityRejection[];
-}
-
-export interface RestaurantFloorPlanSummary {
-  id: string;
-  branchId: string;
-  floorId: string;
-  name: string;
-  canvasWidth: number;
-  canvasHeight: number;
-  gridSize: number | null;
-  isActive: boolean;
-}
-
-export interface RestaurantBranchDetail {
-  id: string;
-  companyId: string;
-  name: string;
-  address: string | null;
-  timeZone: string;
-  isActive: boolean;
-}
-
-export interface RestaurantFloorDetail {
-  id: string;
-  branchId: string;
-  name: string;
-  sortOrder: number;
-  isActive: boolean;
-}
-
-export interface RestaurantAreaDetail {
-  id: string;
-  branchId: string;
-  floorId: string;
-  name: string;
-  type: RestaurantAreaType;
-  sortOrder: number;
-  isActive: boolean;
-}
-
-export interface RestaurantTableDetail {
-  id: string;
-  companyId: string;
-  branchId: string;
-  floorId: string;
-  areaId: string | null;
-  label: string;
-  minCapacity: number;
-  maxCapacity: number;
-  defaultReservationMinutes: number | null;
-  shape: RestaurantTableShape;
-  isActive: boolean;
-}
-
-export interface RestaurantSetupSnapshot {
-  companyId: string;
-  branches: RestaurantBranchDetail[];
-  floors: RestaurantFloorDetail[];
-  areas: RestaurantAreaDetail[];
-  tables: RestaurantTableDetail[];
-  floorPlans: RestaurantFloorPlanSummary[];
-}
-
-export interface RestaurantAreaLayoutDetail {
-  areaId: string;
-  areaName: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  rotationDegrees: number;
-  zIndex: number;
-}
-
-export interface RestaurantTableSeatLayoutDetail {
-  seatNumber: number;
-  x: number;
-  y: number;
-  rotationDegrees: number;
-}
-
-export interface RestaurantTableLayoutDetail {
-  tableId: string;
-  tableLabel: string;
-  areaId: string | null;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  rotationDegrees: number;
-  shape: RestaurantTableShape;
-  zIndex: number;
-  seatLayouts: RestaurantTableSeatLayoutDetail[];
-}
-
-export interface RestaurantFloorPlanDetail extends RestaurantFloorPlanSummary {
-  areaLayouts: RestaurantAreaLayoutDetail[];
-  tableLayouts: RestaurantTableLayoutDetail[];
-}
-
-export interface RestaurantTableStatusDetail {
-  tableId: string;
-  label: string;
-  areaId: string | null;
-  status: RestaurantTableVisualStatus;
-  reason: string | null;
-  reservationId: string | null;
-}
-
-export interface RestaurantFloorPlanStatusMap {
-  floorPlanId: string;
-  at: string;
-  tables: RestaurantTableStatusDetail[];
-}
-
-export interface RestaurantTableBlockDetail {
-  id: string;
-  branchId: string;
-  floorId: string | null;
-  areaId: string | null;
-  tableId: string | null;
-  startAt: string;
-  endAt: string;
-  reason: string | null;
-  isActive: boolean;
-}
-
-export interface RestaurantDashboardMetric {
-  key: string;
-  label: string;
-  value: number;
-}
-
-export interface RestaurantOccupancyByHourPoint {
-  hour: number;
-  reservationCount: number;
-  occupiedCovers: number;
-  occupancyPercent: number;
-}
-
-export interface RestaurantUpcomingReservationSummary {
-  reservationId: string;
-  startAt: string;
-  endAt: string;
-  customerName: string;
-  partySize: number;
-  status: RestaurantReservationStatus;
-  tableLabels: string[];
-}
-
-export interface RestaurantDashboardSummary {
-  branchId: string;
-  date: string;
-  metrics: RestaurantDashboardMetric[];
-  occupancyByHour: RestaurantOccupancyByHourPoint[];
-  upcomingReservations: RestaurantUpcomingReservationSummary[];
-}
-
-export interface RestaurantOperationErrorResponse {
-  code: string;
-  message: string;
-}
+export type RestaurantAreaType = number;

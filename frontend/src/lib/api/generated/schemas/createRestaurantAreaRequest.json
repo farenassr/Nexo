@@ -1,0 +1,16 @@
+{
+  "required": ["branchId", "floorId", "name", "type", "sortOrder"],
+  "type": "object",
+  "properties": {
+    "branchId": { "type": "string", "format": "uuid" },
+    "floorId": { "type": "string", "format": "uuid" },
+    "name": { "type": "string" },
+    "type": { "type": "integer", "x-readme-ref-name": "RestaurantAreaType" },
+    "sortOrder": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": "integer",
+      "format": "int32"
+    }
+  },
+  "x-readme-ref-name": "CreateRestaurantAreaRequest"
+}

@@ -6,7 +6,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.Setup;
 
 public sealed class CreateRestaurantFloorEndpoint(
     RestaurantAccessService accessService,
-    RestaurantSetupService setupService) : Endpoint<CreateRestaurantFloorRequest, object>
+    RestaurantSetupService setupService) : Endpoint<CreateRestaurantFloorRequest, RestaurantFloorDetail>
 {
     public override void Configure()
     {
@@ -26,10 +26,10 @@ public sealed class CreateRestaurantFloorEndpoint(
         var result = await setupService.CreateFloorAsync(request, cancellationToken);
         if (!result.Succeeded)
         {
-            await Send.ResponseAsync(
+            await HttpContext.Response.SendAsync(
                 RestaurantSetupEndpointResponses.FromSetupFailure(result),
                 RestaurantSetupEndpointResponses.ToStatusCode(result.FailureCode),
-                cancellationToken);
+                cancellation: cancellationToken);
             return;
         }
 

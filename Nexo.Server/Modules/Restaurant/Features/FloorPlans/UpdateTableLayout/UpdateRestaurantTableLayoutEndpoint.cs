@@ -6,7 +6,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.FloorPlans.UpdateTableLayout;
 
 public sealed class UpdateRestaurantTableLayoutEndpoint(
     RestaurantAccessService accessService,
-    RestaurantFloorPlanService floorPlanService) : Endpoint<UpdateRestaurantTableLayoutEndpointRequest, object>
+    RestaurantFloorPlanService floorPlanService) : Endpoint<UpdateRestaurantTableLayoutEndpointRequest, RestaurantFloorPlanDetail>
 {
     public override void Configure()
     {
@@ -46,10 +46,10 @@ public sealed class UpdateRestaurantTableLayoutEndpoint(
 
         if (!result.Succeeded)
         {
-            await Send.ResponseAsync(
+            await HttpContext.Response.SendAsync(
                 RestaurantFloorPlanEndpointResponses.FromFloorPlanFailure(result),
                 RestaurantFloorPlanEndpointResponses.ToStatusCode(result.FailureCode),
-                cancellationToken);
+                cancellation: cancellationToken);
             return;
         }
 

@@ -1,7 +1,41 @@
+import {
+  nexoServerModulesRestaurantFeaturesAvailabilitySearchSearchRestaurantAvailabilityEndpoint,
+  nexoServerModulesRestaurantFeaturesDashboardGetRestaurantDashboardGetRestaurantDashboardEndpoint,
+  nexoServerModulesRestaurantFeaturesFloorPlansGetDetailsGetRestaurantFloorPlanEndpoint,
+  nexoServerModulesRestaurantFeaturesFloorPlansListListRestaurantFloorPlansEndpoint,
+  nexoServerModulesRestaurantFeaturesFloorPlansSaveSaveRestaurantFloorPlanEndpoint,
+  nexoServerModulesRestaurantFeaturesFloorPlansStatusMapGetRestaurantFloorPlanStatusMapEndpoint,
+  nexoServerModulesRestaurantFeaturesFloorPlansUpdateTableLayoutUpdateRestaurantTableLayoutEndpoint,
+  nexoServerModulesRestaurantFeaturesGetContextRestaurantContextEndpoint,
+  nexoServerModulesRestaurantFeaturesReservationsCancelCancelRestaurantReservationEndpoint,
+  nexoServerModulesRestaurantFeaturesReservationsCreateCreateRestaurantReservationEndpoint,
+  nexoServerModulesRestaurantFeaturesReservationsListByTableListRestaurantTableReservationsEndpoint,
+  nexoServerModulesRestaurantFeaturesReservationsListDailyListRestaurantReservationsEndpoint,
+  nexoServerModulesRestaurantFeaturesReservationsUpdateStatusUpdateRestaurantReservationStatusEndpoint,
+  nexoServerModulesRestaurantFeaturesSetupCreateRestaurantAreaEndpoint,
+  nexoServerModulesRestaurantFeaturesSetupCreateRestaurantBranchEndpoint,
+  nexoServerModulesRestaurantFeaturesSetupCreateRestaurantFloorEndpoint,
+  nexoServerModulesRestaurantFeaturesSetupCreateRestaurantFloorPlanEndpoint,
+  nexoServerModulesRestaurantFeaturesSetupCreateRestaurantTableEndpoint,
+  nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantAreaEndpoint,
+  nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantBranchEndpoint,
+  nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorEndpoint,
+  nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpoint,
+  nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint,
+  nexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint,
+  nexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpoint,
+} from '../../../lib/api/generated/clients';
+import { ApiClientError } from '../../../lib/api/generatedClient';
 import type {
-  RestaurantAvailabilitySearchResult,
+  CreateRestaurantAreaRequest,
+  CreateRestaurantBranchRequest,
+  CreateRestaurantFloorPlanRequest,
+  CreateRestaurantFloorRequest,
+  CreateRestaurantReservationEndpointRequest,
+  CreateRestaurantTableBlockEndpointRequest,
+  CreateRestaurantTableRequest,
   RestaurantAreaDetail,
-  RestaurantAreaType,
+  RestaurantAvailabilitySearchResult,
   RestaurantBranchDetail,
   RestaurantContextResponse,
   RestaurantDashboardSummary,
@@ -9,16 +43,17 @@ import type {
   RestaurantFloorPlanDetail,
   RestaurantFloorPlanStatusMap,
   RestaurantFloorPlanSummary,
-  RestaurantOperationErrorResponse,
   RestaurantReservationDetail,
-  RestaurantReservationSource,
   RestaurantReservationStatus,
-  RestaurantTableShape,
+  RestaurantSetupSnapshot,
   RestaurantTableBlockDetail,
   RestaurantTableDetail,
-  RestaurantSetupSnapshot,
-} from '../types';
-import { bffFetch } from '../../../lib/api/bffFetch';
+  SaveRestaurantFloorPlanEndpointRequest,
+  SaveRestaurantAreaLayoutRequest,
+  SaveRestaurantTableSeatLayoutRequest,
+  UpdateRestaurantTableLayoutEndpointRequest,
+} from '../../../lib/api/generated/types';
+import type { RestaurantReservationSource, RestaurantTableShape } from '../types';
 
 export class RestaurantApiError extends Error {
   public readonly code: string;
@@ -65,88 +100,27 @@ export interface UpdateRestaurantReservationStatusInput {
   reason: string | null;
 }
 
-export interface CreateRestaurantTableBlockInput {
-  branchId: string;
-  floorId: string | null;
-  areaId: string | null;
-  tableId: string | null;
-  startAt: string;
-  endAt: string;
-  reason: string | null;
-}
-
-export interface CreateRestaurantBranchInput {
-  name: string;
-  address: string | null;
-  timeZone: string;
-}
-
-export interface CreateRestaurantFloorInput {
-  branchId: string;
-  name: string;
-  sortOrder: number;
-}
-
-export interface CreateRestaurantAreaInput {
-  branchId: string;
-  floorId: string;
-  name: string;
-  type: RestaurantAreaType;
-  sortOrder: number;
-}
-
-export interface CreateRestaurantTableInput {
-  branchId: string;
-  floorId: string;
-  areaId: string | null;
-  label: string;
-  minCapacity: number;
-  maxCapacity: number;
-  defaultReservationMinutes: number | null;
-  shape: RestaurantTableShape;
-}
-
-export interface CreateRestaurantFloorPlanInput {
-  branchId: string;
-  floorId: string;
-  name: string;
-  canvasWidth: number;
-  canvasHeight: number;
-  gridSize: number | null;
-  isActive: boolean;
-}
+export type CreateRestaurantTableBlockInput = CreateRestaurantTableBlockEndpointRequest;
+export type CreateRestaurantBranchInput = CreateRestaurantBranchRequest;
+export type CreateRestaurantFloorInput = CreateRestaurantFloorRequest;
+export type CreateRestaurantAreaInput = CreateRestaurantAreaRequest;
+export type CreateRestaurantTableInput = CreateRestaurantTableRequest;
+export type CreateRestaurantFloorPlanInput = CreateRestaurantFloorPlanRequest;
 
 export interface GetRestaurantDashboardInput {
   branchId: string;
   date: string;
 }
 
-export interface SaveRestaurantFloorPlanInput {
-  name: string;
-  canvasWidth: number;
-  canvasHeight: number;
-  gridSize: number | null;
-  isActive: boolean;
-  areaLayouts: SaveRestaurantAreaLayoutInput[];
-  tableLayouts: SaveRestaurantTableLayoutInput[];
-}
+export type SaveRestaurantFloorPlanInput = Required<
+  Pick<
+    SaveRestaurantFloorPlanEndpointRequest,
+    'name' | 'canvasWidth' | 'canvasHeight' | 'gridSize' | 'isActive' | 'areaLayouts' | 'tableLayouts'
+  >
+>;
 
-export interface SaveRestaurantAreaLayoutInput {
-  areaId: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  rotationDegrees: number;
-  zIndex: number;
-}
-
-export interface SaveRestaurantTableSeatLayoutInput {
-  seatNumber: number;
-  x: number;
-  y: number;
-  rotationDegrees: number;
-}
+export type SaveRestaurantAreaLayoutInput = SaveRestaurantAreaLayoutRequest;
+export type SaveRestaurantTableSeatLayoutInput = SaveRestaurantTableSeatLayoutRequest;
 
 export interface SaveRestaurantTableLayoutInput {
   tableId: string;
@@ -160,251 +134,196 @@ export interface SaveRestaurantTableLayoutInput {
   seatLayouts: SaveRestaurantTableSeatLayoutInput[];
 }
 
-export type UpdateRestaurantTableLayoutInput = Omit<SaveRestaurantTableLayoutInput, 'tableId'>;
+export type UpdateRestaurantTableLayoutInput = Required<
+  Pick<UpdateRestaurantTableLayoutEndpointRequest, 'x' | 'y' | 'width' | 'height' | 'rotationDegrees' | 'shape' | 'zIndex' | 'seatLayouts'>
+>;
 
-export async function getRestaurantContext(): Promise<RestaurantContextResponse> {
-  return apiFetch('/v1/restaurant/context');
+export function getRestaurantContext(): Promise<RestaurantContextResponse> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesGetContextRestaurantContextEndpoint());
 }
 
-export async function getRestaurantDashboard(input: GetRestaurantDashboardInput): Promise<RestaurantDashboardSummary> {
-  const search = new URLSearchParams({
-    branchId: input.branchId,
-    date: input.date,
-  });
-
-  return apiFetch(`/v1/restaurant/dashboard?${search.toString()}`);
+export function getRestaurantDashboard(input: GetRestaurantDashboardInput): Promise<RestaurantDashboardSummary> {
+  return restaurantCall(() =>
+    nexoServerModulesRestaurantFeaturesDashboardGetRestaurantDashboardGetRestaurantDashboardEndpoint({
+      params: input,
+    }),
+  );
 }
 
-export async function getRestaurantSetup(): Promise<RestaurantSetupSnapshot> {
-  return apiFetch('/v1/restaurant/setup');
+export function getRestaurantSetup(): Promise<RestaurantSetupSnapshot> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint());
 }
 
-export async function createRestaurantBranch(
-  input: CreateRestaurantBranchInput,
-): Promise<RestaurantBranchDetail> {
-  return apiFetch('/v1/restaurant/setup/branches', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+export function createRestaurantBranch(input: CreateRestaurantBranchInput): Promise<RestaurantBranchDetail> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesSetupCreateRestaurantBranchEndpoint({ data: input }));
 }
 
-export async function createRestaurantFloor(input: CreateRestaurantFloorInput): Promise<RestaurantFloorDetail> {
-  return apiFetch('/v1/restaurant/setup/floors', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+export function createRestaurantFloor(input: CreateRestaurantFloorInput): Promise<RestaurantFloorDetail> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesSetupCreateRestaurantFloorEndpoint({ data: input }));
 }
 
-export async function createRestaurantArea(input: CreateRestaurantAreaInput): Promise<RestaurantAreaDetail> {
-  return apiFetch('/v1/restaurant/setup/areas', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+export function createRestaurantArea(input: CreateRestaurantAreaInput): Promise<RestaurantAreaDetail> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesSetupCreateRestaurantAreaEndpoint({ data: input }));
 }
 
-export async function createRestaurantTable(input: CreateRestaurantTableInput): Promise<RestaurantTableDetail> {
-  return apiFetch('/v1/restaurant/setup/tables', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+export function createRestaurantTable(input: CreateRestaurantTableInput): Promise<RestaurantTableDetail> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesSetupCreateRestaurantTableEndpoint({ data: input }));
 }
 
-export async function createRestaurantFloorPlan(
-  input: CreateRestaurantFloorPlanInput,
-): Promise<RestaurantFloorPlanSummary> {
-  return apiFetch('/v1/restaurant/setup/floor-plans', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+export function createRestaurantFloorPlan(input: CreateRestaurantFloorPlanInput): Promise<RestaurantFloorPlanSummary> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesSetupCreateRestaurantFloorPlanEndpoint({ data: input }));
 }
 
-export async function deleteRestaurantBranch(branchId: string): Promise<void> {
-  return apiFetch(`/v1/restaurant/setup/branches/${branchId}`, { method: 'DELETE' });
+export function deleteRestaurantBranch(branchId: string): Promise<void> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantBranchEndpoint({ branchId })).then(toVoid);
 }
 
-export async function deleteRestaurantFloor(floorId: string): Promise<void> {
-  return apiFetch(`/v1/restaurant/setup/floors/${floorId}`, { method: 'DELETE' });
+export function deleteRestaurantFloor(floorId: string): Promise<void> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorEndpoint({ floorId })).then(toVoid);
 }
 
-export async function deleteRestaurantArea(areaId: string): Promise<void> {
-  return apiFetch(`/v1/restaurant/setup/areas/${areaId}`, { method: 'DELETE' });
+export function deleteRestaurantArea(areaId: string): Promise<void> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantAreaEndpoint({ areaId })).then(toVoid);
 }
 
-export async function deleteRestaurantTable(tableId: string): Promise<void> {
-  return apiFetch(`/v1/restaurant/setup/tables/${tableId}`, { method: 'DELETE' });
+export function deleteRestaurantTable(tableId: string): Promise<void> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint({ tableId })).then(toVoid);
 }
 
-export async function deleteRestaurantFloorPlan(floorPlanId: string): Promise<void> {
-  return apiFetch(`/v1/restaurant/setup/floor-plans/${floorPlanId}`, { method: 'DELETE' });
+export function deleteRestaurantFloorPlan(floorPlanId: string): Promise<void> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpoint({ floorPlanId })).then(toVoid);
 }
 
-export async function listRestaurantReservations(
-  input: ListRestaurantReservationsInput,
-): Promise<RestaurantReservationDetail[]> {
-  const search = new URLSearchParams({
-    branchId: input.branchId,
-    date: input.date,
-  });
-  if (input.status !== null) {
-    search.set('status', String(input.status));
-  }
-
-  return apiFetch(`/v1/restaurant/reservations?${search.toString()}`);
+export function listRestaurantReservations(input: ListRestaurantReservationsInput): Promise<RestaurantReservationDetail[]> {
+  return restaurantCall(() =>
+    nexoServerModulesRestaurantFeaturesReservationsListDailyListRestaurantReservationsEndpoint({
+      params: {
+        branchId: input.branchId,
+        date: input.date,
+        status: input.status ?? undefined,
+      },
+    }),
+  );
 }
 
-export async function searchRestaurantAvailability(
+export function searchRestaurantAvailability(
   input: SearchRestaurantAvailabilityInput,
 ): Promise<RestaurantAvailabilitySearchResult> {
-  return apiFetch('/v1/restaurant/availability/search', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+  return restaurantCall(() =>
+    nexoServerModulesRestaurantFeaturesAvailabilitySearchSearchRestaurantAvailabilityEndpoint({ data: input }),
+  );
 }
 
-export async function createRestaurantReservation(
-  input: CreateRestaurantReservationInput,
-): Promise<RestaurantReservationDetail> {
-  return apiFetch('/v1/restaurant/reservations', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+export function createRestaurantReservation(input: CreateRestaurantReservationInput): Promise<RestaurantReservationDetail> {
+  return restaurantCall(() =>
+    nexoServerModulesRestaurantFeaturesReservationsCreateCreateRestaurantReservationEndpoint({
+      data: input as CreateRestaurantReservationEndpointRequest,
+    }),
+  );
 }
 
-export async function updateRestaurantReservationStatus(
+export function updateRestaurantReservationStatus(
   input: UpdateRestaurantReservationStatusInput,
 ): Promise<RestaurantReservationDetail> {
-  return apiFetch(`/v1/restaurant/reservations/${input.reservationId}/status`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      status: input.status,
-      reason: input.reason,
+  return restaurantCall(() =>
+    nexoServerModulesRestaurantFeaturesReservationsUpdateStatusUpdateRestaurantReservationStatusEndpoint({
+      reservationId: input.reservationId,
+      data: {
+        status: input.status,
+        reason: input.reason,
+      },
     }),
-  });
+  );
 }
 
-export async function cancelRestaurantReservation(
+export function cancelRestaurantReservation(
   reservationId: string,
   reason: string | null,
 ): Promise<RestaurantReservationDetail> {
-  return apiFetch(`/v1/restaurant/reservations/${reservationId}/cancel`, {
-    method: 'POST',
-    body: JSON.stringify({ reason }),
-  });
+  return restaurantCall(() =>
+    nexoServerModulesRestaurantFeaturesReservationsCancelCancelRestaurantReservationEndpoint({
+      reservationId,
+      data: { reason },
+    }),
+  );
 }
 
-export async function listRestaurantTableReservations(
-  tableId: string,
-  date: string,
-): Promise<RestaurantReservationDetail[]> {
-  const search = new URLSearchParams({ date });
-  return apiFetch(`/v1/restaurant/tables/${tableId}/reservations?${search.toString()}`);
+export function listRestaurantTableReservations(tableId: string, date: string): Promise<RestaurantReservationDetail[]> {
+  return restaurantCall(() =>
+    nexoServerModulesRestaurantFeaturesReservationsListByTableListRestaurantTableReservationsEndpoint({
+      tableId,
+      params: { date },
+    }),
+  );
 }
 
-export async function createRestaurantTableBlock(
-  input: CreateRestaurantTableBlockInput,
-): Promise<RestaurantTableBlockDetail> {
-  return apiFetch('/v1/restaurant/table-blocks', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+export function createRestaurantTableBlock(input: CreateRestaurantTableBlockInput): Promise<RestaurantTableBlockDetail> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpoint({ data: input }));
 }
 
-export async function listRestaurantFloorPlans(
-  branchId: string,
-  floorId: string,
-): Promise<RestaurantFloorPlanSummary[]> {
-  const search = new URLSearchParams({ branchId, floorId });
-  return apiFetch(`/v1/restaurant/floor-plans?${search.toString()}`);
+export function listRestaurantFloorPlans(branchId: string, floorId: string): Promise<RestaurantFloorPlanSummary[]> {
+  return restaurantCall(() =>
+    nexoServerModulesRestaurantFeaturesFloorPlansListListRestaurantFloorPlansEndpoint({
+      params: { branchId, floorId },
+    }),
+  );
 }
 
-export async function getRestaurantFloorPlan(floorPlanId: string): Promise<RestaurantFloorPlanDetail> {
-  return apiFetch(`/v1/restaurant/floor-plans/${floorPlanId}`);
+export function getRestaurantFloorPlan(floorPlanId: string): Promise<RestaurantFloorPlanDetail> {
+  return restaurantCall(() => nexoServerModulesRestaurantFeaturesFloorPlansGetDetailsGetRestaurantFloorPlanEndpoint({ floorPlanId }));
 }
 
-export async function getRestaurantFloorPlanStatusMap(
+export function getRestaurantFloorPlanStatusMap(
   floorPlanId: string,
   at: string,
   areaId: string | null,
 ): Promise<RestaurantFloorPlanStatusMap> {
-  const search = new URLSearchParams({ at });
-  if (areaId) {
-    search.set('areaId', areaId);
-  }
-
-  return apiFetch(`/v1/restaurant/floor-plans/${floorPlanId}/status-map?${search.toString()}`);
+  return restaurantCall(() =>
+    nexoServerModulesRestaurantFeaturesFloorPlansStatusMapGetRestaurantFloorPlanStatusMapEndpoint({
+      floorPlanId,
+      params: { at, areaId },
+    }),
+  );
 }
 
-export async function saveRestaurantFloorPlan(
+export function saveRestaurantFloorPlan(
   floorPlanId: string,
   input: SaveRestaurantFloorPlanInput,
 ): Promise<RestaurantFloorPlanDetail> {
-  return apiFetch(`/v1/restaurant/floor-plans/${floorPlanId}`, {
-    method: 'PUT',
-    body: JSON.stringify(input),
-  });
+  return restaurantCall(() =>
+    nexoServerModulesRestaurantFeaturesFloorPlansSaveSaveRestaurantFloorPlanEndpoint({
+      floorPlanId,
+      data: input,
+    }),
+  );
 }
 
-export async function updateRestaurantTableLayout(
+export function updateRestaurantTableLayout(
   floorPlanId: string,
   tableId: string,
   input: UpdateRestaurantTableLayoutInput,
 ): Promise<RestaurantFloorPlanDetail> {
-  return apiFetch(`/v1/restaurant/floor-plans/${floorPlanId}/tables/${tableId}/layout`, {
-    method: 'PUT',
-    body: JSON.stringify(input),
-  });
-}
-
-async function apiFetch<TResponse>(path: string, init: RequestInit = {}): Promise<TResponse> {
-  let response: Response;
-  try {
-    response = await bffFetch(path, {
-      method: init.method ?? 'GET',
-      ...init,
-      headers: {
-        Accept: 'application/json',
-        ...(init.body ? { 'Content-Type': 'application/json' } : {}),
-        ...init.headers,
-      },
-    });
-  } catch {
-    throw new RestaurantApiError('NetworkError', 'No se pudo conectar con el API de restaurante.', 0);
-  }
-
-  if (!response.ok) {
-    throw await toApiError(response);
-  }
-
-  if (response.status === 204) {
-    return undefined as TResponse;
-  }
-
-  try {
-    return (await response.json()) as TResponse;
-  } catch {
-    throw new RestaurantApiError('InvalidResponse', 'La respuesta del API de restaurante no es valida.', response.status);
-  }
-}
-
-async function toApiError(response: Response): Promise<RestaurantApiError> {
-  const fallback = new RestaurantApiError(
-    `Http${response.status}`,
-    response.statusText || 'Restaurant request failed.',
-    response.status,
+  return restaurantCall(() =>
+    nexoServerModulesRestaurantFeaturesFloorPlansUpdateTableLayoutUpdateRestaurantTableLayoutEndpoint({
+      floorPlanId,
+      tableId,
+      data: input,
+    }),
   );
+}
 
-  if (!response.headers.get('Content-Type')?.includes('application/json')) {
-    return fallback;
-  }
-
+async function restaurantCall<T>(request: () => Promise<T>): Promise<T> {
   try {
-    const payload = (await response.json()) as Partial<RestaurantOperationErrorResponse>;
-    return new RestaurantApiError(
-      payload.code || fallback.code,
-      payload.message || fallback.message,
-      response.status,
-    );
-  } catch {
-    return fallback;
+    return await request();
+  } catch (error) {
+    if (error instanceof ApiClientError) {
+      throw new RestaurantApiError(error.code, error.message, error.status);
+    }
+
+    throw error;
   }
+}
+
+function toVoid() {
+  return undefined;
 }

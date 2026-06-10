@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "branchId": { "type": "string", "format": "uuid" },
+    "date": { "type": "string", "format": "date" },
+    "status": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "integer",
+          "x-readme-ref-name": "RestaurantReservationStatus"
+        }
+      ]
+    }
+  },
+  "x-readme-ref-name": "ListRestaurantReservationsEndpointRequest"
+}

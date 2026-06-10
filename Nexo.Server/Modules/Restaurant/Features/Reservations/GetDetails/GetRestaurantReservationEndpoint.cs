@@ -7,7 +7,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.Reservations.GetDetails;
 
 public sealed class GetRestaurantReservationEndpoint(
     RestaurantAccessService accessService,
-    RestaurantReservationService reservationService) : Endpoint<GetRestaurantReservationEndpointRequest, object>
+    RestaurantReservationService reservationService) : Endpoint<GetRestaurantReservationEndpointRequest, RestaurantReservationDetail>
 {
     public override void Configure()
     {

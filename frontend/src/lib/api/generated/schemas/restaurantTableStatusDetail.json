@@ -1,0 +1,23 @@
+{
+  "required": [
+    "tableId",
+    "label",
+    "areaId",
+    "status",
+    "reason",
+    "reservationId"
+  ],
+  "type": "object",
+  "properties": {
+    "tableId": { "type": "string", "format": "uuid" },
+    "label": { "type": "string" },
+    "areaId": { "type": ["null", "string"], "format": "uuid" },
+    "status": {
+      "type": "integer",
+      "x-readme-ref-name": "RestaurantTableVisualStatus"
+    },
+    "reason": { "type": ["null", "string"] },
+    "reservationId": { "type": ["null", "string"], "format": "uuid" }
+  },
+  "x-readme-ref-name": "RestaurantTableStatusDetail"
+}

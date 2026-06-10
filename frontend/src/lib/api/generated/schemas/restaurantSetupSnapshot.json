@@ -1,0 +1,176 @@
+{
+  "required": [
+    "companyId",
+    "branches",
+    "floors",
+    "areas",
+    "tables",
+    "floorPlans"
+  ],
+  "type": "object",
+  "properties": {
+    "companyId": { "type": "string", "format": "uuid" },
+    "branches": {
+      "type": "array",
+      "items": {
+        "required": [
+          "id",
+          "companyId",
+          "name",
+          "address",
+          "timeZone",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "companyId": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "address": { "type": ["null", "string"] },
+          "timeZone": { "type": "string" },
+          "isActive": { "type": "boolean" }
+        },
+        "x-readme-ref-name": "RestaurantBranchDetail"
+      }
+    },
+    "floors": {
+      "type": "array",
+      "items": {
+        "required": ["id", "branchId", "name", "sortOrder", "isActive"],
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "branchId": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "sortOrder": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "isActive": { "type": "boolean" }
+        },
+        "x-readme-ref-name": "RestaurantFloorDetail"
+      }
+    },
+    "areas": {
+      "type": "array",
+      "items": {
+        "required": [
+          "id",
+          "branchId",
+          "floorId",
+          "name",
+          "type",
+          "sortOrder",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "branchId": { "type": "string", "format": "uuid" },
+          "floorId": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "type": {
+            "type": "integer",
+            "x-readme-ref-name": "RestaurantAreaType"
+          },
+          "sortOrder": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "isActive": { "type": "boolean" }
+        },
+        "x-readme-ref-name": "RestaurantAreaDetail"
+      }
+    },
+    "tables": {
+      "type": "array",
+      "items": {
+        "required": [
+          "id",
+          "companyId",
+          "branchId",
+          "floorId",
+          "areaId",
+          "label",
+          "minCapacity",
+          "maxCapacity",
+          "defaultReservationMinutes",
+          "shape",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "companyId": { "type": "string", "format": "uuid" },
+          "branchId": { "type": "string", "format": "uuid" },
+          "floorId": { "type": "string", "format": "uuid" },
+          "areaId": { "type": ["null", "string"], "format": "uuid" },
+          "label": { "type": "string" },
+          "minCapacity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxCapacity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "defaultReservationMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["null", "integer"],
+            "format": "int32"
+          },
+          "shape": {
+            "type": "integer",
+            "x-readme-ref-name": "RestaurantTableShape"
+          },
+          "isActive": { "type": "boolean" }
+        },
+        "x-readme-ref-name": "RestaurantTableDetail"
+      }
+    },
+    "floorPlans": {
+      "type": "array",
+      "items": {
+        "required": [
+          "id",
+          "branchId",
+          "floorId",
+          "name",
+          "canvasWidth",
+          "canvasHeight",
+          "gridSize",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "branchId": { "type": "string", "format": "uuid" },
+          "floorId": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "canvasWidth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "canvasHeight": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "gridSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": ["null", "number"],
+            "format": "double"
+          },
+          "isActive": { "type": "boolean" }
+        },
+        "x-readme-ref-name": "RestaurantFloorPlanSummary"
+      }
+    }
+  },
+  "x-readme-ref-name": "RestaurantSetupSnapshot"
+}

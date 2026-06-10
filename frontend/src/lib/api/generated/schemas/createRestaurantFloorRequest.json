@@ -1,0 +1,14 @@
+{
+  "required": ["branchId", "name", "sortOrder"],
+  "type": "object",
+  "properties": {
+    "branchId": { "type": "string", "format": "uuid" },
+    "name": { "type": "string" },
+    "sortOrder": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": "integer",
+      "format": "int32"
+    }
+  },
+  "x-readme-ref-name": "CreateRestaurantFloorRequest"
+}

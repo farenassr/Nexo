@@ -3,6 +3,7 @@ import {
   combineDateAndTime,
   defaultReservationForm,
   defaultSetup,
+  createRestaurantWorkspaceStore,
   optionalText,
   patchRestaurantSetup,
   readStoredSelectedTableId,
@@ -10,6 +11,7 @@ import {
   isGuid,
   normalizeRestaurantSetupScope,
   selectedTableStorageKey,
+  setupStorageKey,
   storeSelectedTableId,
 } from './restaurantWorkspaceState';
 
@@ -101,6 +103,47 @@ describe('restaurantWorkspaceState', () => {
 
     expect(storage.getItem(selectedTableStorageKey)).toBe('table-1');
     expect(readStoredSelectedTableId(storage)).toBe('table-1');
+  });
+
+  it('creates a zustand workspace store that restores and persists setup patches', () => {
+    const storage = new MemoryStorage();
+    storage.setItem(
+      setupStorageKey,
+      JSON.stringify({
+        branchId: '00000000-0000-7000-8000-000000000101',
+        serviceTime: '19:00',
+      }),
+    );
+
+    const store = createRestaurantWorkspaceStore(storage);
+
+    expect(store.getState().setup.branchId).toBe('00000000-0000-7000-8000-000000000101');
+    expect(store.getState().setup.serviceTime).toBe('19:00');
+
+    store.getState().patchSetup({
+      floorId: '00000000-0000-7000-8000-000000000201',
+    });
+
+    expect(JSON.parse(storage.getItem(setupStorageKey) ?? '{}')).toMatchObject({
+      branchId: '00000000-0000-7000-8000-000000000101',
+      floorId: '00000000-0000-7000-8000-000000000201',
+      serviceTime: '19:00',
+    });
+  });
+
+  it('creates a zustand workspace store that persists selected table changes', () => {
+    const storage = new MemoryStorage();
+    const store = createRestaurantWorkspaceStore(storage);
+
+    store.getState().setSelectedTableId('table-1');
+
+    expect(store.getState().selectedTableId).toBe('table-1');
+    expect(storage.getItem(selectedTableStorageKey)).toBe('table-1');
+
+    store.getState().clearSelectedTableId();
+
+    expect(store.getState().selectedTableId).toBeNull();
+    expect(storage.getItem(selectedTableStorageKey)).toBeNull();
   });
 });
 

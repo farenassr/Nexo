@@ -6,7 +6,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.FloorPlans.Save;
 
 public sealed class SaveRestaurantFloorPlanEndpoint(
     RestaurantAccessService accessService,
-    RestaurantFloorPlanService floorPlanService) : Endpoint<SaveRestaurantFloorPlanEndpointRequest, object>
+    RestaurantFloorPlanService floorPlanService) : Endpoint<SaveRestaurantFloorPlanEndpointRequest, RestaurantFloorPlanDetail>
 {
     public override void Configure()
     {
@@ -43,10 +43,10 @@ public sealed class SaveRestaurantFloorPlanEndpoint(
 
         if (!result.Succeeded)
         {
-            await Send.ResponseAsync(
+            await HttpContext.Response.SendAsync(
                 RestaurantFloorPlanEndpointResponses.FromFloorPlanFailure(result),
                 RestaurantFloorPlanEndpointResponses.ToStatusCode(result.FailureCode),
-                cancellationToken);
+                cancellation: cancellationToken);
             return;
         }
 

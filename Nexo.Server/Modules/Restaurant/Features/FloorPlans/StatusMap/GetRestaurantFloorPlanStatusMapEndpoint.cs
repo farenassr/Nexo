@@ -6,7 +6,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.FloorPlans.StatusMap;
 
 public sealed class GetRestaurantFloorPlanStatusMapEndpoint(
     RestaurantAccessService accessService,
-    RestaurantFloorPlanService floorPlanService) : Endpoint<GetRestaurantFloorPlanStatusMapEndpointRequest, object>
+    RestaurantFloorPlanService floorPlanService) : Endpoint<GetRestaurantFloorPlanStatusMapEndpointRequest, RestaurantFloorPlanStatusMap>
 {
     public override void Configure()
     {
@@ -31,10 +31,10 @@ public sealed class GetRestaurantFloorPlanStatusMapEndpoint(
 
         if (request.At == default)
         {
-            await Send.ResponseAsync(
+            await HttpContext.Response.SendAsync(
                 new RestaurantOperationErrorResponse(RestaurantFloorPlanFailureCode.InvalidRequest.ToString(), "The status-map instant is required."),
                 StatusCodes.Status400BadRequest,
-                cancellationToken);
+                cancellation: cancellationToken);
             return;
         }
 

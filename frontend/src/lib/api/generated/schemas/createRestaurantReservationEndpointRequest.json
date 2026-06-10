@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "properties": {
+    "branchId": { "type": "string", "format": "uuid" },
+    "tableIds": {
+      "type": "array",
+      "items": { "type": "string", "format": "uuid" }
+    },
+    "partySize": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": "integer",
+      "format": "int32"
+    },
+    "startAt": { "type": "string", "format": "date-time" },
+    "durationMinutes": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": ["null", "integer"],
+      "format": "int32"
+    },
+    "customerFullName": { "type": "string" },
+    "customerPhone": { "type": ["null", "string"] },
+    "customerEmail": { "type": ["null", "string"] },
+    "source": {
+      "type": "integer",
+      "x-readme-ref-name": "RestaurantReservationSource"
+    },
+    "specialRequests": { "type": ["null", "string"] }
+  },
+  "x-readme-ref-name": "CreateRestaurantReservationEndpointRequest"
+}

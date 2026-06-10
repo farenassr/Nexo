@@ -11,6 +11,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "vitest run",
+    "api:prepare": "node scripts/prepare-openapi.mjs openapi/nexo.raw.openapi.json openapi/nexo.openapi.json",
+    "api:generate": "kubb generate",
+    "api:validate": "cd openapi && kubb validate --input nexo.openapi.json",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -19,10 +22,16 @@
     "lucide-react": "^1.17.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "sonner": "^2.0.7"
+    "sonner": "^2.0.7",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@kubb/cli": "^4.37.12",
+    "@kubb/plugin-client": "^4.37.12",
+    "@kubb/plugin-oas": "^4.37.12",
+    "@kubb/plugin-react-query": "^4.37.12",
+    "@kubb/plugin-ts": "^4.37.12",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
@@ -31,6 +40,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "prettier": "^3.8.4",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.48.1",
     "vite": "^8.0.0",

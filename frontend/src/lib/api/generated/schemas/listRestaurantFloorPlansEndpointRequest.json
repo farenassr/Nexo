@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "properties": {
+    "branchId": { "type": "string", "format": "uuid" },
+    "floorId": { "type": "string", "format": "uuid" }
+  },
+  "x-readme-ref-name": "ListRestaurantFloorPlansEndpointRequest"
+}

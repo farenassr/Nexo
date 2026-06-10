@@ -1,0 +1,99 @@
+{
+  "required": [
+    "branchId",
+    "date",
+    "metrics",
+    "occupancyByHour",
+    "upcomingReservations"
+  ],
+  "type": "object",
+  "properties": {
+    "branchId": { "type": "string", "format": "uuid" },
+    "date": { "type": "string", "format": "date" },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "required": ["key", "label", "value"],
+        "type": "object",
+        "properties": {
+          "key": { "type": "string" },
+          "label": { "type": "string" },
+          "value": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "x-readme-ref-name": "RestaurantDashboardMetric"
+      }
+    },
+    "occupancyByHour": {
+      "type": "array",
+      "items": {
+        "required": [
+          "hour",
+          "reservationCount",
+          "occupiedCovers",
+          "occupancyPercent"
+        ],
+        "type": "object",
+        "properties": {
+          "hour": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "reservationCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "occupiedCovers": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "occupancyPercent": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "x-readme-ref-name": "RestaurantOccupancyByHourPoint"
+      }
+    },
+    "upcomingReservations": {
+      "type": "array",
+      "items": {
+        "required": [
+          "reservationId",
+          "startAt",
+          "endAt",
+          "customerName",
+          "partySize",
+          "status",
+          "tableLabels"
+        ],
+        "type": "object",
+        "properties": {
+          "reservationId": { "type": "string", "format": "uuid" },
+          "startAt": { "type": "string", "format": "date-time" },
+          "endAt": { "type": "string", "format": "date-time" },
+          "customerName": { "type": "string" },
+          "partySize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "integer",
+            "x-readme-ref-name": "RestaurantReservationStatus"
+          },
+          "tableLabels": { "type": "array", "items": { "type": "string" } }
+        },
+        "x-readme-ref-name": "RestaurantUpcomingReservationSummary"
+      }
+    }
+  },
+  "x-readme-ref-name": "RestaurantDashboardSummary"
+}

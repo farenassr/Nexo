@@ -6,7 +6,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.Dashboard.GetRestaurantDashboa
 
 public sealed class GetRestaurantDashboardEndpoint(
     RestaurantAccessService accessService,
-    RestaurantDashboardService dashboardService) : Endpoint<RestaurantDashboardRequest, object>
+    RestaurantDashboardService dashboardService) : Endpoint<RestaurantDashboardRequest, RestaurantDashboardSummary>
 {
     public override void Configure()
     {
@@ -31,10 +31,10 @@ public sealed class GetRestaurantDashboardEndpoint(
 
         if (request.BranchId == Guid.Empty || request.Date == default)
         {
-            await Send.ResponseAsync(
+            await HttpContext.Response.SendAsync(
                 new RestaurantOperationErrorResponse("InvalidRequest", "Branch and date are required."),
                 StatusCodes.Status400BadRequest,
-                cancellationToken);
+                cancellation: cancellationToken);
             return;
         }
 

@@ -7,7 +7,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.Availability.Search;
 
 public sealed class SearchRestaurantAvailabilityEndpoint(
     RestaurantAccessService accessService,
-    RestaurantAvailabilityService availabilityService) : Endpoint<SearchRestaurantAvailabilityEndpointRequest, object>
+    RestaurantAvailabilityService availabilityService) : Endpoint<SearchRestaurantAvailabilityEndpointRequest, RestaurantAvailabilitySearchResult>
 {
     public override void Configure()
     {

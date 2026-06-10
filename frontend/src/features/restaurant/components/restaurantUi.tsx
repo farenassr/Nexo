@@ -76,6 +76,8 @@ export function statusLabel(status: RestaurantReservationStatus) {
       return labels.status.cancelled;
     case RestaurantReservationStatus.NoShow:
       return labels.status.noShow;
+    default:
+      return labels.status.pending;
   }
 }
 
@@ -92,6 +94,8 @@ export function sourceLabel(source: RestaurantReservationSource) {
     case RestaurantReservationSource.Partner:
       return labels.sources.partner;
     case RestaurantReservationSource.Other:
+      return labels.sources.other;
+    default:
       return labels.sources.other;
   }
 }
@@ -110,6 +114,8 @@ export function visualStatusLabel(status: RestaurantTableVisualStatus) {
       return labels.status.cleaning;
     case RestaurantTableVisualStatus.Available:
       return labels.status.available;
+    default:
+      return labels.status.available;
   }
 }
 
@@ -126,6 +132,8 @@ export function visualStatusToken(status: RestaurantTableVisualStatus) {
     case RestaurantTableVisualStatus.Cleaning:
       return 'cleaning';
     case RestaurantTableVisualStatus.Available:
+      return 'available';
+    default:
       return 'available';
   }
 }

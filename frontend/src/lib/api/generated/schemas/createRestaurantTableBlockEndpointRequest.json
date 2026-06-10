@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "properties": {
+    "branchId": { "type": "string", "format": "uuid" },
+    "floorId": { "type": ["null", "string"], "format": "uuid" },
+    "areaId": { "type": ["null", "string"], "format": "uuid" },
+    "tableId": { "type": ["null", "string"], "format": "uuid" },
+    "startAt": { "type": "string", "format": "date-time" },
+    "endAt": { "type": "string", "format": "date-time" },
+    "reason": { "type": ["null", "string"] }
+  },
+  "x-readme-ref-name": "CreateRestaurantTableBlockEndpointRequest"
+}

@@ -1,0 +1,5 @@
+{
+  "type": "object",
+  "properties": { "floorPlanId": { "type": "string", "format": "uuid" } },
+  "x-readme-ref-name": "GetRestaurantFloorPlanEndpointRequest"
+}

@@ -1,4 +1,6 @@
-import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import { useStore } from 'zustand';
+import { createStore, type StoreApi } from 'zustand/vanilla';
 
 export interface RestaurantSetup {
   branchId: string;
@@ -46,12 +48,59 @@ export const defaultReservationForm: ReservationFormState = {
   specialRequests: '',
 };
 
-export function useStoredSetup(): [RestaurantSetup, Dispatch<SetStateAction<RestaurantSetup>>] {
-  const [setup, setSetup] = useState<RestaurantSetup>(() => readStoredSetup(window.localStorage.getItem(setupStorageKey)));
+export interface RestaurantWorkspaceStore {
+  setup: RestaurantSetup;
+  selectedTableId: string | null;
+  setSetup: Dispatch<SetStateAction<RestaurantSetup>>;
+  patchSetup: (patch: Partial<RestaurantSetup>) => void;
+  setSelectedTableId: (tableId: string) => void;
+  clearSelectedTableId: () => void;
+}
 
-  useEffect(() => {
-    window.localStorage.setItem(setupStorageKey, JSON.stringify(setup));
-  }, [setup]);
+export type RestaurantWorkspaceStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
+
+export function createRestaurantWorkspaceStore(
+  storage: RestaurantWorkspaceStorage = getBrowserStorage(),
+): StoreApi<RestaurantWorkspaceStore> {
+  return createStore<RestaurantWorkspaceStore>((set, get) => ({
+    setup: readStoredSetup(storage.getItem(setupStorageKey)),
+    selectedTableId: readStoredSelectedTableId(storage),
+    setSetup: (nextSetup) => {
+      const setup = typeof nextSetup === 'function' ? nextSetup(get().setup) : nextSetup;
+      persistSetup(storage, setup);
+      set({ setup });
+    },
+    patchSetup: (patch) => {
+      const setup = patchRestaurantSetup(get().setup, patch);
+      persistSetup(storage, setup);
+      set({ setup });
+    },
+    setSelectedTableId: (tableId) => {
+      storeSelectedTableId(tableId, storage);
+      set({ selectedTableId: tableId });
+    },
+    clearSelectedTableId: () => {
+      storage.removeItem(selectedTableStorageKey);
+      set({ selectedTableId: null });
+    },
+  }));
+}
+
+const noopStorage: RestaurantWorkspaceStorage = {
+  getItem: () => null,
+  setItem: () => undefined,
+  removeItem: () => undefined,
+};
+
+export const restaurantWorkspaceStore = createRestaurantWorkspaceStore();
+
+export function useRestaurantWorkspaceStore<T>(selector: (state: RestaurantWorkspaceStore) => T): T {
+  return useStore(restaurantWorkspaceStore, selector);
+}
+
+export function useStoredSetup(): [RestaurantSetup, Dispatch<SetStateAction<RestaurantSetup>>] {
+  const setup = useRestaurantWorkspaceStore((state) => state.setup);
+  const setSetup = useRestaurantWorkspaceStore((state) => state.setSetup);
 
   return [setup, setSetup];
 }
@@ -111,12 +160,20 @@ export function isGuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.trim());
 }
 
-export function storeSelectedTableId(tableId: string, storage: Storage = window.localStorage) {
+export function storeSelectedTableId(tableId: string, storage: RestaurantWorkspaceStorage = window.localStorage) {
   storage.setItem(selectedTableStorageKey, tableId);
 }
 
-export function readStoredSelectedTableId(storage: Storage = window.localStorage) {
+export function readStoredSelectedTableId(storage: RestaurantWorkspaceStorage = window.localStorage) {
   return storage.getItem(selectedTableStorageKey);
+}
+
+function persistSetup(storage: RestaurantWorkspaceStorage, setup: RestaurantSetup) {
+  storage.setItem(setupStorageKey, JSON.stringify(setup));
+}
+
+function getBrowserStorage(): RestaurantWorkspaceStorage {
+  return globalThis.localStorage ?? noopStorage;
 }
 
 function todayIsoDate() {

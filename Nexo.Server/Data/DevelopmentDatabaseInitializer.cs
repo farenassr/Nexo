@@ -18,7 +18,7 @@ public sealed class DevelopmentDatabaseInitializer(
 
         using var scope = serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<NexoDbContext>();
-        if (dbContext.Database.ProviderName is null)
+        if (!HasDatabaseProvider(dbContext))
         {
             logger.LogInformation("Skipping development database initialization because no EF provider is configured.");
             return;
@@ -72,5 +72,17 @@ public sealed class DevelopmentDatabaseInitializer(
     public Task StopAsync(CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
+    }
+
+    private static bool HasDatabaseProvider(NexoDbContext dbContext)
+    {
+        try
+        {
+            return dbContext.Database.ProviderName is not null;
+        }
+        catch (InvalidOperationException exception) when (exception.Message.Contains("No database provider has been configured", StringComparison.Ordinal))
+        {
+            return false;
+        }
     }
 }

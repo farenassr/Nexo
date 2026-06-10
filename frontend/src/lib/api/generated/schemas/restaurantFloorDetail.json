@@ -1,0 +1,16 @@
+{
+  "required": ["id", "branchId", "name", "sortOrder", "isActive"],
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "branchId": { "type": "string", "format": "uuid" },
+    "name": { "type": "string" },
+    "sortOrder": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": "integer",
+      "format": "int32"
+    },
+    "isActive": { "type": "boolean" }
+  },
+  "x-readme-ref-name": "RestaurantFloorDetail"
+}

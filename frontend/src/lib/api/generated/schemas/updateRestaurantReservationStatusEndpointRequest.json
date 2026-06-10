@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "integer",
+      "x-readme-ref-name": "RestaurantReservationStatus"
+    },
+    "reason": { "type": ["null", "string"] }
+  },
+  "x-readme-ref-name": "UpdateRestaurantReservationStatusEndpointRequest"
+}

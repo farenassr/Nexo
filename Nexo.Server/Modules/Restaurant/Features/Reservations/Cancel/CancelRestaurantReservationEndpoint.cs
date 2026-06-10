@@ -7,7 +7,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.Reservations.Cancel;
 
 public sealed class CancelRestaurantReservationEndpoint(
     RestaurantAccessService accessService,
-    RestaurantReservationService reservationService) : Endpoint<CancelRestaurantReservationEndpointRequest, object>
+    RestaurantReservationService reservationService) : Endpoint<CancelRestaurantReservationEndpointRequest, RestaurantReservationDetail>
 {
     public override void Configure()
     {
@@ -36,10 +36,10 @@ public sealed class CancelRestaurantReservationEndpoint(
 
         if (!result.Succeeded)
         {
-            await Send.ResponseAsync(
+            await HttpContext.Response.SendAsync(
                 RestaurantEndpointResponses.FromReservationFailure(result),
                 RestaurantEndpointResponses.ToStatusCode(result.FailureCode),
-                cancellationToken);
+                cancellation: cancellationToken);
             return;
         }
 

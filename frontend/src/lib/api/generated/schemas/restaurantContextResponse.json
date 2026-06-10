@@ -1,0 +1,10 @@
+{
+  "required": ["companyId", "moduleKey", "permissionContracts"],
+  "type": "object",
+  "properties": {
+    "companyId": { "type": "string", "format": "uuid" },
+    "moduleKey": { "type": "string" },
+    "permissionContracts": { "type": "array", "items": { "type": "string" } }
+  },
+  "x-readme-ref-name": "RestaurantContextResponse"
+}
