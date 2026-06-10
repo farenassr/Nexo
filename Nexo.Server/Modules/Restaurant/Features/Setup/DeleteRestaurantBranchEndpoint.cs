@@ -10,7 +10,6 @@ public sealed class DeleteRestaurantBranchEndpoint(
     public override void Configure()
     {
         Delete("/v1/restaurant/setup/branches/{BranchId}");
-        AllowAnonymous();
         Summary(summary => summary.Summary = "Deletes a restaurant branch and its setup tree.");
     }
 

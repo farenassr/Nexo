@@ -11,7 +11,6 @@ public sealed class UpdateRestaurantTableLayoutEndpoint(
     public override void Configure()
     {
         Put("/v1/restaurant/floor-plans/{FloorPlanId}/tables/{TableId}/layout");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Updates a restaurant table layout.";

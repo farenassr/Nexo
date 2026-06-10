@@ -10,7 +10,6 @@ public sealed class DeleteRestaurantAreaEndpoint(
     public override void Configure()
     {
         Delete("/v1/restaurant/setup/areas/{AreaId}");
-        AllowAnonymous();
         Summary(summary => summary.Summary = "Deletes a restaurant area.");
     }
 

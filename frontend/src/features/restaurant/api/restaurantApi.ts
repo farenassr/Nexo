@@ -18,6 +18,7 @@ import type {
   RestaurantTableDetail,
   RestaurantSetupSnapshot,
 } from '../types';
+import { bffFetch } from '../../../lib/api/bffFetch';
 
 export class RestaurantApiError extends Error {
   public readonly code: string;
@@ -357,7 +358,7 @@ export async function updateRestaurantTableLayout(
 async function apiFetch<TResponse>(path: string, init: RequestInit = {}): Promise<TResponse> {
   let response: Response;
   try {
-    response = await fetch(path, {
+    response = await bffFetch(path, {
       method: init.method ?? 'GET',
       ...init,
       headers: {

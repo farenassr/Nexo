@@ -11,7 +11,6 @@ public sealed class SaveRestaurantFloorPlanEndpoint(
     public override void Configure()
     {
         Put("/v1/restaurant/floor-plans/{FloorPlanId}");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Saves restaurant floor plan layouts.";

@@ -12,7 +12,6 @@ public sealed class CreateRestaurantReservationEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/reservations");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Creates a restaurant reservation.";

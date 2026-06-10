@@ -11,7 +11,6 @@ public sealed class CreateRestaurantFloorEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/setup/floors");
-        AllowAnonymous();
         Summary(summary => summary.Summary = "Creates a restaurant floor.");
     }
 

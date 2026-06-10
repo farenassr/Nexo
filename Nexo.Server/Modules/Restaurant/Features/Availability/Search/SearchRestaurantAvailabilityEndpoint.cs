@@ -12,7 +12,6 @@ public sealed class SearchRestaurantAvailabilityEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/availability/search");
-        AllowAnonymous();
         Summary(summary =>
         {
             summary.Summary = "Searches available restaurant tables.";

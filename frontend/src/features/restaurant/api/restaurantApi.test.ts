@@ -41,8 +41,27 @@ describe('restaurantApi', () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       '/v1/restaurant/reservations?branchId=00000000-0000-7000-8000-000000000101&date=2026-06-08&status=1',
-      expect.objectContaining({ method: 'GET' }),
+      expect.objectContaining({ method: 'GET', credentials: 'include' }),
     );
+  });
+
+  it('sends credentials and csrf token for mutable restaurant requests', async () => {
+    vi.stubGlobal('document', { cookie: 'nexo.csrf=csrf-456' });
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ id: 'branch-1' }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await createRestaurantBranch({ name: 'Principal', address: null, timeZone: 'UTC' });
+
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/v1/restaurant/setup/branches',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'include',
+      }),
+    );
+    expect(new Headers(init.headers).get('X-CSRF-TOKEN')).toBe('csrf-456');
   });
 
   it('loads the restaurant dashboard with branch and date query parameters', async () => {

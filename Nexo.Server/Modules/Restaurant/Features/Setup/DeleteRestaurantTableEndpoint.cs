@@ -10,7 +10,6 @@ public sealed class DeleteRestaurantTableEndpoint(
     public override void Configure()
     {
         Delete("/v1/restaurant/setup/tables/{TableId}");
-        AllowAnonymous();
         Summary(summary => summary.Summary = "Deletes a restaurant table.");
     }
 

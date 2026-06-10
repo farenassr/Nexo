@@ -11,7 +11,6 @@ public sealed class CreateRestaurantFloorPlanEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/setup/floor-plans");
-        AllowAnonymous();
         Summary(summary => summary.Summary = "Creates a restaurant floor plan with initial layouts.");
     }
 
