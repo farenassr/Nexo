@@ -98,7 +98,7 @@ foreach ($file in Get-ProductionFile -ProjectDirectory "Nexo.Server" -Patterns @
     }
 }
 
-# All HTTP routes are under /v1/ except /health and /alive.
+# All HTTP routes are under /v1/ except health probes and BFF auth endpoints.
 foreach ($file in Get-ProductionFile -ProjectDirectory "Nexo.Server" -Patterns @("*.cs")) {
     $relativePath = Get-RepoRelativePath -Path $file.FullName
     $lineNumber = 0
@@ -107,8 +107,13 @@ foreach ($file in Get-ProductionFile -ProjectDirectory "Nexo.Server" -Patterns @
         $match = [regex]::Match($line, '\b(?:Get|Post|Put|Patch|Delete)\("(?<route>[^"]+)"')
         if ($match.Success) {
             $route = $match.Groups["route"].Value
-            if (-not $route.StartsWith("/v1/") -and $route -ne "/health" -and $route -ne "/alive") {
-                Add-Violation "${relativePath}:$lineNumber uses unversioned route $route (expected /v1/... or /health or /alive)"
+            $isAllowedInfrastructureRoute =
+                $route -eq "/health" -or
+                $route -eq "/alive" -or
+                $route.StartsWith("/auth/")
+
+            if (-not $route.StartsWith("/v1/") -and -not $isAllowedInfrastructureRoute) {
+                Add-Violation "${relativePath}:$lineNumber uses unversioned route $route (expected /v1/..., /auth/..., /health, or /alive)"
             }
         }
     }
@@ -128,6 +133,48 @@ foreach ($file in Get-ProductionFile -ProjectDirectory "Nexo.Server" -Patterns @
     foreach ($marker in $providerMarkers) {
         if ($content.Contains($marker)) {
             Add-Violation "$relativePath contains provider SDK marker $marker outside an Integrations folder"
+        }
+    }
+}
+
+# Baseline configuration must not point at another product or shared identity
+# environment. Local or production Keycloak values belong in user-secrets,
+# environment variables, Aspire parameters, or deployment configuration.
+$baselineConfigFiles = @(
+    Join-Path $repoRoot "Nexo.Server/appsettings.json"
+)
+foreach ($configFile in $baselineConfigFiles) {
+    if (-not (Test-Path -LiteralPath $configFile)) {
+        continue
+    }
+
+    $relativePath = Get-RepoRelativePath -Path $configFile
+    $content = Get-Content -LiteralPath $configFile -Raw
+    if ($content.IndexOf("ceo-agent", [StringComparison]::OrdinalIgnoreCase) -ge 0) {
+        Add-Violation "$relativePath contains ceo-agent baseline Keycloak configuration"
+    }
+}
+
+$appHostFile = Join-Path $repoRoot "Nexo.AppHost/AppHost.cs"
+if (Test-Path -LiteralPath $appHostFile) {
+    $relativePath = Get-RepoRelativePath -Path $appHostFile
+    $content = Get-Content -LiteralPath $appHostFile -Raw
+    $requiredKeycloakAppHostMarkers = @(
+        "KEYCLOAK_ISSUER",
+        "KEYCLOAK_REALM",
+        "KEYCLOAK_CLIENT_ID",
+        "KEYCLOAK_CLIENT_SECRET",
+        "KEYCLOAK_REDIRECT_URI",
+        "Keycloak__Authority",
+        "Keycloak__Realm",
+        "Keycloak__ClientId",
+        "Keycloak__ClientSecret",
+        "Keycloak__LogoutRedirectUri"
+    )
+
+    foreach ($marker in $requiredKeycloakAppHostMarkers) {
+        if (-not $content.Contains($marker)) {
+            Add-Violation "$relativePath does not map AppHost Keycloak user secret marker $marker"
         }
     }
 }

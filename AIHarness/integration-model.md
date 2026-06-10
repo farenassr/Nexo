@@ -48,8 +48,10 @@ on a specific API.
 - Use reference values such as `kv://company/provider/purpose`.
 - Local development uses Aspire parameters or user-secrets for credentials not
   supplied by Aspire resource references.
-- Do not move local PostgreSQL, Redis, or Keycloak connection strings into a
-  secret store when Aspire already supplies them.
+- Do not move local PostgreSQL or Redis connection strings into a secret store
+  when Aspire already supplies them. Keep Keycloak values in AppHost
+  user-secrets, Aspire parameters, environment variables, or deployed secret
+  stores.
 
 ## Contract Test Checklist
 

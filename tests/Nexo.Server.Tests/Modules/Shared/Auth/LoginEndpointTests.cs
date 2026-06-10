@@ -1,0 +1,124 @@
+using System.Net;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
+using FastEndpoints;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Nexo.Server.Modules.Shared.Auth;
+using Nexo.Server.Modules.Shared.Auth.Features;
+using TUnit.Assertions;
+using TUnit.Core;
+
+namespace Nexo.Server.Tests.Modules.Shared.Auth;
+
+public sealed class LoginEndpointTests
+{
+    [Test]
+    public async Task GetLogin_PreservesChallengeRedirectResponse()
+    {
+        await using var app = await BuildLoginTestAppAsync(useForwardedHeaders: false);
+        using var client = app.GetTestClient();
+
+        var response = await client.GetAsync("/auth/login?returnUrl=%2F");
+
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        await Assert.That(response.Headers.Location?.ToString()).Contains("redirect_uri=http%3A%2F%2Flocalhost%2Fauth%2Fcallback");
+    }
+
+    [Test]
+    public async Task GetLogin_UsesForwardedFrontendOriginForChallengeRedirect()
+    {
+        await using var app = await BuildLoginTestAppAsync(useForwardedHeaders: true);
+        using var client = app.GetTestClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/auth/login?returnUrl=%2F");
+        request.Headers.TryAddWithoutValidation("X-Forwarded-Host", "webfrontend-nexo.dev.localhost:55809");
+        request.Headers.TryAddWithoutValidation("X-Forwarded-Proto", "http");
+
+        var response = await client.SendAsync(request);
+
+        await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.Redirect);
+        await Assert.That(response.Headers.Location?.ToString())
+            .Contains("redirect_uri=http%3A%2F%2Fwebfrontend-nexo.dev.localhost%3A55809%2Fauth%2Fcallback");
+    }
+
+    private static async Task<WebApplication> BuildLoginTestAppAsync(bool useForwardedHeaders)
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseTestServer();
+        builder.Services.AddFastEndpoints(options =>
+        {
+            options.Filter = type => type == typeof(LoginEndpoint);
+        });
+        builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultChallengeScheme = NexoAuthSchemes.Keycloak;
+            })
+            .AddScheme<AuthenticationSchemeOptions, RedirectChallengeHandler>(
+                NexoAuthSchemes.Keycloak,
+                _ => { });
+        builder.Services.AddSingleton<IKeycloakTokenRefreshService, NoOpKeycloakTokenRefreshService>();
+        builder.Services.Configure<KeycloakOptions>(options =>
+        {
+            options.Authority = "https://identity.example.test/realms/nexo";
+            options.Realm = "nexo";
+            options.ClientId = "nexo-web-bff";
+            options.ClientSecret = "configured-outside-source-control";
+            options.LogoutRedirectUri = "https://app.example.test/login";
+        });
+
+        var app = builder.Build();
+        if (useForwardedHeaders)
+        {
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto
+            });
+        }
+
+        app.UseAuthentication();
+        app.UseFastEndpoints();
+        await app.StartAsync();
+        return app;
+    }
+
+    private sealed class RedirectChallengeHandler(
+        IOptionsMonitor<AuthenticationSchemeOptions> options,
+        ILoggerFactory logger,
+        UrlEncoder encoder)
+        : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
+    {
+        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+        {
+            return Task.FromResult(AuthenticateResult.NoResult());
+        }
+
+        protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+        {
+            var redirectUri = Uri.EscapeDataString($"{Request.Scheme}://{Request.Host}/auth/callback");
+            Response.Redirect($"https://identity.example.test/login?redirect_uri={redirectUri}");
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class NoOpKeycloakTokenRefreshService : IKeycloakTokenRefreshService
+    {
+        public bool ShouldRefresh(AuthenticationProperties properties)
+        {
+            return false;
+        }
+
+        public Task<KeycloakTokenRefreshResult> RefreshAsync(
+            ClaimsPrincipal principal,
+            AuthenticationProperties properties,
+            CancellationToken cancellationToken)
+        {
+            return Task.FromResult(KeycloakTokenRefreshResult.Failed());
+        }
+    }
+}

@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
+const serverTarget = process.env.SERVER_HTTPS || process.env.SERVER_HTTP;
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -8,12 +10,19 @@ export default defineConfig({
     proxy: {
       // Proxy API calls to the app service
       '/api': {
-        target: process.env.SERVER_HTTPS || process.env.SERVER_HTTP,
-        changeOrigin: true
+        target: serverTarget,
+        changeOrigin: true,
+        xfwd: true
       },
       '/v1': {
-        target: process.env.SERVER_HTTPS || process.env.SERVER_HTTP,
-        changeOrigin: true
+        target: serverTarget,
+        changeOrigin: true,
+        xfwd: true
+      },
+      '/auth': {
+        target: serverTarget,
+        changeOrigin: true,
+        xfwd: true
       }
     }
   }
