@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "properties": {
+    "branchId": { "type": "string", "format": "uuid" },
+    "date": { "type": "string", "format": "date" }
+  },
+  "x-readme-ref-name": "RestaurantDashboardRequest"
+}

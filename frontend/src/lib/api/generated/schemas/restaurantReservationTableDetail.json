@@ -1,0 +1,9 @@
+{
+  "required": ["tableId", "label"],
+  "type": "object",
+  "properties": {
+    "tableId": { "type": "string", "format": "uuid" },
+    "label": { "type": "string" }
+  },
+  "x-readme-ref-name": "RestaurantReservationTableDetail"
+}

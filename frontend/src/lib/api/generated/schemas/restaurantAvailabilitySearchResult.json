@@ -1,0 +1,54 @@
+{
+  "required": ["availableTables", "rejections"],
+  "type": "object",
+  "properties": {
+    "availableTables": {
+      "type": "array",
+      "items": {
+        "required": [
+          "tableId",
+          "label",
+          "minCapacity",
+          "maxCapacity",
+          "startAt",
+          "endAt"
+        ],
+        "type": "object",
+        "properties": {
+          "tableId": { "type": "string", "format": "uuid" },
+          "label": { "type": "string" },
+          "minCapacity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxCapacity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "startAt": { "type": "string", "format": "date-time" },
+          "endAt": { "type": "string", "format": "date-time" }
+        },
+        "x-readme-ref-name": "RestaurantAvailabilityTableOption"
+      }
+    },
+    "rejections": {
+      "type": "array",
+      "items": {
+        "required": ["tableId", "code", "message"],
+        "type": "object",
+        "properties": {
+          "tableId": { "type": ["null", "string"], "format": "uuid" },
+          "code": {
+            "type": "integer",
+            "x-readme-ref-name": "RestaurantAvailabilityFailureCode"
+          },
+          "message": { "type": "string" }
+        },
+        "x-readme-ref-name": "RestaurantAvailabilityRejection"
+      }
+    }
+  },
+  "x-readme-ref-name": "RestaurantAvailabilitySearchResult"
+}

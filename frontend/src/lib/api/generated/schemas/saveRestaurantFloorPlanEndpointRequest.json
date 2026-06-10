@@ -1,0 +1,157 @@
+{
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" },
+    "canvasWidth": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": "number",
+      "format": "double"
+    },
+    "canvasHeight": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": "number",
+      "format": "double"
+    },
+    "gridSize": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": ["null", "number"],
+      "format": "double"
+    },
+    "isActive": { "type": "boolean" },
+    "areaLayouts": {
+      "type": "array",
+      "items": {
+        "required": [
+          "areaId",
+          "x",
+          "y",
+          "width",
+          "height",
+          "rotationDegrees",
+          "zIndex"
+        ],
+        "type": "object",
+        "properties": {
+          "areaId": { "type": "string", "format": "uuid" },
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "width": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "height": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "rotationDegrees": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "zIndex": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "x-readme-ref-name": "SaveRestaurantAreaLayoutRequest"
+      }
+    },
+    "tableLayouts": {
+      "type": "array",
+      "items": {
+        "required": [
+          "tableId",
+          "x",
+          "y",
+          "width",
+          "height",
+          "rotationDegrees",
+          "shape",
+          "zIndex",
+          "seatLayouts"
+        ],
+        "type": "object",
+        "properties": {
+          "tableId": { "type": "string", "format": "uuid" },
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "width": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "height": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "rotationDegrees": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "shape": {
+            "type": "integer",
+            "x-readme-ref-name": "RestaurantTableShape"
+          },
+          "zIndex": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "seatLayouts": {
+            "type": "array",
+            "items": {
+              "required": ["seatNumber", "x", "y", "rotationDegrees"],
+              "type": "object",
+              "properties": {
+                "seatNumber": {
+                  "pattern": "^-?(?:0|[1-9]\\d*)$",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "x": {
+                  "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                  "type": "number",
+                  "format": "double"
+                },
+                "y": {
+                  "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                  "type": "number",
+                  "format": "double"
+                },
+                "rotationDegrees": {
+                  "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                  "type": "number",
+                  "format": "double"
+                }
+              },
+              "x-readme-ref-name": "SaveRestaurantTableSeatLayoutRequest"
+            }
+          }
+        },
+        "x-readme-ref-name": "SaveRestaurantTableLayoutRequest"
+      }
+    }
+  },
+  "x-readme-ref-name": "SaveRestaurantFloorPlanEndpointRequest"
+}

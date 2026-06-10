@@ -1,11 +1,12 @@
 using FastEndpoints;
 using Nexo.Server.Modules.Restaurant.Authorization;
+using Nexo.Shared.Restaurant;
 
 namespace Nexo.Server.Modules.Restaurant.Features.Setup;
 
 public sealed class GetRestaurantSetupEndpoint(
     RestaurantAccessService accessService,
-    RestaurantSetupService setupService) : EndpointWithoutRequest<object>
+    RestaurantSetupService setupService) : EndpointWithoutRequest<RestaurantSetupSnapshot>
 {
     public override void Configure()
     {

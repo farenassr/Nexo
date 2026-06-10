@@ -1,0 +1,48 @@
+{
+  "required": [
+    "areaId",
+    "areaName",
+    "x",
+    "y",
+    "width",
+    "height",
+    "rotationDegrees",
+    "zIndex"
+  ],
+  "type": "object",
+  "properties": {
+    "areaId": { "type": "string", "format": "uuid" },
+    "areaName": { "type": "string" },
+    "x": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": "number",
+      "format": "double"
+    },
+    "y": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": "number",
+      "format": "double"
+    },
+    "width": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": "number",
+      "format": "double"
+    },
+    "height": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": "number",
+      "format": "double"
+    },
+    "rotationDegrees": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": "number",
+      "format": "double"
+    },
+    "zIndex": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": "integer",
+      "format": "int32"
+    }
+  },
+  "x-readme-ref-name": "RestaurantAreaLayoutDetail"
+}

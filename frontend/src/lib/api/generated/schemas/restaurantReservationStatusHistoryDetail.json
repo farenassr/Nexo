@@ -1,0 +1,22 @@
+{
+  "required": ["fromStatus", "toStatus", "reason", "changedAt"],
+  "type": "object",
+  "properties": {
+    "fromStatus": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "integer",
+          "x-readme-ref-name": "RestaurantReservationStatus"
+        }
+      ]
+    },
+    "toStatus": {
+      "type": "integer",
+      "x-readme-ref-name": "RestaurantReservationStatus"
+    },
+    "reason": { "type": ["null", "string"] },
+    "changedAt": { "type": "string", "format": "date-time" }
+  },
+  "x-readme-ref-name": "RestaurantReservationStatusHistoryDetail"
+}

@@ -6,7 +6,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.FloorPlans.GetDetails;
 
 public sealed class GetRestaurantFloorPlanEndpoint(
     RestaurantAccessService accessService,
-    RestaurantFloorPlanService floorPlanService) : Endpoint<GetRestaurantFloorPlanEndpointRequest, object>
+    RestaurantFloorPlanService floorPlanService) : Endpoint<GetRestaurantFloorPlanEndpointRequest, RestaurantFloorPlanDetail>
 {
     public override void Configure()
     {

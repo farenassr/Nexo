@@ -6,7 +6,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.TableBlocks.Create;
 
 public sealed class CreateRestaurantTableBlockEndpoint(
     RestaurantAccessService accessService,
-    RestaurantTableBlockService tableBlockService) : Endpoint<CreateRestaurantTableBlockEndpointRequest, object>
+    RestaurantTableBlockService tableBlockService) : Endpoint<CreateRestaurantTableBlockEndpointRequest, RestaurantTableBlockDetail>
 {
     public override void Configure()
     {
@@ -42,12 +42,12 @@ public sealed class CreateRestaurantTableBlockEndpoint(
 
         if (!result.Succeeded)
         {
-            await Send.ResponseAsync(
+            await HttpContext.Response.SendAsync(
                 new RestaurantOperationErrorResponse(result.FailureCode.ToString(), result.Message),
                 result.FailureCode == RestaurantTableBlockFailureCode.NotFound
                     ? StatusCodes.Status404NotFound
                     : StatusCodes.Status400BadRequest,
-                cancellationToken);
+                cancellation: cancellationToken);
             return;
         }
 

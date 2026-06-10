@@ -1,0 +1,95 @@
+{
+  "required": [
+    "reservationId",
+    "branchId",
+    "partySize",
+    "startAt",
+    "endAt",
+    "turnoverBufferMinutes",
+    "status",
+    "source",
+    "specialRequests",
+    "cancelledAt",
+    "cancellationReason",
+    "customer",
+    "tables",
+    "statusHistory"
+  ],
+  "type": "object",
+  "properties": {
+    "reservationId": { "type": "string", "format": "uuid" },
+    "branchId": { "type": "string", "format": "uuid" },
+    "partySize": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": "integer",
+      "format": "int32"
+    },
+    "startAt": { "type": "string", "format": "date-time" },
+    "endAt": { "type": "string", "format": "date-time" },
+    "turnoverBufferMinutes": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": "integer",
+      "format": "int32"
+    },
+    "status": {
+      "type": "integer",
+      "x-readme-ref-name": "RestaurantReservationStatus"
+    },
+    "source": {
+      "type": "integer",
+      "x-readme-ref-name": "RestaurantReservationSource"
+    },
+    "specialRequests": { "type": ["null", "string"] },
+    "cancelledAt": { "type": ["null", "string"], "format": "date-time" },
+    "cancellationReason": { "type": ["null", "string"] },
+    "customer": {
+      "required": ["customerId", "fullName", "phone", "email"],
+      "type": "object",
+      "properties": {
+        "customerId": { "type": "string", "format": "uuid" },
+        "fullName": { "type": "string" },
+        "phone": { "type": ["null", "string"] },
+        "email": { "type": ["null", "string"] }
+      },
+      "x-readme-ref-name": "RestaurantReservationCustomerDetail"
+    },
+    "tables": {
+      "type": "array",
+      "items": {
+        "required": ["tableId", "label"],
+        "type": "object",
+        "properties": {
+          "tableId": { "type": "string", "format": "uuid" },
+          "label": { "type": "string" }
+        },
+        "x-readme-ref-name": "RestaurantReservationTableDetail"
+      }
+    },
+    "statusHistory": {
+      "type": "array",
+      "items": {
+        "required": ["fromStatus", "toStatus", "reason", "changedAt"],
+        "type": "object",
+        "properties": {
+          "fromStatus": {
+            "oneOf": [
+              { "type": "null" },
+              {
+                "type": "integer",
+                "x-readme-ref-name": "RestaurantReservationStatus"
+              }
+            ]
+          },
+          "toStatus": {
+            "type": "integer",
+            "x-readme-ref-name": "RestaurantReservationStatus"
+          },
+          "reason": { "type": ["null", "string"] },
+          "changedAt": { "type": "string", "format": "date-time" }
+        },
+        "x-readme-ref-name": "RestaurantReservationStatusHistoryDetail"
+      }
+    }
+  },
+  "x-readme-ref-name": "RestaurantReservationDetail"
+}

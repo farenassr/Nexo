@@ -1,0 +1,2807 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Nexo.Server | v1",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5519/"
+    }
+  ],
+  "paths": {
+    "/auth/me": {
+      "get": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesSharedAuthFeaturesAuthMeEndpoint",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/auth/login": {
+      "get": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesSharedAuthFeaturesLoginEndpoint",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesSharedAuthFeaturesLogoutEndpoint",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesSharedAuthFeaturesRefreshEndpoint",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/restaurant/table-blocks": {
+      "post": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpoint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRestaurantTableBlockEndpointRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantTableBlockDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/restaurant/setup/areas": {
+      "post": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesSetupCreateRestaurantAreaEndpoint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRestaurantAreaRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantAreaDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/restaurant/setup/branches": {
+      "post": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesSetupCreateRestaurantBranchEndpoint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRestaurantBranchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantBranchDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/restaurant/setup/floors": {
+      "post": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesSetupCreateRestaurantFloorEndpoint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRestaurantFloorRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantFloorDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/restaurant/setup/floor-plans": {
+      "post": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesSetupCreateRestaurantFloorPlanEndpoint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRestaurantFloorPlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantFloorPlanDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/restaurant/setup/tables": {
+      "post": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesSetupCreateRestaurantTableEndpoint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRestaurantTableRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantTableDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/restaurant/setup/areas/{areaId}": {
+      "delete": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantAreaEndpoint",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "areaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/setup/branches/{branchId}": {
+      "delete": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantBranchEndpoint",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/setup/floors/{floorId}": {
+      "delete": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorEndpoint",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "floorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/setup/floor-plans/{floorPlanId}": {
+      "delete": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpoint",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "floorPlanId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/setup/tables/{tableId}": {
+      "delete": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "tableId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/setup": {
+      "get": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantSetupSnapshot"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/restaurant/reservations/{reservationId}/status": {
+      "put": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesReservationsUpdateStatusUpdateRestaurantReservationStatusEndpoint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRestaurantReservationStatusEndpointRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantReservationDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "reservationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/reservations": {
+      "get": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesReservationsListDailyListRestaurantReservationsEndpoint",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestaurantReservationDetail"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/components/schemas/RestaurantReservationStatus"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesReservationsCreateCreateRestaurantReservationEndpoint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRestaurantReservationEndpointRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantReservationDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/restaurant/tables/{tableId}/reservations": {
+      "get": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesReservationsListByTableListRestaurantTableReservationsEndpoint",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestaurantReservationDetail"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "tableId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/reservations/{reservationId}": {
+      "get": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesReservationsGetDetailsGetRestaurantReservationEndpoint",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantReservationDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "reservationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/reservations/{reservationId}/cancel": {
+      "post": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesReservationsCancelCancelRestaurantReservationEndpoint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelRestaurantReservationEndpointRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantReservationDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "reservationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/context": {
+      "get": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesGetContextRestaurantContextEndpoint",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantContextResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/v1/restaurant/floor-plans/{floorPlanId}/tables/{tableId}/layout": {
+      "put": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesFloorPlansUpdateTableLayoutUpdateRestaurantTableLayoutEndpoint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRestaurantTableLayoutEndpointRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantFloorPlanDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "floorPlanId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "tableId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/floor-plans/{floorPlanId}/status-map": {
+      "get": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesFloorPlansStatusMapGetRestaurantFloorPlanStatusMapEndpoint",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantFloorPlanStatusMap"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "floorPlanId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "at",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "areaId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/floor-plans/{floorPlanId}": {
+      "put": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesFloorPlansSaveSaveRestaurantFloorPlanEndpoint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveRestaurantFloorPlanEndpointRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantFloorPlanDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "floorPlanId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesFloorPlansGetDetailsGetRestaurantFloorPlanEndpoint",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantFloorPlanDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "floorPlanId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/floor-plans": {
+      "get": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesFloorPlansListListRestaurantFloorPlansEndpoint",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestaurantFloorPlanSummary"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "floorId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/dashboard": {
+      "get": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesDashboardGetRestaurantDashboardGetRestaurantDashboardEndpoint",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantDashboardSummary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ]
+      }
+    },
+    "/v1/restaurant/availability/search": {
+      "post": {
+        "tags": [
+          "Nexo.Server"
+        ],
+        "operationId": "NexoServerModulesRestaurantFeaturesAvailabilitySearchSearchRestaurantAvailabilityEndpoint",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchRestaurantAvailabilityEndpointRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestaurantAvailabilitySearchResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "parameters": []
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthClaimResponse": {
+        "required": [
+          "type",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "AuthSessionResponse": {
+        "required": [
+          "isAuthenticated",
+          "userId",
+          "name",
+          "email",
+          "companyId",
+          "roles",
+          "claims"
+        ],
+        "type": "object",
+        "properties": {
+          "isAuthenticated": {
+            "type": "boolean"
+          },
+          "userId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "name": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "companyId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "claims": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthClaimResponse"
+            }
+          }
+        }
+      },
+      "CancelRestaurantReservationEndpointRequest": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "CreateRestaurantAreaRequest": {
+        "required": [
+          "branchId",
+          "floorId",
+          "name",
+          "type",
+          "sortOrder"
+        ],
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "floorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/RestaurantAreaType"
+          },
+          "sortOrder": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CreateRestaurantBranchRequest": {
+        "required": [
+          "name",
+          "address",
+          "timeZone"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "timeZone": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateRestaurantFloorPlanRequest": {
+        "required": [
+          "branchId",
+          "floorId",
+          "name",
+          "canvasWidth",
+          "canvasHeight",
+          "gridSize",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "floorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "canvasWidth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "canvasHeight": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "gridSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreateRestaurantFloorRequest": {
+        "required": [
+          "branchId",
+          "name",
+          "sortOrder"
+        ],
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sortOrder": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CreateRestaurantReservationEndpointRequest": {
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tableIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "partySize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "durationMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "customerFullName": {
+            "type": "string"
+          },
+          "customerPhone": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "customerEmail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "source": {
+            "$ref": "#/components/schemas/RestaurantReservationSource"
+          },
+          "specialRequests": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "CreateRestaurantTableBlockEndpointRequest": {
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "floorId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "areaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "tableId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "CreateRestaurantTableRequest": {
+        "required": [
+          "branchId",
+          "floorId",
+          "areaId",
+          "label",
+          "minCapacity",
+          "maxCapacity",
+          "defaultReservationMinutes",
+          "shape"
+        ],
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "floorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "areaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "label": {
+            "type": "string"
+          },
+          "minCapacity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxCapacity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "defaultReservationMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "shape": {
+            "$ref": "#/components/schemas/RestaurantTableShape"
+          }
+        }
+      },
+      "GetRestaurantFloorPlanEndpointRequest": {
+        "type": "object",
+        "properties": {
+          "floorPlanId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "GetRestaurantFloorPlanStatusMapEndpointRequest": {
+        "type": "object",
+        "properties": {
+          "floorPlanId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "areaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "GetRestaurantReservationEndpointRequest": {
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ListRestaurantFloorPlansEndpointRequest": {
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "floorId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ListRestaurantReservationsEndpointRequest": {
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RestaurantReservationStatus"
+              }
+            ]
+          }
+        }
+      },
+      "ListRestaurantTableReservationsEndpointRequest": {
+        "type": "object",
+        "properties": {
+          "tableId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "RestaurantAreaDetail": {
+        "required": [
+          "id",
+          "branchId",
+          "floorId",
+          "name",
+          "type",
+          "sortOrder",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "floorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/RestaurantAreaType"
+          },
+          "sortOrder": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RestaurantAreaLayoutDetail": {
+        "required": [
+          "areaId",
+          "areaName",
+          "x",
+          "y",
+          "width",
+          "height",
+          "rotationDegrees",
+          "zIndex"
+        ],
+        "type": "object",
+        "properties": {
+          "areaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "areaName": {
+            "type": "string"
+          },
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "width": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "height": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "rotationDegrees": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "zIndex": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RestaurantAreaType": {
+        "type": "integer"
+      },
+      "RestaurantAvailabilityFailureCode": {
+        "type": "integer"
+      },
+      "RestaurantAvailabilityRejection": {
+        "required": [
+          "tableId",
+          "code",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "tableId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "code": {
+            "$ref": "#/components/schemas/RestaurantAvailabilityFailureCode"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "RestaurantAvailabilitySearchResult": {
+        "required": [
+          "availableTables",
+          "rejections"
+        ],
+        "type": "object",
+        "properties": {
+          "availableTables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantAvailabilityTableOption"
+            }
+          },
+          "rejections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantAvailabilityRejection"
+            }
+          }
+        }
+      },
+      "RestaurantAvailabilityTableOption": {
+        "required": [
+          "tableId",
+          "label",
+          "minCapacity",
+          "maxCapacity",
+          "startAt",
+          "endAt"
+        ],
+        "type": "object",
+        "properties": {
+          "tableId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "label": {
+            "type": "string"
+          },
+          "minCapacity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxCapacity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RestaurantBranchDetail": {
+        "required": [
+          "id",
+          "companyId",
+          "name",
+          "address",
+          "timeZone",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "companyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "timeZone": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RestaurantContextResponse": {
+        "required": [
+          "companyId",
+          "moduleKey",
+          "permissionContracts"
+        ],
+        "type": "object",
+        "properties": {
+          "companyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "moduleKey": {
+            "type": "string"
+          },
+          "permissionContracts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "RestaurantDashboardMetric": {
+        "required": [
+          "key",
+          "label",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "value": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RestaurantDashboardRequest": {
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "RestaurantDashboardSummary": {
+        "required": [
+          "branchId",
+          "date",
+          "metrics",
+          "occupancyByHour",
+          "upcomingReservations"
+        ],
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantDashboardMetric"
+            }
+          },
+          "occupancyByHour": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantOccupancyByHourPoint"
+            }
+          },
+          "upcomingReservations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantUpcomingReservationSummary"
+            }
+          }
+        }
+      },
+      "RestaurantFloorDetail": {
+        "required": [
+          "id",
+          "branchId",
+          "name",
+          "sortOrder",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sortOrder": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RestaurantFloorPlanDetail": {
+        "required": [
+          "id",
+          "branchId",
+          "floorId",
+          "name",
+          "canvasWidth",
+          "canvasHeight",
+          "gridSize",
+          "isActive",
+          "areaLayouts",
+          "tableLayouts"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "floorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "canvasWidth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "canvasHeight": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "gridSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "areaLayouts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantAreaLayoutDetail"
+            }
+          },
+          "tableLayouts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantTableLayoutDetail"
+            }
+          }
+        }
+      },
+      "RestaurantFloorPlanStatusMap": {
+        "required": [
+          "floorPlanId",
+          "at",
+          "tables"
+        ],
+        "type": "object",
+        "properties": {
+          "floorPlanId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "tables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantTableStatusDetail"
+            }
+          }
+        }
+      },
+      "RestaurantFloorPlanSummary": {
+        "required": [
+          "id",
+          "branchId",
+          "floorId",
+          "name",
+          "canvasWidth",
+          "canvasHeight",
+          "gridSize",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "floorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "canvasWidth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "canvasHeight": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "gridSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RestaurantOccupancyByHourPoint": {
+        "required": [
+          "hour",
+          "reservationCount",
+          "occupiedCovers",
+          "occupancyPercent"
+        ],
+        "type": "object",
+        "properties": {
+          "hour": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "reservationCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "occupiedCovers": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "occupancyPercent": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "RestaurantReservationCustomerDetail": {
+        "required": [
+          "customerId",
+          "fullName",
+          "phone",
+          "email"
+        ],
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "phone": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "email": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "RestaurantReservationDetail": {
+        "required": [
+          "reservationId",
+          "branchId",
+          "partySize",
+          "startAt",
+          "endAt",
+          "turnoverBufferMinutes",
+          "status",
+          "source",
+          "specialRequests",
+          "cancelledAt",
+          "cancellationReason",
+          "customer",
+          "tables",
+          "statusHistory"
+        ],
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "partySize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "turnoverBufferMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RestaurantReservationStatus"
+          },
+          "source": {
+            "$ref": "#/components/schemas/RestaurantReservationSource"
+          },
+          "specialRequests": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "cancelledAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "cancellationReason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "customer": {
+            "$ref": "#/components/schemas/RestaurantReservationCustomerDetail"
+          },
+          "tables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantReservationTableDetail"
+            }
+          },
+          "statusHistory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantReservationStatusHistoryDetail"
+            }
+          }
+        }
+      },
+      "RestaurantReservationSource": {
+        "type": "integer"
+      },
+      "RestaurantReservationStatus": {
+        "type": "integer"
+      },
+      "RestaurantReservationStatusHistoryDetail": {
+        "required": [
+          "fromStatus",
+          "toStatus",
+          "reason",
+          "changedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "fromStatus": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RestaurantReservationStatus"
+              }
+            ]
+          },
+          "toStatus": {
+            "$ref": "#/components/schemas/RestaurantReservationStatus"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "changedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "RestaurantReservationTableDetail": {
+        "required": [
+          "tableId",
+          "label"
+        ],
+        "type": "object",
+        "properties": {
+          "tableId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      },
+      "RestaurantSetupSnapshot": {
+        "required": [
+          "companyId",
+          "branches",
+          "floors",
+          "areas",
+          "tables",
+          "floorPlans"
+        ],
+        "type": "object",
+        "properties": {
+          "companyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "branches": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantBranchDetail"
+            }
+          },
+          "floors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantFloorDetail"
+            }
+          },
+          "areas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantAreaDetail"
+            }
+          },
+          "tables": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantTableDetail"
+            }
+          },
+          "floorPlans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantFloorPlanSummary"
+            }
+          }
+        }
+      },
+      "RestaurantTableBlockDetail": {
+        "required": [
+          "id",
+          "branchId",
+          "floorId",
+          "areaId",
+          "tableId",
+          "startAt",
+          "endAt",
+          "reason",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "floorId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "areaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "tableId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RestaurantTableDetail": {
+        "required": [
+          "id",
+          "companyId",
+          "branchId",
+          "floorId",
+          "areaId",
+          "label",
+          "minCapacity",
+          "maxCapacity",
+          "defaultReservationMinutes",
+          "shape",
+          "isActive"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "companyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "floorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "areaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "label": {
+            "type": "string"
+          },
+          "minCapacity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "maxCapacity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "defaultReservationMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          },
+          "shape": {
+            "$ref": "#/components/schemas/RestaurantTableShape"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "RestaurantTableLayoutDetail": {
+        "required": [
+          "tableId",
+          "tableLabel",
+          "areaId",
+          "x",
+          "y",
+          "width",
+          "height",
+          "rotationDegrees",
+          "shape",
+          "zIndex",
+          "seatLayouts"
+        ],
+        "type": "object",
+        "properties": {
+          "tableId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tableLabel": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "width": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "height": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "rotationDegrees": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "shape": {
+            "$ref": "#/components/schemas/RestaurantTableShape"
+          },
+          "zIndex": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "seatLayouts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestaurantTableSeatLayoutDetail"
+            }
+          }
+        }
+      },
+      "RestaurantTableSeatLayoutDetail": {
+        "required": [
+          "seatNumber",
+          "x",
+          "y",
+          "rotationDegrees"
+        ],
+        "type": "object",
+        "properties": {
+          "seatNumber": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "rotationDegrees": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "RestaurantTableShape": {
+        "type": "integer"
+      },
+      "RestaurantTableStatusDetail": {
+        "required": [
+          "tableId",
+          "label",
+          "areaId",
+          "status",
+          "reason",
+          "reservationId"
+        ],
+        "type": "object",
+        "properties": {
+          "tableId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "label": {
+            "type": "string"
+          },
+          "areaId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RestaurantTableVisualStatus"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "reservationId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "RestaurantTableVisualStatus": {
+        "type": "integer"
+      },
+      "RestaurantUpcomingReservationSummary": {
+        "required": [
+          "reservationId",
+          "startAt",
+          "endAt",
+          "customerName",
+          "partySize",
+          "status",
+          "tableLabels"
+        ],
+        "type": "object",
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "partySize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RestaurantReservationStatus"
+          },
+          "tableLabels": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "SaveRestaurantAreaLayoutRequest": {
+        "required": [
+          "areaId",
+          "x",
+          "y",
+          "width",
+          "height",
+          "rotationDegrees",
+          "zIndex"
+        ],
+        "type": "object",
+        "properties": {
+          "areaId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "width": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "height": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "rotationDegrees": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "zIndex": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "SaveRestaurantFloorPlanEndpointRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "canvasWidth": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "canvasHeight": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "gridSize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "areaLayouts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaveRestaurantAreaLayoutRequest"
+            }
+          },
+          "tableLayouts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaveRestaurantTableLayoutRequest"
+            }
+          }
+        }
+      },
+      "SaveRestaurantTableLayoutRequest": {
+        "required": [
+          "tableId",
+          "x",
+          "y",
+          "width",
+          "height",
+          "rotationDegrees",
+          "shape",
+          "zIndex",
+          "seatLayouts"
+        ],
+        "type": "object",
+        "properties": {
+          "tableId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "width": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "height": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "rotationDegrees": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "shape": {
+            "$ref": "#/components/schemas/RestaurantTableShape"
+          },
+          "zIndex": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "seatLayouts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaveRestaurantTableSeatLayoutRequest"
+            }
+          }
+        }
+      },
+      "SaveRestaurantTableSeatLayoutRequest": {
+        "required": [
+          "seatNumber",
+          "x",
+          "y",
+          "rotationDegrees"
+        ],
+        "type": "object",
+        "properties": {
+          "seatNumber": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "rotationDegrees": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "SearchRestaurantAvailabilityEndpointRequest": {
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "partySize": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "durationMinutes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          }
+        }
+      },
+      "UpdateRestaurantReservationStatusEndpointRequest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/RestaurantReservationStatus"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "UpdateRestaurantTableLayoutEndpointRequest": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "y": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "width": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "height": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "rotationDegrees": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": "number",
+            "format": "double"
+          },
+          "shape": {
+            "$ref": "#/components/schemas/RestaurantTableShape"
+          },
+          "zIndex": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": "integer",
+            "format": "int32"
+          },
+          "seatLayouts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SaveRestaurantTableSeatLayoutRequest"
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Nexo.Server"
+    }
+  ]
+}

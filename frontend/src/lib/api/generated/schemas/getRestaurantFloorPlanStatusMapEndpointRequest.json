@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "floorPlanId": { "type": "string", "format": "uuid" },
+    "at": { "type": "string", "format": "date-time" },
+    "areaId": { "type": ["null", "string"], "format": "uuid" }
+  },
+  "x-readme-ref-name": "GetRestaurantFloorPlanStatusMapEndpointRequest"
+}

@@ -1,0 +1,13 @@
+{
+  "required": ["id", "companyId", "name", "address", "timeZone", "isActive"],
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "companyId": { "type": "string", "format": "uuid" },
+    "name": { "type": "string" },
+    "address": { "type": ["null", "string"] },
+    "timeZone": { "type": "string" },
+    "isActive": { "type": "boolean" }
+  },
+  "x-readme-ref-name": "RestaurantBranchDetail"
+}

@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "properties": {
+    "tableId": { "type": "string", "format": "uuid" },
+    "date": { "type": "string", "format": "date" }
+  },
+  "x-readme-ref-name": "ListRestaurantTableReservationsEndpointRequest"
+}

@@ -5,7 +5,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.Setup;
 
 public sealed class DeleteRestaurantTableEndpoint(
     RestaurantAccessService accessService,
-    RestaurantSetupService setupService) : EndpointWithoutRequest<object>
+    RestaurantSetupService setupService) : EndpointWithoutRequest
 {
     public override void Configure()
     {
@@ -25,10 +25,10 @@ public sealed class DeleteRestaurantTableEndpoint(
         var result = await setupService.DeleteTableAsync(Route<Guid>("TableId"), cancellationToken);
         if (!result.Succeeded)
         {
-            await Send.ResponseAsync(
+            await HttpContext.Response.SendAsync(
                 RestaurantSetupEndpointResponses.FromSetupFailure(result),
                 RestaurantSetupEndpointResponses.ToStatusCode(result.FailureCode),
-                cancellationToken);
+                cancellation: cancellationToken);
             return;
         }
 

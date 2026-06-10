@@ -1,0 +1,11 @@
+{
+  "required": ["customerId", "fullName", "phone", "email"],
+  "type": "object",
+  "properties": {
+    "customerId": { "type": "string", "format": "uuid" },
+    "fullName": { "type": "string" },
+    "phone": { "type": ["null", "string"] },
+    "email": { "type": ["null", "string"] }
+  },
+  "x-readme-ref-name": "RestaurantReservationCustomerDetail"
+}

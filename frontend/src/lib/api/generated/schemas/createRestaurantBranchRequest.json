@@ -1,0 +1,10 @@
+{
+  "required": ["name", "address", "timeZone"],
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" },
+    "address": { "type": ["null", "string"] },
+    "timeZone": { "type": "string" }
+  },
+  "x-readme-ref-name": "CreateRestaurantBranchRequest"
+}

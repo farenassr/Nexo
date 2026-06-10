@@ -1,0 +1,14 @@
+{
+  "required": ["key", "label", "value"],
+  "type": "object",
+  "properties": {
+    "key": { "type": "string" },
+    "label": { "type": "string" },
+    "value": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": "integer",
+      "format": "int32"
+    }
+  },
+  "x-readme-ref-name": "RestaurantDashboardMetric"
+}

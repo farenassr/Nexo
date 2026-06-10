@@ -361,6 +361,7 @@ function defaultDimensionsForShape(shape: RestaurantTableShape, width: number, h
       return { width: Math.max(width, 140), height: Math.max(minimumTableSize, Math.round(height * 0.7)) };
     case RestaurantTableShape.Rectangle:
     case RestaurantTableShape.Custom:
+    default:
       return { width, height };
   }
 }

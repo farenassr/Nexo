@@ -1,0 +1,33 @@
+{
+  "required": [
+    "isAuthenticated",
+    "userId",
+    "name",
+    "email",
+    "companyId",
+    "roles",
+    "claims"
+  ],
+  "type": "object",
+  "properties": {
+    "isAuthenticated": { "type": "boolean" },
+    "userId": { "type": ["null", "string"] },
+    "name": { "type": ["null", "string"] },
+    "email": { "type": ["null", "string"] },
+    "companyId": { "type": ["null", "string"] },
+    "roles": { "type": "array", "items": { "type": "string" } },
+    "claims": {
+      "type": "array",
+      "items": {
+        "required": ["type", "value"],
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "value": { "type": "string" }
+        },
+        "x-readme-ref-name": "AuthClaimResponse"
+      }
+    }
+  },
+  "x-readme-ref-name": "AuthSessionResponse"
+}

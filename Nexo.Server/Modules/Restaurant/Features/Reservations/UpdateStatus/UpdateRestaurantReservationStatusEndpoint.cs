@@ -7,7 +7,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.Reservations.UpdateStatus;
 
 public sealed class UpdateRestaurantReservationStatusEndpoint(
     RestaurantAccessService accessService,
-    RestaurantReservationService reservationService) : Endpoint<UpdateRestaurantReservationStatusEndpointRequest, object>
+    RestaurantReservationService reservationService) : Endpoint<UpdateRestaurantReservationStatusEndpointRequest, RestaurantReservationDetail>
 {
     public override void Configure()
     {
@@ -39,10 +39,10 @@ public sealed class UpdateRestaurantReservationStatusEndpoint(
 
         if (!result.Succeeded)
         {
-            await Send.ResponseAsync(
+            await HttpContext.Response.SendAsync(
                 RestaurantEndpointResponses.FromReservationFailure(result),
                 RestaurantEndpointResponses.ToStatusCode(result.FailureCode),
-                cancellationToken);
+                cancellation: cancellationToken);
             return;
         }
 

@@ -7,7 +7,7 @@ namespace Nexo.Server.Modules.Restaurant.Features.Reservations.ListDaily;
 
 public sealed class ListRestaurantReservationsEndpoint(
     RestaurantAccessService accessService,
-    RestaurantReservationService reservationService) : Endpoint<ListRestaurantReservationsEndpointRequest, object>
+    RestaurantReservationService reservationService) : Endpoint<ListRestaurantReservationsEndpointRequest, IReadOnlyCollection<RestaurantReservationDetail>>
 {
     public override void Configure()
     {

@@ -1,0 +1,36 @@
+{
+  "required": [
+    "id",
+    "branchId",
+    "floorId",
+    "name",
+    "canvasWidth",
+    "canvasHeight",
+    "gridSize",
+    "isActive"
+  ],
+  "type": "object",
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "branchId": { "type": "string", "format": "uuid" },
+    "floorId": { "type": "string", "format": "uuid" },
+    "name": { "type": "string" },
+    "canvasWidth": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": "number",
+      "format": "double"
+    },
+    "canvasHeight": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": "number",
+      "format": "double"
+    },
+    "gridSize": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": ["null", "number"],
+      "format": "double"
+    },
+    "isActive": { "type": "boolean" }
+  },
+  "x-readme-ref-name": "RestaurantFloorPlanSummary"
+}

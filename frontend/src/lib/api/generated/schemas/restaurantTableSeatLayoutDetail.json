@@ -1,0 +1,27 @@
+{
+  "required": ["seatNumber", "x", "y", "rotationDegrees"],
+  "type": "object",
+  "properties": {
+    "seatNumber": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": "integer",
+      "format": "int32"
+    },
+    "x": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": "number",
+      "format": "double"
+    },
+    "y": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": "number",
+      "format": "double"
+    },
+    "rotationDegrees": {
+      "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+      "type": "number",
+      "format": "double"
+    }
+  },
+  "x-readme-ref-name": "RestaurantTableSeatLayoutDetail"
+}
