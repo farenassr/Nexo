@@ -1,8 +1,17 @@
 using FastEndpoints;
+using Azure.Identity;
+using Microsoft.AspNetCore.HttpOverrides;
 using Nexo.Server.Modules;
+using Nexo.Server.Modules.Shared.Auth;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var keyVaultUri = builder.Configuration["KeyVault:Uri"];
+if (!builder.Environment.IsDevelopment() && !string.IsNullOrWhiteSpace(keyVaultUri))
+{
+    builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUri), new DefaultAzureCredential());
+}
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
@@ -12,6 +21,8 @@ builder.AddRedisClientBuilder("cache")
 // Add services to the container.
 builder.Services.AddProblemDetails();
 builder.Services.AddFastEndpoints();
+builder.Services.AddKeycloakAuthentication(builder.Configuration);
+builder.Services.AddKeycloakAuthorization();
 builder.Services.AddNexoModules(builder.Configuration);
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -28,7 +39,18 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseForwardedHeaders(new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedProto
+    });
+}
+
 app.UseOutputCache();
+app.UseAuthentication();
+app.UseNexoCsrfProtection();
+app.UseAuthorization();
 app.UseFastEndpoints(config =>
 {
     if (!app.Environment.IsDevelopment())

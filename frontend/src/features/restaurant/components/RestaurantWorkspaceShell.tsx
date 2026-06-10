@@ -1,4 +1,6 @@
 import { Link, Outlet, useRouterState } from '@tanstack/react-router';
+import { LogOut } from 'lucide-react';
+import { useAuthSession } from '../../auth/session/AuthSessionProvider';
 import labels from '../labels.es.json';
 import {
   isRestaurantSetupRoute,
@@ -10,6 +12,7 @@ import { RestaurantContextBar } from './RestaurantContextBar';
 export function RestaurantWorkspaceShell() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const showSetupNavigation = isRestaurantSetupRoute(pathname);
+  const { logout, session } = useAuthSession();
 
   return (
     <div className="restaurant-workspace-shell">
@@ -38,6 +41,10 @@ export function RestaurantWorkspaceShell() {
             ))}
           </nav>
         )}
+        <button className="restaurant-logout-button" type="button" onClick={() => void logout()}>
+          <LogOut size={17} aria-hidden="true" />
+          <span>{session.name || session.email || 'Cerrar sesion'}</span>
+        </button>
       </aside>
       <div className="restaurant-workspace-main">
         <RestaurantContextBar />

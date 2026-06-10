@@ -32,13 +32,14 @@ frontend (React + Vite + TypeScript)
   -> Nexo.Server (FastEndpoints API)
        resolves tenant context, validates membership, permissions, and active
        modules, then executes vertical-slice features
-  -> PostgreSQL + Redis + Keycloak + external integrations
+  -> PostgreSQL + Redis + external Keycloak + external integrations
 ```
 
 Main projects:
 
-- `Nexo.AppHost`: local Aspire orchestration for PostgreSQL, Redis, Keycloak,
-  API, and frontend.
+- `Nexo.AppHost`: local Aspire orchestration for PostgreSQL, Redis, API, and
+  frontend. Keycloak is configured externally until a local identity resource is
+  added.
 - `Nexo.Server`: FastEndpoints API, EF Core persistence, module registration,
   and vertical slices under `Modules/<Module>/`.
 - `frontend`: React + Vite + TypeScript SPA served through Aspire.
@@ -108,7 +109,8 @@ dotnet build Nexo.slnx --no-restore
 dotnet test Nexo.slnx --no-build
 ```
 
-Use `Nexo.AppHost` for the Aspire local runtime. See
+Use `Nexo.AppHost` for the Aspire local runtime. Configure Keycloak through
+AppHost user-secrets, environment variables, or Aspire parameters. See
 `docs/azure-infrastructure.md` for local and deployed infrastructure notes.
 
 ## Documentation Map

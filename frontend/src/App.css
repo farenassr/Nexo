@@ -78,7 +78,8 @@
 }
 
 .restaurant-main-nav a,
-.restaurant-setup-nav button {
+.restaurant-setup-nav button,
+.restaurant-logout-button {
   min-height: 42px;
   display: flex;
   align-items: center;
@@ -93,6 +94,19 @@
 .restaurant-main-nav a[data-active='true'] {
   background: rgba(255, 255, 255, 0.12);
   color: #ffffff;
+}
+
+.restaurant-logout-button {
+  justify-content: flex-start;
+  margin-top: auto;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.restaurant-logout-button span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .restaurant-setup-nav {
@@ -1450,6 +1464,55 @@ button:disabled {
   padding: 0 14px;
   background: var(--accent);
   color: #ffffff;
+}
+
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--bg);
+}
+
+.auth-panel {
+  width: min(420px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.auth-panel h1,
+.auth-panel p {
+  margin: 0;
+}
+
+.auth-panel p {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.auth-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.auth-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .spin {
