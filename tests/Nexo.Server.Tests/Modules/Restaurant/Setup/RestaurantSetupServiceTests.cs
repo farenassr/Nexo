@@ -85,6 +85,157 @@ public sealed class RestaurantSetupServiceTests
     }
 
     [Test]
+    public async Task UpdateWorkflow_UpdatesSetupEntitiesAndFloorPlanMetadata()
+    {
+        await using var dbContext = CreateContext();
+        var service = new RestaurantSetupService(dbContext, new FixedTimeProvider(Now));
+        var branch = await service.CreateBranchAsync(new CreateRestaurantBranchRequest("Centro", "Calle 1", "UTC"), CancellationToken.None);
+        var floor = await service.CreateFloorAsync(new CreateRestaurantFloorRequest(branch.Branch!.Id, "Main", 1), CancellationToken.None);
+        var area = await service.CreateAreaAsync(
+            new CreateRestaurantAreaRequest(branch.Branch.Id, floor.Floor!.Id, "Comedor", RestaurantAreaType.DiningRoom, 1),
+            CancellationToken.None);
+        var table = await service.CreateTableAsync(
+            new CreateRestaurantTableRequest(branch.Branch.Id, floor.Floor.Id, area.Area!.Id, "A1", 1, 4, 90, RestaurantTableShape.Rectangle),
+            CancellationToken.None);
+        var floorPlan = await service.CreateFloorPlanAsync(
+            new CreateRestaurantFloorPlanRequest(branch.Branch.Id, floor.Floor.Id, "Plano", 1200, 760, 20, true),
+            CancellationToken.None);
+
+        var updatedBranch = await service.UpdateBranchAsync(
+            branch.Branch.Id,
+            new UpdateRestaurantBranchRequest("Centro Norte", "Calle 2", "America/Santo_Domingo", false),
+            CancellationToken.None);
+        var updatedFloor = await service.UpdateFloorAsync(
+            floor.Floor.Id,
+            new UpdateRestaurantFloorRequest(branch.Branch.Id, "Terraza", 4, false),
+            CancellationToken.None);
+        var updatedArea = await service.UpdateAreaAsync(
+            area.Area.Id,
+            new UpdateRestaurantAreaRequest(branch.Branch.Id, floor.Floor.Id, "Privado", RestaurantAreaType.PrivateRoom, 3, false),
+            CancellationToken.None);
+        var updatedTable = await service.UpdateTableAsync(
+            table.Table!.Id,
+            new UpdateRestaurantTableRequest(branch.Branch.Id, floor.Floor.Id, null, "P9", 2, 8, 120, RestaurantTableShape.Round, false),
+            CancellationToken.None);
+        var updatedFloorPlan = await service.UpdateFloorPlanMetadataAsync(
+            floorPlan.FloorPlan!.Id,
+            new UpdateRestaurantFloorPlanMetadataRequest(branch.Branch.Id, floor.Floor.Id, "Cena privada", 1400, 900, 25, false),
+            CancellationToken.None);
+
+        await Assert.That(updatedBranch.Succeeded).IsTrue();
+        await Assert.That(updatedBranch.Branch!.Name).IsEqualTo("Centro Norte");
+        await Assert.That(updatedBranch.Branch.IsActive).IsFalse();
+        await Assert.That(updatedFloor.Floor!.Name).IsEqualTo("Terraza");
+        await Assert.That(updatedFloor.Floor.SortOrder).IsEqualTo(4);
+        await Assert.That(updatedArea.Area!.Type).IsEqualTo(RestaurantAreaType.PrivateRoom);
+        await Assert.That(updatedTable.Table!.AreaId).IsNull();
+        await Assert.That(updatedTable.Table.Label).IsEqualTo("P9");
+        await Assert.That(updatedTable.Table.MaxCapacity).IsEqualTo(8);
+        await Assert.That(updatedFloorPlan.FloorPlanSummary!.Name).IsEqualTo("Cena privada");
+        await Assert.That(updatedFloorPlan.FloorPlanSummary.CanvasWidth).IsEqualTo(1400);
+        await Assert.That(updatedFloorPlan.FloorPlanSummary.IsActive).IsFalse();
+        await Assert.That(await dbContext.RestaurantTableLayouts.CountAsync()).IsEqualTo(1);
+    }
+
+    [Test]
+    public async Task UpdateTableAsync_RejectsAreaOutsideSelectedFloor()
+    {
+        await using var dbContext = CreateContext();
+        var service = new RestaurantSetupService(dbContext, new FixedTimeProvider(Now));
+        var branch = await service.CreateBranchAsync(new CreateRestaurantBranchRequest("Centro", null, "UTC"), CancellationToken.None);
+        var mainFloor = await service.CreateFloorAsync(new CreateRestaurantFloorRequest(branch.Branch!.Id, "Main", 1), CancellationToken.None);
+        var patioFloor = await service.CreateFloorAsync(new CreateRestaurantFloorRequest(branch.Branch.Id, "Patio", 2), CancellationToken.None);
+        var mainArea = await service.CreateAreaAsync(
+            new CreateRestaurantAreaRequest(branch.Branch.Id, mainFloor.Floor!.Id, "Comedor", RestaurantAreaType.DiningRoom, 1),
+            CancellationToken.None);
+        var patioArea = await service.CreateAreaAsync(
+            new CreateRestaurantAreaRequest(branch.Branch.Id, patioFloor.Floor!.Id, "Patio", RestaurantAreaType.Outdoor, 1),
+            CancellationToken.None);
+        var table = await service.CreateTableAsync(
+            new CreateRestaurantTableRequest(branch.Branch.Id, mainFloor.Floor.Id, mainArea.Area!.Id, "A1", 1, 4, null, RestaurantTableShape.Rectangle),
+            CancellationToken.None);
+
+        var result = await service.UpdateTableAsync(
+            table.Table!.Id,
+            new UpdateRestaurantTableRequest(branch.Branch.Id, mainFloor.Floor.Id, patioArea.Area!.Id, "A1", 1, 4, null, RestaurantTableShape.Rectangle, true),
+            CancellationToken.None);
+
+        await Assert.That(result.Succeeded).IsFalse();
+        await Assert.That(result.FailureCode).IsEqualTo(RestaurantSetupFailureCode.NotFound);
+        await Assert.That((await dbContext.RestaurantTables.SingleAsync(entity => entity.Id == table.Table.Id)).AreaId).IsEqualTo(mainArea.Area.Id);
+    }
+
+    [Test]
+    public async Task UpsertOpeningHourAsync_UpdatesBranchDayHours()
+    {
+        await using var dbContext = CreateContext();
+        var service = new RestaurantSetupService(dbContext, new FixedTimeProvider(Now));
+        var branch = await service.CreateBranchAsync(new CreateRestaurantBranchRequest("Centro", null, "UTC"), CancellationToken.None);
+
+        var result = await service.UpsertOpeningHourAsync(
+            new UpsertRestaurantOpeningHourRequest(
+                branch.Branch!.Id,
+                DayOfWeek.Monday,
+                new TimeOnly(8, 30),
+                new TimeOnly(22, 15),
+                false),
+            CancellationToken.None);
+
+        await Assert.That(result.Succeeded).IsTrue();
+        await Assert.That(result.OpeningHour!.DayOfWeek).IsEqualTo(DayOfWeek.Monday);
+        await Assert.That(result.OpeningHour.OpensAt).IsEqualTo(new TimeOnly(8, 30));
+        await Assert.That(result.OpeningHour.ClosesAt).IsEqualTo(new TimeOnly(22, 15));
+        await Assert.That(await dbContext.RestaurantOpeningHours.CountAsync()).IsEqualTo(7);
+    }
+
+    [Test]
+    public async Task UpsertOpeningHourAsync_RejectsClosingBeforeOpening()
+    {
+        await using var dbContext = CreateContext();
+        var service = new RestaurantSetupService(dbContext, new FixedTimeProvider(Now));
+        var branch = await service.CreateBranchAsync(new CreateRestaurantBranchRequest("Centro", null, "UTC"), CancellationToken.None);
+
+        var result = await service.UpsertOpeningHourAsync(
+            new UpsertRestaurantOpeningHourRequest(branch.Branch!.Id, DayOfWeek.Friday, new TimeOnly(22, 0), new TimeOnly(9, 0), false),
+            CancellationToken.None);
+
+        await Assert.That(result.Succeeded).IsFalse();
+        await Assert.That(result.FailureCode).IsEqualTo(RestaurantSetupFailureCode.InvalidRequest);
+    }
+
+    [Test]
+    public async Task UpsertAndDeleteSpecialDayAsync_ManagesHolidayOverrides()
+    {
+        await using var dbContext = CreateContext();
+        var service = new RestaurantSetupService(dbContext, new FixedTimeProvider(Now));
+        var branch = await service.CreateBranchAsync(new CreateRestaurantBranchRequest("Centro", null, "UTC"), CancellationToken.None);
+        var holidayDate = new DateOnly(2026, 12, 25);
+
+        var created = await service.UpsertSpecialDayAsync(
+            new UpsertRestaurantSpecialDayRequest(null, branch.Branch!.Id, holidayDate, "Navidad", true, null, null),
+            CancellationToken.None);
+        var edited = await service.UpsertSpecialDayAsync(
+            new UpsertRestaurantSpecialDayRequest(
+                created.SpecialDay!.Id,
+                branch.Branch.Id,
+                holidayDate,
+                "Navidad cena",
+                false,
+                new TimeOnly(18, 0),
+                new TimeOnly(23, 0)),
+            CancellationToken.None);
+        var deleted = await service.DeleteSpecialDayAsync(created.SpecialDay.Id, CancellationToken.None);
+
+        await Assert.That(created.Succeeded).IsTrue();
+        await Assert.That(created.SpecialDay.IsClosed).IsTrue();
+        await Assert.That(edited.Succeeded).IsTrue();
+        await Assert.That(edited.SpecialDay!.Name).IsEqualTo("Navidad cena");
+        await Assert.That(edited.SpecialDay.OpensAt).IsEqualTo(new TimeOnly(18, 0));
+        await Assert.That(deleted.Succeeded).IsTrue();
+        await Assert.That(await dbContext.RestaurantSpecialDays.CountAsync()).IsEqualTo(0);
+    }
+
+    [Test]
     public async Task GetSnapshotAsync_ReturnsOnlyCurrentCompanySetup()
     {
         await using var dbContext = CreateContext();

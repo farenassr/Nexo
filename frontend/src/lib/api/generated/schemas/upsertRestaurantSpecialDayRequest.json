@@ -1,0 +1,22 @@
+{
+  "required": [
+    "id",
+    "branchId",
+    "date",
+    "name",
+    "isClosed",
+    "opensAt",
+    "closesAt"
+  ],
+  "type": "object",
+  "properties": {
+    "id": { "type": ["null", "string"], "format": "uuid" },
+    "branchId": { "type": "string", "format": "uuid" },
+    "date": { "type": "string", "format": "date" },
+    "name": { "type": "string" },
+    "isClosed": { "type": "boolean" },
+    "opensAt": { "type": ["null", "string"], "format": "time" },
+    "closesAt": { "type": ["null", "string"], "format": "time" }
+  },
+  "x-readme-ref-name": "UpsertRestaurantSpecialDayRequest"
+}

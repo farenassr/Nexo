@@ -131,7 +131,10 @@ export function RestaurantFloorPlanLivePage() {
     useNexoServerModulesRestaurantFeaturesFloorPlansStatusMapGetRestaurantFloorPlanStatusMapEndpoint(
       {
         floorPlanId: setup.floorPlanId,
-        params: { at: serviceInstant, areaId: optionalText(setup.areaId) },
+        params: {
+          at: serviceInstant,
+          ...(setup.areaId ? { areaId: setup.areaId } : {}),
+        },
       },
       { query: { enabled: isGuid(setup.floorPlanId) } },
     );

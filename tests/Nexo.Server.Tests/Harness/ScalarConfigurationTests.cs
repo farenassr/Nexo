@@ -17,6 +17,16 @@ public sealed class ScalarConfigurationTests
         await Assert.That(program).Contains("app.MapScalarApiReference();");
     }
 
+    [Test]
+    public async Task ServerPipeline_SuppressesRequestAbortCancellations()
+    {
+        var repoRoot = FindRepositoryRoot();
+        var program = await File.ReadAllTextAsync(Path.Combine(repoRoot, "Nexo.Server", "Program.cs"));
+
+        await Assert.That(program).Contains("OperationCanceledException");
+        await Assert.That(program).Contains("context.RequestAborted.IsCancellationRequested");
+    }
+
     private static string FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);

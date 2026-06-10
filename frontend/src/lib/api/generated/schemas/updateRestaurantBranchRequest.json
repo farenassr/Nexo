@@ -1,0 +1,11 @@
+{
+  "required": ["name", "address", "timeZone", "isActive"],
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" },
+    "address": { "type": ["null", "string"] },
+    "timeZone": { "type": "string" },
+    "isActive": { "type": "boolean" }
+  },
+  "x-readme-ref-name": "UpdateRestaurantBranchRequest"
+}

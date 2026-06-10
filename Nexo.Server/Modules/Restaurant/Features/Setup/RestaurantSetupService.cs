@@ -85,7 +85,36 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
                 floorPlan.IsActive))
             .ToArrayAsync(cancellationToken);
 
-        return new RestaurantSetupSnapshot(dbContext.CurrentCompanyId, branches, floors, areas, tables, floorPlans);
+        var openingHours = await dbContext.RestaurantOpeningHours
+            .AsNoTracking()
+            .Where(openingHour => branchIds.Contains(openingHour.BranchId))
+            .OrderBy(static openingHour => openingHour.BranchId)
+            .ThenBy(static openingHour => openingHour.DayOfWeek)
+            .Select(static openingHour => new RestaurantOpeningHourDetail(
+                openingHour.Id,
+                openingHour.BranchId,
+                openingHour.DayOfWeek,
+                openingHour.OpensAt,
+                openingHour.ClosesAt,
+                openingHour.IsClosed))
+            .ToArrayAsync(cancellationToken);
+
+        var specialDays = await dbContext.RestaurantSpecialDays
+            .AsNoTracking()
+            .Where(specialDay => branchIds.Contains(specialDay.BranchId))
+            .OrderBy(static specialDay => specialDay.Date)
+            .ThenBy(static specialDay => specialDay.Name)
+            .Select(static specialDay => new RestaurantSpecialDayDetail(
+                specialDay.Id,
+                specialDay.BranchId,
+                specialDay.Date,
+                specialDay.Name,
+                specialDay.IsClosed,
+                specialDay.OpensAt,
+                specialDay.ClosesAt))
+            .ToArrayAsync(cancellationToken);
+
+        return new RestaurantSetupSnapshot(dbContext.CurrentCompanyId, branches, floors, areas, tables, floorPlans, openingHours, specialDays);
     }
 
     public async Task<RestaurantSetupOperationResult> CreateBranchAsync(
@@ -292,6 +321,301 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
         return RestaurantSetupOperationResult.Success(detail!);
     }
 
+    public async Task<RestaurantSetupOperationResult> UpdateBranchAsync(
+        Guid branchId,
+        UpdateRestaurantBranchRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        if (branchId == Guid.Empty || string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.TimeZone))
+        {
+            return RestaurantSetupOperationResult.Failed(
+                RestaurantSetupFailureCode.InvalidRequest,
+                "Branch name and time zone are required.");
+        }
+
+        var branch = await dbContext.CoreBranches.SingleOrDefaultAsync(branch => branch.Id == branchId, cancellationToken);
+        if (branch is null)
+        {
+            return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Branch was not found.");
+        }
+
+        branch.Name = request.Name.Trim();
+        branch.Address = TrimToNull(request.Address);
+        branch.TimeZone = request.TimeZone.Trim();
+        branch.IsActive = request.IsActive;
+        branch.UpdatedAt = timeProvider.GetUtcNow();
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return RestaurantSetupOperationResult.Success(ToDetail(branch));
+    }
+
+    public async Task<RestaurantSetupOperationResult> UpdateFloorAsync(
+        Guid floorId,
+        UpdateRestaurantFloorRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        if (floorId == Guid.Empty || request.BranchId == Guid.Empty || string.IsNullOrWhiteSpace(request.Name))
+        {
+            return RestaurantSetupOperationResult.Failed(
+                RestaurantSetupFailureCode.InvalidRequest,
+                "Branch and floor name are required.");
+        }
+
+        if (!await BranchExistsAsync(request.BranchId, cancellationToken))
+        {
+            return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Branch was not found.");
+        }
+
+        var floor = await dbContext.RestaurantFloors.SingleOrDefaultAsync(floor => floor.Id == floorId, cancellationToken);
+        if (floor is null)
+        {
+            return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Floor was not found.");
+        }
+
+        floor.BranchId = request.BranchId;
+        floor.Name = request.Name.Trim();
+        floor.SortOrder = request.SortOrder;
+        floor.IsActive = request.IsActive;
+        floor.UpdatedAt = timeProvider.GetUtcNow();
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return RestaurantSetupOperationResult.Success(ToDetail(floor));
+    }
+
+    public async Task<RestaurantSetupOperationResult> UpdateAreaAsync(
+        Guid areaId,
+        UpdateRestaurantAreaRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        if (areaId == Guid.Empty || request.BranchId == Guid.Empty || request.FloorId == Guid.Empty || string.IsNullOrWhiteSpace(request.Name))
+        {
+            return RestaurantSetupOperationResult.Failed(
+                RestaurantSetupFailureCode.InvalidRequest,
+                "Branch, floor, and area name are required.");
+        }
+
+        if (!await FloorBelongsToBranchAsync(request.FloorId, request.BranchId, cancellationToken))
+        {
+            return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Floor was not found.");
+        }
+
+        var area = await dbContext.RestaurantAreas.SingleOrDefaultAsync(area => area.Id == areaId, cancellationToken);
+        if (area is null)
+        {
+            return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Area was not found.");
+        }
+
+        area.BranchId = request.BranchId;
+        area.FloorId = request.FloorId;
+        area.Name = request.Name.Trim();
+        area.Type = request.Type;
+        area.SortOrder = request.SortOrder;
+        area.IsActive = request.IsActive;
+        area.UpdatedAt = timeProvider.GetUtcNow();
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return RestaurantSetupOperationResult.Success(ToDetail(area));
+    }
+
+    public async Task<RestaurantSetupOperationResult> UpdateTableAsync(
+        Guid tableId,
+        UpdateRestaurantTableRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        if (tableId == Guid.Empty
+            || request.BranchId == Guid.Empty
+            || request.FloorId == Guid.Empty
+            || string.IsNullOrWhiteSpace(request.Label)
+            || request.MinCapacity <= 0
+            || request.MaxCapacity < request.MinCapacity)
+        {
+            return RestaurantSetupOperationResult.Failed(
+                RestaurantSetupFailureCode.InvalidRequest,
+                "Branch, floor, label, and valid capacities are required.");
+        }
+
+        if (!await FloorBelongsToBranchAsync(request.FloorId, request.BranchId, cancellationToken))
+        {
+            return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Floor was not found.");
+        }
+
+        if (request.AreaId.HasValue
+            && !await AreaBelongsToFloorAsync(request.AreaId.Value, request.BranchId, request.FloorId, cancellationToken))
+        {
+            return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Area was not found in the selected floor.");
+        }
+
+        var table = await dbContext.RestaurantTables.SingleOrDefaultAsync(table => table.Id == tableId, cancellationToken);
+        if (table is null)
+        {
+            return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Table was not found.");
+        }
+
+        var now = timeProvider.GetUtcNow();
+        table.BranchId = request.BranchId;
+        table.FloorId = request.FloorId;
+        table.AreaId = request.AreaId;
+        table.Label = request.Label.Trim();
+        table.MinCapacity = request.MinCapacity;
+        table.MaxCapacity = request.MaxCapacity;
+        table.DefaultReservationMinutes = request.DefaultReservationMinutes;
+        table.Shape = request.Shape;
+        table.IsActive = request.IsActive;
+        table.UpdatedAt = now;
+
+        var tableLayouts = await dbContext.RestaurantTableLayouts
+            .Where(layout => layout.TableId == tableId)
+            .ToListAsync(cancellationToken);
+        foreach (var layout in tableLayouts)
+        {
+            layout.Shape = request.Shape;
+            layout.UpdatedAt = now;
+        }
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return RestaurantSetupOperationResult.Success(ToDetail(table));
+    }
+
+    public async Task<RestaurantSetupOperationResult> UpdateFloorPlanMetadataAsync(
+        Guid floorPlanId,
+        UpdateRestaurantFloorPlanMetadataRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        if (floorPlanId == Guid.Empty
+            || request.BranchId == Guid.Empty
+            || request.FloorId == Guid.Empty
+            || string.IsNullOrWhiteSpace(request.Name)
+            || request.CanvasWidth <= 0
+            || request.CanvasHeight <= 0
+            || request.GridSize is <= 0)
+        {
+            return RestaurantSetupOperationResult.Failed(
+                RestaurantSetupFailureCode.InvalidRequest,
+                "Branch, floor, name, and valid canvas dimensions are required.");
+        }
+
+        if (!await FloorBelongsToBranchAsync(request.FloorId, request.BranchId, cancellationToken))
+        {
+            return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Floor was not found.");
+        }
+
+        var floorPlan = await dbContext.RestaurantFloorPlans.SingleOrDefaultAsync(plan => plan.Id == floorPlanId, cancellationToken);
+        if (floorPlan is null)
+        {
+            return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Floor plan was not found.");
+        }
+
+        floorPlan.BranchId = request.BranchId;
+        floorPlan.FloorId = request.FloorId;
+        floorPlan.Name = request.Name.Trim();
+        floorPlan.CanvasWidth = request.CanvasWidth;
+        floorPlan.CanvasHeight = request.CanvasHeight;
+        floorPlan.GridSize = request.GridSize;
+        floorPlan.IsActive = request.IsActive;
+        floorPlan.UpdatedAt = timeProvider.GetUtcNow();
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return RestaurantSetupOperationResult.Success(ToSummary(floorPlan));
+    }
+
+    public async Task<RestaurantSetupOperationResult> UpsertOpeningHourAsync(
+        UpsertRestaurantOpeningHourRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        if (request.BranchId == Guid.Empty || (!request.IsClosed && request.ClosesAt <= request.OpensAt))
+        {
+            return RestaurantSetupOperationResult.Failed(
+                RestaurantSetupFailureCode.InvalidRequest,
+                "Branch and valid opening hours are required.");
+        }
+
+        if (!await BranchExistsAsync(request.BranchId, cancellationToken))
+        {
+            return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Branch was not found.");
+        }
+
+        var openingHour = await dbContext.RestaurantOpeningHours.SingleOrDefaultAsync(
+            hours => hours.BranchId == request.BranchId && hours.DayOfWeek == request.DayOfWeek,
+            cancellationToken);
+        var now = timeProvider.GetUtcNow();
+
+        if (openingHour is null)
+        {
+            openingHour = new RestaurantOpeningHour
+            {
+                CompanyId = dbContext.CurrentCompanyId,
+                BranchId = request.BranchId,
+                DayOfWeek = request.DayOfWeek,
+                CreatedAt = now
+            };
+            dbContext.RestaurantOpeningHours.Add(openingHour);
+        }
+
+        openingHour.OpensAt = request.OpensAt;
+        openingHour.ClosesAt = request.ClosesAt;
+        openingHour.IsClosed = request.IsClosed;
+        openingHour.UpdatedAt = now;
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return RestaurantSetupOperationResult.Success(ToDetail(openingHour));
+    }
+
+    public async Task<RestaurantSetupOperationResult> UpsertSpecialDayAsync(
+        UpsertRestaurantSpecialDayRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        if (request.BranchId == Guid.Empty
+            || string.IsNullOrWhiteSpace(request.Name)
+            || (!request.IsClosed && (!request.OpensAt.HasValue || !request.ClosesAt.HasValue || request.ClosesAt <= request.OpensAt)))
+        {
+            return RestaurantSetupOperationResult.Failed(
+                RestaurantSetupFailureCode.InvalidRequest,
+                "Branch, date, name, and valid special-day hours are required.");
+        }
+
+        if (!await BranchExistsAsync(request.BranchId, cancellationToken))
+        {
+            return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Branch was not found.");
+        }
+
+        RestaurantSpecialDay? specialDay = null;
+        if (request.Id.HasValue)
+        {
+            specialDay = await dbContext.RestaurantSpecialDays.SingleOrDefaultAsync(day => day.Id == request.Id.Value, cancellationToken);
+            if (specialDay is null)
+            {
+                return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Special day was not found.");
+            }
+        }
+
+        specialDay ??= await dbContext.RestaurantSpecialDays.SingleOrDefaultAsync(
+            day => day.BranchId == request.BranchId && day.Date == request.Date,
+            cancellationToken);
+
+        var now = timeProvider.GetUtcNow();
+        if (specialDay is null)
+        {
+            specialDay = new RestaurantSpecialDay
+            {
+                CompanyId = dbContext.CurrentCompanyId,
+                CreatedAt = now
+            };
+            dbContext.RestaurantSpecialDays.Add(specialDay);
+        }
+
+        specialDay.BranchId = request.BranchId;
+        specialDay.Date = request.Date;
+        specialDay.Name = request.Name.Trim();
+        specialDay.IsClosed = request.IsClosed;
+        specialDay.OpensAt = request.IsClosed ? null : request.OpensAt;
+        specialDay.ClosesAt = request.IsClosed ? null : request.ClosesAt;
+        specialDay.UpdatedAt = now;
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return RestaurantSetupOperationResult.Success(ToDetail(specialDay));
+    }
+
     public async Task<RestaurantSetupOperationResult> DeleteBranchAsync(Guid branchId, CancellationToken cancellationToken = default)
     {
         var branch = await dbContext.CoreBranches.SingleOrDefaultAsync(branch => branch.Id == branchId, cancellationToken);
@@ -368,6 +692,19 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
 
         await DeleteFloorPlanDependentsAsync(floorPlanId, cancellationToken);
         dbContext.RestaurantFloorPlans.Remove(floorPlan);
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return RestaurantSetupOperationResult.Success();
+    }
+
+    public async Task<RestaurantSetupOperationResult> DeleteSpecialDayAsync(Guid specialDayId, CancellationToken cancellationToken = default)
+    {
+        var specialDay = await dbContext.RestaurantSpecialDays.SingleOrDefaultAsync(day => day.Id == specialDayId, cancellationToken);
+        if (specialDay is null)
+        {
+            return RestaurantSetupOperationResult.Failed(RestaurantSetupFailureCode.NotFound, "Special day was not found.");
+        }
+
+        dbContext.RestaurantSpecialDays.Remove(specialDay);
         await dbContext.SaveChangesAsync(cancellationToken);
         return RestaurantSetupOperationResult.Success();
     }
@@ -456,6 +793,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
     private async Task DeleteBranchDependentsAsync(Guid branchId, CancellationToken cancellationToken)
     {
         var floorPlanIds = await dbContext.RestaurantFloorPlans
+            .AsNoTracking()
             .Where(floorPlan => floorPlan.BranchId == branchId)
             .Select(floorPlan => floorPlan.Id)
             .ToArrayAsync(cancellationToken);
@@ -465,6 +803,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
         }
 
         var tableIds = await dbContext.RestaurantTables
+            .AsNoTracking()
             .Where(table => table.BranchId == branchId)
             .Select(table => table.Id)
             .ToArrayAsync(cancellationToken);
@@ -500,6 +839,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
     private async Task DeleteFloorDependentsAsync(Guid floorId, CancellationToken cancellationToken)
     {
         var floorPlanIds = await dbContext.RestaurantFloorPlans
+            .AsNoTracking()
             .Where(floorPlan => floorPlan.FloorId == floorId)
             .Select(floorPlan => floorPlan.Id)
             .ToArrayAsync(cancellationToken);
@@ -509,6 +849,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
         }
 
         var tableIds = await dbContext.RestaurantTables
+            .AsNoTracking()
             .Where(table => table.FloorId == floorId)
             .Select(table => table.Id)
             .ToArrayAsync(cancellationToken);
@@ -628,21 +969,27 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
 
     private Task<bool> BranchExistsAsync(Guid branchId, CancellationToken cancellationToken)
     {
-        return dbContext.CoreBranches.AnyAsync(branch => branch.Id == branchId, cancellationToken);
+        return dbContext.CoreBranches
+            .AsNoTracking()
+            .AnyAsync(branch => branch.Id == branchId, cancellationToken);
     }
 
     private Task<bool> FloorBelongsToBranchAsync(Guid floorId, Guid branchId, CancellationToken cancellationToken)
     {
-        return dbContext.RestaurantFloors.AnyAsync(
-            floor => floor.Id == floorId && floor.BranchId == branchId,
-            cancellationToken);
+        return dbContext.RestaurantFloors
+            .AsNoTracking()
+            .AnyAsync(
+                floor => floor.Id == floorId && floor.BranchId == branchId,
+                cancellationToken);
     }
 
     private Task<bool> AreaBelongsToFloorAsync(Guid areaId, Guid branchId, Guid floorId, CancellationToken cancellationToken)
     {
-        return dbContext.RestaurantAreas.AnyAsync(
-            area => area.Id == areaId && area.BranchId == branchId && area.FloorId == floorId,
-            cancellationToken);
+        return dbContext.RestaurantAreas
+            .AsNoTracking()
+            .AnyAsync(
+                area => area.Id == areaId && area.BranchId == branchId && area.FloorId == floorId,
+                cancellationToken);
     }
 
     private static string? TrimToNull(string? value)
@@ -680,5 +1027,41 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
             table.DefaultReservationMinutes,
             table.Shape,
             table.IsActive);
+    }
+
+    private static RestaurantFloorPlanSummary ToSummary(RestaurantFloorPlan floorPlan)
+    {
+        return new RestaurantFloorPlanSummary(
+            floorPlan.Id,
+            floorPlan.BranchId,
+            floorPlan.FloorId,
+            floorPlan.Name,
+            floorPlan.CanvasWidth,
+            floorPlan.CanvasHeight,
+            floorPlan.GridSize,
+            floorPlan.IsActive);
+    }
+
+    private static RestaurantOpeningHourDetail ToDetail(RestaurantOpeningHour openingHour)
+    {
+        return new RestaurantOpeningHourDetail(
+            openingHour.Id,
+            openingHour.BranchId,
+            openingHour.DayOfWeek,
+            openingHour.OpensAt,
+            openingHour.ClosesAt,
+            openingHour.IsClosed);
+    }
+
+    private static RestaurantSpecialDayDetail ToDetail(RestaurantSpecialDay specialDay)
+    {
+        return new RestaurantSpecialDayDetail(
+            specialDay.Id,
+            specialDay.BranchId,
+            specialDay.Date,
+            specialDay.Name,
+            specialDay.IsClosed,
+            specialDay.OpensAt,
+            specialDay.ClosesAt);
     }
 }

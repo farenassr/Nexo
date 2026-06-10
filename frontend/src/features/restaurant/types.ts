@@ -20,18 +20,21 @@ export type {
   RestaurantFloorPlanDetail,
   RestaurantFloorPlanStatusMap,
   RestaurantFloorPlanSummary,
+  RestaurantOpeningHourDetail,
   RestaurantOccupancyByHourPoint,
   RestaurantReservationCustomerDetail,
   RestaurantReservationDetail,
   RestaurantReservationStatusHistoryDetail,
   RestaurantReservationTableDetail,
   RestaurantSetupSnapshot,
+  RestaurantSpecialDayDetail,
   RestaurantTableBlockDetail,
   RestaurantTableDetail,
   RestaurantTableLayoutDetail,
   RestaurantTableSeatLayoutDetail,
   RestaurantTableStatusDetail,
   RestaurantUpcomingReservationSummary,
+  DayOfWeek,
 } from "../../lib/api/generated/types";
 
 export interface RestaurantOperationErrorResponse {

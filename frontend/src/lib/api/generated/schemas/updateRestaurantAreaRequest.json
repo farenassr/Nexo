@@ -1,0 +1,17 @@
+{
+  "required": ["branchId", "floorId", "name", "type", "sortOrder", "isActive"],
+  "type": "object",
+  "properties": {
+    "branchId": { "type": "string", "format": "uuid" },
+    "floorId": { "type": "string", "format": "uuid" },
+    "name": { "type": "string" },
+    "type": { "type": "integer", "x-readme-ref-name": "RestaurantAreaType" },
+    "sortOrder": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": "integer",
+      "format": "int32"
+    },
+    "isActive": { "type": "boolean" }
+  },
+  "x-readme-ref-name": "UpdateRestaurantAreaRequest"
+}

@@ -64,6 +64,19 @@
     "createArea": "Crear zona",
     "createTable": "Crear mesa",
     "createFloorPlan": "Crear plano",
+    "editBranch": "Editar sucursal",
+    "editFloor": "Editar piso",
+    "editArea": "Editar zona",
+    "editTable": "Editar mesa",
+    "editFloorPlan": "Editar metadata del plano",
+    "openingHours": "Horarios de atencion",
+    "specialDays": "Feriados / dias especiales",
+    "addSpecialDay": "Agregar dia especial",
+    "noSpecialDays": "Sin feriados creados",
+    "opensAt": "Abre",
+    "closesAt": "Cierra",
+    "closed": "Cerrado",
+    "isActive": "Activo",
     "branches": "Sucursales",
     "floors": "Pisos",
     "areas": "Zonas",
@@ -87,7 +100,8 @@
     "seated": "Sentar",
     "completed": "Completar",
     "close": "Cerrar",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "save": "Guardar"
   },
   "editor": {
     "activeManagedBySetup": "Activa, gestionada desde Setup",
@@ -220,6 +234,8 @@
     "setupCreated": "Setup creado",
     "setupCreateFailed": "No se pudo crear el setup",
     "setupDeleted": "Setup eliminado",
-    "setupDeleteFailed": "No se pudo eliminar el setup"
+    "setupDeleteFailed": "No se pudo eliminar el setup",
+    "setupUpdated": "Setup actualizado",
+    "setupUpdateFailed": "No se pudo actualizar el setup"
   }
 }

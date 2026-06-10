@@ -32,6 +32,17 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next(context);
+    }
+    catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
+    {
+        // The browser can abort in-flight API calls when the user changes tabs/routes.
+    }
+});
 
 if (app.Environment.IsDevelopment())
 {

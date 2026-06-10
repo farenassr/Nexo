@@ -8,7 +8,10 @@ public sealed record RestaurantSetupOperationResult(
     RestaurantFloorDetail? Floor = null,
     RestaurantAreaDetail? Area = null,
     RestaurantTableDetail? Table = null,
-    RestaurantFloorPlanDetail? FloorPlan = null)
+    RestaurantFloorPlanDetail? FloorPlan = null,
+    RestaurantFloorPlanSummary? FloorPlanSummary = null,
+    RestaurantOpeningHourDetail? OpeningHour = null,
+    RestaurantSpecialDayDetail? SpecialDay = null)
 {
     public static RestaurantSetupOperationResult Success()
     {
@@ -38,6 +41,21 @@ public sealed record RestaurantSetupOperationResult(
     public static RestaurantSetupOperationResult Success(RestaurantFloorPlanDetail floorPlan)
     {
         return new RestaurantSetupOperationResult(true, RestaurantSetupFailureCode.None, string.Empty, FloorPlan: floorPlan);
+    }
+
+    public static RestaurantSetupOperationResult Success(RestaurantFloorPlanSummary floorPlan)
+    {
+        return new RestaurantSetupOperationResult(true, RestaurantSetupFailureCode.None, string.Empty, FloorPlanSummary: floorPlan);
+    }
+
+    public static RestaurantSetupOperationResult Success(RestaurantOpeningHourDetail openingHour)
+    {
+        return new RestaurantSetupOperationResult(true, RestaurantSetupFailureCode.None, string.Empty, OpeningHour: openingHour);
+    }
+
+    public static RestaurantSetupOperationResult Success(RestaurantSpecialDayDetail specialDay)
+    {
+        return new RestaurantSetupOperationResult(true, RestaurantSetupFailureCode.None, string.Empty, SpecialDay: specialDay);
     }
 
     public static RestaurantSetupOperationResult Failed(RestaurantSetupFailureCode failureCode, string message)

@@ -47,6 +47,23 @@ public sealed class LoginEndpointTests
             .Contains("redirect_uri=http%3A%2F%2Fwebfrontend-nexo.dev.localhost%3A55809%2Fauth%2Fcallback");
     }
 
+    [Test]
+    public async Task AuthMe_AllowsAnonymousRequestToReturnUnauthorized()
+    {
+        var repoRoot = FindRepositoryRoot();
+        var endpoint = await File.ReadAllTextAsync(Path.Combine(
+            repoRoot,
+            "Nexo.Server",
+            "Modules",
+            "Shared",
+            "Auth",
+            "Features",
+            "AuthMeEndpoint.cs"));
+
+        await Assert.That(endpoint).Contains("AllowAnonymous();");
+        await Assert.That(endpoint).Contains("Send.UnauthorizedAsync");
+    }
+
     private static async Task<WebApplication> BuildLoginTestAppAsync(bool useForwardedHeaders)
     {
         var builder = WebApplication.CreateBuilder();
@@ -85,6 +102,23 @@ public sealed class LoginEndpointTests
         app.UseFastEndpoints();
         await app.StartAsync();
         return app;
+    }
+
+    private static string FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+
+        while (directory is not null)
+        {
+            if (File.Exists(Path.Combine(directory.FullName, "Nexo.slnx")))
+            {
+                return directory.FullName;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate Nexo.slnx from the test output directory.");
     }
 
     private sealed class RedirectChallengeHandler(

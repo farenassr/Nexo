@@ -165,6 +165,7 @@ public sealed class RestaurantAvailabilityService(NexoDbContext dbContext)
         if (!await IsWithinOpeningWindowAsync(request.BranchId, localWindow, cancellationToken))
         {
             var specialDay = await dbContext.RestaurantSpecialDays
+                .AsNoTracking()
                 .SingleOrDefaultAsync(day => day.BranchId == request.BranchId && day.Date == localWindow.Start.Date, cancellationToken);
             var code = specialDay?.IsClosed == true
                 ? RestaurantAvailabilityFailureCode.SpecialDayClosed
