@@ -1,4 +1,4 @@
-import type { SaveRestaurantFloorPlanInput } from './api/restaurantApi';
+import type { SaveRestaurantFloorPlanEndpointRequest } from "../../lib/api/generated/types";
 import {
   RestaurantTableShape,
   type RestaurantAreaDetail,
@@ -6,9 +6,22 @@ import {
   type RestaurantFloorPlanDetail,
   type RestaurantTableDetail,
   type RestaurantTableLayoutDetail,
-} from './types';
+} from "./types";
 
 const minimumTableSize = 44;
+
+type SaveRestaurantFloorPlanInput = Required<
+  Pick<
+    SaveRestaurantFloorPlanEndpointRequest,
+    | "name"
+    | "canvasWidth"
+    | "canvasHeight"
+    | "gridSize"
+    | "isActive"
+    | "areaLayouts"
+    | "tableLayouts"
+  >
+>;
 
 export interface FloorPlanEditorState {
   floorPlan: RestaurantFloorPlanDetail;
@@ -18,7 +31,9 @@ export interface FloorPlanEditorState {
   isDirty: boolean;
 }
 
-export function createFloorPlanEditorState(floorPlan: RestaurantFloorPlanDetail): FloorPlanEditorState {
+export function createFloorPlanEditorState(
+  floorPlan: RestaurantFloorPlanDetail,
+): FloorPlanEditorState {
   const initialFloorPlan = cloneFloorPlan(floorPlan);
   return {
     floorPlan: cloneFloorPlan(floorPlan),
@@ -48,7 +63,9 @@ export function applyEditorChange(
   };
 }
 
-export function undoEditorChange(state: FloorPlanEditorState): FloorPlanEditorState {
+export function undoEditorChange(
+  state: FloorPlanEditorState,
+): FloorPlanEditorState {
   const previousFloorPlan = state.past[state.past.length - 1];
   if (!previousFloorPlan) {
     return state;
@@ -64,7 +81,9 @@ export function undoEditorChange(state: FloorPlanEditorState): FloorPlanEditorSt
   };
 }
 
-export function redoEditorChange(state: FloorPlanEditorState): FloorPlanEditorState {
+export function redoEditorChange(
+  state: FloorPlanEditorState,
+): FloorPlanEditorState {
   const nextFloorPlan = state.future[0];
   if (!nextFloorPlan) {
     return state;
@@ -88,7 +107,15 @@ export function moveTableLayout(
   return {
     ...floorPlan,
     tableLayouts: floorPlan.tableLayouts.map((table) =>
-      table.tableId === tableId ? moveTableInsideCanvas(table, floorPlan.canvasWidth, floorPlan.canvasHeight, deltaX, deltaY) : table,
+      table.tableId === tableId
+        ? moveTableInsideCanvas(
+            table,
+            floorPlan.canvasWidth,
+            floorPlan.canvasHeight,
+            deltaX,
+            deltaY,
+          )
+        : table,
     ),
   };
 }
@@ -107,7 +134,11 @@ export function resizeTableLayout(
       }
 
       const nextWidth = clamp(width, minimumTableSize, floorPlan.canvasWidth);
-      const nextHeight = clamp(height, minimumTableSize, floorPlan.canvasHeight);
+      const nextHeight = clamp(
+        height,
+        minimumTableSize,
+        floorPlan.canvasHeight,
+      );
       return {
         ...table,
         width: nextWidth,
@@ -126,7 +157,11 @@ export function changeTableShape(
   chairCount: number,
 ): RestaurantFloorPlanDetail {
   return replaceTableLayoutById(floorPlan, tableId, (table) => {
-    const dimensions = defaultDimensionsForShape(shape, table.width, table.height);
+    const dimensions = defaultDimensionsForShape(
+      shape,
+      table.width,
+      table.height,
+    );
     return {
       ...table,
       ...dimensions,
@@ -156,7 +191,15 @@ export function moveAreaLayout(
   return {
     ...floorPlan,
     areaLayouts: floorPlan.areaLayouts.map((area) =>
-      area.areaId === areaId ? moveLayoutInsideCanvas(area, floorPlan.canvasWidth, floorPlan.canvasHeight, deltaX, deltaY) : area,
+      area.areaId === areaId
+        ? moveLayoutInsideCanvas(
+            area,
+            floorPlan.canvasWidth,
+            floorPlan.canvasHeight,
+            deltaX,
+            deltaY,
+          )
+        : area,
     ),
   };
 }
@@ -198,7 +241,10 @@ export function addTableLayoutFromSetup(
 
   const dimensions = defaultDimensionsForShape(table.shape, 96, 72);
   const offset = floorPlan.tableLayouts.length * 60;
-  const chairCount = Math.max(table.minCapacity, Math.min(table.maxCapacity, 4));
+  const chairCount = Math.max(
+    table.minCapacity,
+    Math.min(table.maxCapacity, 4),
+  );
   return {
     ...floorPlan,
     tableLayouts: [
@@ -207,8 +253,16 @@ export function addTableLayoutFromSetup(
         tableId: table.id,
         tableLabel: table.label,
         areaId: table.areaId,
-        x: clamp(150 + offset, 0, Math.max(0, floorPlan.canvasWidth - dimensions.width)),
-        y: clamp(Math.round(150 + offset * 0.67), 0, Math.max(0, floorPlan.canvasHeight - dimensions.height)),
+        x: clamp(
+          150 + offset,
+          0,
+          Math.max(0, floorPlan.canvasWidth - dimensions.width),
+        ),
+        y: clamp(
+          Math.round(150 + offset * 0.67),
+          0,
+          Math.max(0, floorPlan.canvasHeight - dimensions.height),
+        ),
         width: dimensions.width,
         height: dimensions.height,
         rotationDegrees: 0,
@@ -237,11 +291,16 @@ export function replaceTableLayout(
 ): RestaurantFloorPlanDetail {
   return {
     ...floorPlan,
-    tableLayouts: floorPlan.tableLayouts.map((table) => (table.tableId === tableLayout.tableId ? tableLayout : table)),
+    tableLayouts: floorPlan.tableLayouts.map((table) =>
+      table.tableId === tableLayout.tableId ? tableLayout : table,
+    ),
   };
 }
 
-export function buildSeatLayouts(shape: RestaurantTableShape, chairCount: number) {
+export function buildSeatLayouts(
+  shape: RestaurantTableShape,
+  chairCount: number,
+) {
   const safeChairCount = Math.max(0, Math.min(Math.round(chairCount), 16));
 
   if (safeChairCount === 0) {
@@ -277,7 +336,9 @@ export function buildSeatLayouts(shape: RestaurantTableShape, chairCount: number
   ];
 }
 
-export function toSaveFloorPlanInput(floorPlan: RestaurantFloorPlanDetail): SaveRestaurantFloorPlanInput {
+export function toSaveFloorPlanInput(
+  floorPlan: RestaurantFloorPlanDetail,
+): SaveRestaurantFloorPlanInput {
   return {
     name: floorPlan.name,
     canvasWidth: floorPlan.canvasWidth,
@@ -319,7 +380,9 @@ function replaceTableLayoutById(
 ) {
   return {
     ...floorPlan,
-    tableLayouts: floorPlan.tableLayouts.map((table) => (table.tableId === tableId ? mapTable(table) : table)),
+    tableLayouts: floorPlan.tableLayouts.map((table) =>
+      table.tableId === tableId ? mapTable(table) : table,
+    ),
   };
 }
 
@@ -330,10 +393,18 @@ function moveTableInsideCanvas(
   deltaX: number,
   deltaY: number,
 ): RestaurantTableLayoutDetail {
-  return moveLayoutInsideCanvas(table, canvasWidth, canvasHeight, deltaX, deltaY);
+  return moveLayoutInsideCanvas(
+    table,
+    canvasWidth,
+    canvasHeight,
+    deltaX,
+    deltaY,
+  );
 }
 
-function moveLayoutInsideCanvas<TLayout extends RestaurantAreaLayoutDetail | RestaurantTableLayoutDetail>(
+function moveLayoutInsideCanvas<
+  TLayout extends RestaurantAreaLayoutDetail | RestaurantTableLayoutDetail,
+>(
   layout: TLayout,
   canvasWidth: number,
   canvasHeight: number,
@@ -347,7 +418,11 @@ function moveLayoutInsideCanvas<TLayout extends RestaurantAreaLayoutDetail | Res
   };
 }
 
-function defaultDimensionsForShape(shape: RestaurantTableShape, width: number, height: number) {
+function defaultDimensionsForShape(
+  shape: RestaurantTableShape,
+  width: number,
+  height: number,
+) {
   switch (shape) {
     case RestaurantTableShape.Round:
       return { width: 96, height: 96 };
@@ -356,9 +431,15 @@ function defaultDimensionsForShape(shape: RestaurantTableShape, width: number, h
       return { width: size, height: size };
     }
     case RestaurantTableShape.Booth:
-      return { width: Math.max(width, 120), height: Math.max(minimumTableSize, Math.round(height * 0.9)) };
+      return {
+        width: Math.max(width, 120),
+        height: Math.max(minimumTableSize, Math.round(height * 0.9)),
+      };
     case RestaurantTableShape.Bar:
-      return { width: Math.max(width, 140), height: Math.max(minimumTableSize, Math.round(height * 0.7)) };
+      return {
+        width: Math.max(width, 140),
+        height: Math.max(minimumTableSize, Math.round(height * 0.7)),
+      };
     case RestaurantTableShape.Rectangle:
     case RestaurantTableShape.Custom:
     default:
@@ -366,7 +447,13 @@ function defaultDimensionsForShape(shape: RestaurantTableShape, width: number, h
   }
 }
 
-function distributeAlongEdge(chairCount: number, y: number, rotationDegrees: number, seatNumberOffset = 0, inset = 0) {
+function distributeAlongEdge(
+  chairCount: number,
+  y: number,
+  rotationDegrees: number,
+  seatNumberOffset = 0,
+  inset = 0,
+) {
   if (chairCount <= 0) {
     return [];
   }
@@ -386,7 +473,9 @@ function normalizeRotation(rotationDegrees: number) {
   return ((Math.round(rotationDegrees) % 360) + 360) % 360;
 }
 
-function cloneFloorPlan(floorPlan: RestaurantFloorPlanDetail): RestaurantFloorPlanDetail {
+function cloneFloorPlan(
+  floorPlan: RestaurantFloorPlanDetail,
+): RestaurantFloorPlanDetail {
   return {
     ...floorPlan,
     areaLayouts: floorPlan.areaLayouts.map((area) => ({ ...area })),
@@ -397,7 +486,10 @@ function cloneFloorPlan(floorPlan: RestaurantFloorPlanDetail): RestaurantFloorPl
   };
 }
 
-function floorPlansEqual(left: RestaurantFloorPlanDetail, right: RestaurantFloorPlanDetail) {
+function floorPlansEqual(
+  left: RestaurantFloorPlanDetail,
+  right: RestaurantFloorPlanDetail,
+) {
   return JSON.stringify(left) === JSON.stringify(right);
 }
 

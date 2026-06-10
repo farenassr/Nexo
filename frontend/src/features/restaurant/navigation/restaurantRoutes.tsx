@@ -1,19 +1,12 @@
-import { createRoute, Navigate, type AnyRoute } from '@tanstack/react-router';
+import { createRoute, type AnyRoute } from '@tanstack/react-router';
 import { RestaurantWorkspaceShell } from '../components/RestaurantWorkspaceShell';
 import { RestaurantDashboardPage } from '../pages/RestaurantDashboardPage';
 import { RestaurantFloorPlanEditorPage } from '../pages/RestaurantFloorPlanEditorPage';
 import { RestaurantFloorPlanLivePage } from '../pages/RestaurantFloorPlanLivePage';
 import { RestaurantReservationsPage } from '../pages/RestaurantReservationsPage';
 import { RestaurantSetupPage } from '../pages/RestaurantSetupPage';
-import { restaurantDefaultRoute } from './restaurantNavigation';
 
 export function createRestaurantRoutes(rootRoute: AnyRoute) {
-  const indexRoute = createRoute({
-    getParentRoute: () => rootRoute,
-    path: '/',
-    component: () => <Navigate to={restaurantDefaultRoute as never} replace />,
-  });
-
   const restaurantRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: '/restaurant',
@@ -52,5 +45,5 @@ export function createRestaurantRoutes(rootRoute: AnyRoute) {
 
   restaurantRoute.addChildren([dashboardRoute, floorPlanRoute, reservationsRoute, floorPlanEditorRoute, setupRoute]);
 
-  return [indexRoute, restaurantRoute];
+  return [restaurantRoute];
 }

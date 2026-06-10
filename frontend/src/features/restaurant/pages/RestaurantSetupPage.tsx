@@ -1,24 +1,44 @@
-import { useMemo, useState, type FormEvent } from 'react';
-import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
-import { Building2, Grid3X3, Layers, Loader2, Map, Settings, Trash2, Utensils } from 'lucide-react';
-import { toast } from 'sonner';
+import { useMemo, useState, type FormEvent } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
-  createRestaurantArea,
-  createRestaurantBranch,
-  createRestaurantFloor,
-  createRestaurantFloorPlan,
-  createRestaurantTable,
-  deleteRestaurantArea,
-  deleteRestaurantBranch,
-  deleteRestaurantFloor,
-  deleteRestaurantFloorPlan,
-  deleteRestaurantTable,
-  getRestaurantSetup,
-} from '../api/restaurantApi';
-import { EmptyState, Field, InlineError, Metric, PanelHeader, SkeletonRows } from '../components/restaurantUi';
-import labels from '../labels.es.json';
-import { restaurantQueryKeys } from '../queryKeys';
-import { optionalText, updateSetup, useStoredSetup } from '../state/restaurantWorkspaceState';
+  Building2,
+  Grid3X3,
+  Layers,
+  Loader2,
+  Map,
+  Settings,
+  Trash2,
+  Utensils,
+} from "lucide-react";
+import { toast } from "sonner";
+import {
+  useNexoServerModulesRestaurantFeaturesSetupCreateRestaurantAreaEndpoint,
+  useNexoServerModulesRestaurantFeaturesSetupCreateRestaurantBranchEndpoint,
+  useNexoServerModulesRestaurantFeaturesSetupCreateRestaurantFloorEndpoint,
+  useNexoServerModulesRestaurantFeaturesSetupCreateRestaurantFloorPlanEndpoint,
+  useNexoServerModulesRestaurantFeaturesSetupCreateRestaurantTableEndpoint,
+  useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantAreaEndpoint,
+  useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantBranchEndpoint,
+  useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorEndpoint,
+  useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpoint,
+  useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint,
+  useNexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint,
+} from "../../../lib/api/generated/hooks";
+import { invalidateRestaurantSetup } from "../api/restaurantQueryInvalidation";
+import {
+  EmptyState,
+  Field,
+  InlineError,
+  Metric,
+  PanelHeader,
+  SkeletonRows,
+} from "../components/restaurantUi";
+import labels from "../labels.es.json";
+import {
+  optionalText,
+  updateSetup,
+  useStoredSetup,
+} from "../state/restaurantWorkspaceState";
 import {
   RestaurantAreaType,
   RestaurantTableShape,
@@ -28,16 +48,16 @@ import {
   type RestaurantFloorPlanSummary,
   type RestaurantSetupSnapshot,
   type RestaurantTableDetail,
-} from '../types';
+} from "../types";
 
 const areaTypeOptions = [
-  { value: RestaurantAreaType.DiningRoom, label: 'Comedor' },
-  { value: RestaurantAreaType.Terrace, label: 'Terraza' },
-  { value: RestaurantAreaType.Bar, label: 'Bar' },
-  { value: RestaurantAreaType.PrivateRoom, label: 'Privado' },
-  { value: RestaurantAreaType.Outdoor, label: 'Exterior' },
-  { value: RestaurantAreaType.Takeaway, label: 'Takeaway' },
-  { value: RestaurantAreaType.Other, label: 'Otro' },
+  { value: RestaurantAreaType.DiningRoom, label: "Comedor" },
+  { value: RestaurantAreaType.Terrace, label: "Terraza" },
+  { value: RestaurantAreaType.Bar, label: "Bar" },
+  { value: RestaurantAreaType.PrivateRoom, label: "Privado" },
+  { value: RestaurantAreaType.Outdoor, label: "Exterior" },
+  { value: RestaurantAreaType.Takeaway, label: "Takeaway" },
+  { value: RestaurantAreaType.Other, label: "Otro" },
 ] as const;
 
 const shapeOptions = [
@@ -77,7 +97,7 @@ interface FloorPlanFormState {
   isActive: boolean;
 }
 
-type SetupDeleteKind = 'branch' | 'floor' | 'area' | 'table' | 'floorPlan';
+type SetupDeleteKind = "branch" | "floor" | "area" | "table" | "floorPlan";
 
 interface SetupDeleteInput {
   kind: SetupDeleteKind;
@@ -90,41 +110,46 @@ export function RestaurantSetupPage() {
   const [workspaceSetup, setWorkspaceSetup] = useStoredSetup();
   const [branchForm, setBranchForm] = useState({
     name: labels.setup.mainBranch,
-    address: '',
-    timeZone: 'UTC',
+    address: "",
+    timeZone: "UTC",
   });
-  const [floorForm, setFloorForm] = useState({ branchId: '', name: labels.setup.mainFloor, sortOrder: 1 });
+  const [floorForm, setFloorForm] = useState({
+    branchId: "",
+    name: labels.setup.mainFloor,
+    sortOrder: 1,
+  });
   const [areaForm, setAreaForm] = useState<AreaFormState>({
-    branchId: '',
-    floorId: '',
+    branchId: "",
+    floorId: "",
     name: labels.setup.mainArea,
     type: RestaurantAreaType.DiningRoom,
     sortOrder: 1,
   });
   const [tableForm, setTableForm] = useState<TableFormState>({
-    branchId: '',
-    floorId: '',
-    areaId: '',
-    label: 'A1',
+    branchId: "",
+    floorId: "",
+    areaId: "",
+    label: "A1",
     minCapacity: 2,
     maxCapacity: 4,
     defaultReservationMinutes: 90,
     shape: RestaurantTableShape.Rectangle,
   });
   const [floorPlanForm, setFloorPlanForm] = useState<FloorPlanFormState>({
-    branchId: '',
-    floorId: '',
+    branchId: "",
+    floorId: "",
     name: labels.setup.mainPlan,
     canvasWidth: 1200,
     canvasHeight: 760,
     gridSize: 20,
     isActive: true,
   });
+  const [pendingDelete, setPendingDelete] = useState<SetupDeleteInput | null>(
+    null,
+  );
 
-  const setupQuery = useQuery({
-    queryKey: restaurantQueryKeys.setup(),
-    queryFn: getRestaurantSetup,
-  });
+  const setupQuery =
+    useNexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint();
 
   const snapshot = setupQuery.data;
   const branches = snapshot?.branches ?? [];
@@ -133,7 +158,9 @@ export function RestaurantSetupPage() {
 
   const selectedBranchId = pickId(branches, workspaceSetup.branchId);
   const selectedFloorId = pickId(
-    floors.filter((floor) => !selectedBranchId || floor.branchId === selectedBranchId),
+    floors.filter(
+      (floor) => !selectedBranchId || floor.branchId === selectedBranchId,
+    ),
     workspaceSetup.floorId,
   );
 
@@ -142,112 +169,169 @@ export function RestaurantSetupPage() {
   const areaFloors = floors.filter((floor) => floor.branchId === areaBranchId);
   const areaFloorId = areaForm.floorId || pickId(areaFloors, selectedFloorId);
   const tableBranchId = tableForm.branchId || selectedBranchId;
-  const tableFloors = floors.filter((floor) => floor.branchId === tableBranchId);
-  const tableFloorId = tableForm.floorId || pickId(tableFloors, selectedFloorId);
-  const tableAreas = areas.filter((area) => area.branchId === tableBranchId && area.floorId === tableFloorId);
+  const tableFloors = floors.filter(
+    (floor) => floor.branchId === tableBranchId,
+  );
+  const tableFloorId =
+    tableForm.floorId || pickId(tableFloors, selectedFloorId);
+  const tableAreas = areas.filter(
+    (area) => area.branchId === tableBranchId && area.floorId === tableFloorId,
+  );
   const floorPlanBranchId = floorPlanForm.branchId || selectedBranchId;
-  const floorPlanFloors = floors.filter((floor) => floor.branchId === floorPlanBranchId);
-  const floorPlanFloorId = floorPlanForm.floorId || pickId(floorPlanFloors, selectedFloorId);
+  const floorPlanFloors = floors.filter(
+    (floor) => floor.branchId === floorPlanBranchId,
+  );
+  const floorPlanFloorId =
+    floorPlanForm.floorId || pickId(floorPlanFloors, selectedFloorId);
 
-  const branchMutation = useMutation({
-    mutationFn: createRestaurantBranch,
-    onSuccess: async (branch) => {
-      updateSetup(setWorkspaceSetup, { branchId: branch.id, floorId: '', areaId: '', floorPlanId: '' });
-      setFloorForm((current) => ({ ...current, branchId: branch.id }));
-      setBranchForm({ name: labels.setup.mainBranch, address: '', timeZone: 'UTC' });
-      toast.success(labels.toasts.setupCreated);
-      await invalidateSetup(queryClient);
-    },
-    onError: (error) => showMutationError(error),
-  });
+  const branchMutation =
+    useNexoServerModulesRestaurantFeaturesSetupCreateRestaurantBranchEndpoint({
+      mutation: {
+        onSuccess: async (branch) => {
+          updateSetup(setWorkspaceSetup, {
+            branchId: branch.id,
+            floorId: "",
+            areaId: "",
+            floorPlanId: "",
+          });
+          setFloorForm((current) => ({ ...current, branchId: branch.id }));
+          setBranchForm({
+            name: labels.setup.mainBranch,
+            address: "",
+            timeZone: "UTC",
+          });
+          toast.success(labels.toasts.setupCreated);
+          await invalidateRestaurantSetup(queryClient);
+        },
+        onError: (error) => showMutationError(error),
+      },
+    });
 
-  const floorMutation = useMutation({
-    mutationFn: createRestaurantFloor,
-    onSuccess: async (floor) => {
-      updateSetup(setWorkspaceSetup, { branchId: floor.branchId, floorId: floor.id, areaId: '', floorPlanId: '' });
-      setAreaForm((current) => ({ ...current, branchId: floor.branchId, floorId: floor.id }));
-      setFloorPlanForm((current) => ({ ...current, branchId: floor.branchId, floorId: floor.id }));
-      toast.success(labels.toasts.setupCreated);
-      await invalidateSetup(queryClient);
-    },
-    onError: (error) => showMutationError(error),
-  });
+  const floorMutation =
+    useNexoServerModulesRestaurantFeaturesSetupCreateRestaurantFloorEndpoint({
+      mutation: {
+        onSuccess: async (floor) => {
+          updateSetup(setWorkspaceSetup, {
+            branchId: floor.branchId,
+            floorId: floor.id,
+            areaId: "",
+            floorPlanId: "",
+          });
+          setAreaForm((current) => ({
+            ...current,
+            branchId: floor.branchId,
+            floorId: floor.id,
+          }));
+          setFloorPlanForm((current) => ({
+            ...current,
+            branchId: floor.branchId,
+            floorId: floor.id,
+          }));
+          toast.success(labels.toasts.setupCreated);
+          await invalidateRestaurantSetup(queryClient);
+        },
+        onError: (error) => showMutationError(error),
+      },
+    });
 
-  const areaMutation = useMutation({
-    mutationFn: createRestaurantArea,
-    onSuccess: async (area) => {
-      updateSetup(setWorkspaceSetup, {
-        branchId: area.branchId,
-        floorId: area.floorId,
-        areaId: area.id,
-      });
-      setTableForm((current) => ({
-        ...current,
-        branchId: area.branchId,
-        floorId: area.floorId,
-        areaId: area.id,
-      }));
-      toast.success(labels.toasts.setupCreated);
-      await invalidateSetup(queryClient);
-    },
-    onError: (error) => showMutationError(error),
-  });
+  const areaMutation =
+    useNexoServerModulesRestaurantFeaturesSetupCreateRestaurantAreaEndpoint({
+      mutation: {
+        onSuccess: async (area) => {
+          updateSetup(setWorkspaceSetup, {
+            branchId: area.branchId,
+            floorId: area.floorId,
+            areaId: area.id,
+          });
+          setTableForm((current) => ({
+            ...current,
+            branchId: area.branchId,
+            floorId: area.floorId,
+            areaId: area.id,
+          }));
+          toast.success(labels.toasts.setupCreated);
+          await invalidateRestaurantSetup(queryClient);
+        },
+        onError: (error) => showMutationError(error),
+      },
+    });
 
-  const tableMutation = useMutation({
-    mutationFn: createRestaurantTable,
-    onSuccess: async (table) => {
-      updateSetup(setWorkspaceSetup, {
-        branchId: table.branchId,
-        floorId: table.floorId,
-        areaId: table.areaId ?? '',
-      });
-      toast.success(labels.toasts.setupCreated);
-      await invalidateSetup(queryClient);
-    },
-    onError: (error) => showMutationError(error),
-  });
+  const tableMutation =
+    useNexoServerModulesRestaurantFeaturesSetupCreateRestaurantTableEndpoint({
+      mutation: {
+        onSuccess: async (table) => {
+          updateSetup(setWorkspaceSetup, {
+            branchId: table.branchId,
+            floorId: table.floorId,
+            areaId: table.areaId ?? "",
+          });
+          toast.success(labels.toasts.setupCreated);
+          await invalidateRestaurantSetup(queryClient);
+        },
+        onError: (error) => showMutationError(error),
+      },
+    });
 
-  const floorPlanMutation = useMutation({
-    mutationFn: createRestaurantFloorPlan,
-    onSuccess: async (floorPlan) => {
-      updateSetup(setWorkspaceSetup, {
-        branchId: floorPlan.branchId,
-        floorId: floorPlan.floorId,
-        floorPlanId: floorPlan.id,
-      });
-      toast.success(labels.toasts.setupCreated);
-      await invalidateSetup(queryClient);
-    },
-    onError: (error) => showMutationError(error),
-  });
+  const floorPlanMutation =
+    useNexoServerModulesRestaurantFeaturesSetupCreateRestaurantFloorPlanEndpoint(
+      {
+        mutation: {
+          onSuccess: async (floorPlan) => {
+            updateSetup(setWorkspaceSetup, {
+              branchId: floorPlan.branchId,
+              floorId: floorPlan.floorId,
+              floorPlanId: floorPlan.id,
+            });
+            toast.success(labels.toasts.setupCreated);
+            await invalidateRestaurantSetup(queryClient);
+          },
+          onError: (error) => showMutationError(error),
+        },
+      },
+    );
 
-  const deleteMutation = useMutation({
-    mutationFn: async ({ kind, id }: SetupDeleteInput) => {
-      switch (kind) {
-        case 'branch':
-          await deleteRestaurantBranch(id);
-          return;
-        case 'floor':
-          await deleteRestaurantFloor(id);
-          return;
-        case 'area':
-          await deleteRestaurantArea(id);
-          return;
-        case 'table':
-          await deleteRestaurantTable(id);
-          return;
-        case 'floorPlan':
-          await deleteRestaurantFloorPlan(id);
-          return;
+  const deleteMutationOptions = {
+    onSuccess: async () => {
+      if (pendingDelete) {
+        clearDeletedSelection(pendingDelete, workspaceSetup, setWorkspaceSetup);
       }
-    },
-    onSuccess: async (_, deleted) => {
-      clearDeletedSelection(deleted, workspaceSetup, setWorkspaceSetup);
       toast.success(labels.toasts.setupDeleted);
-      await invalidateSetup(queryClient);
+      setPendingDelete(null);
+      await invalidateRestaurantSetup(queryClient);
     },
-    onError: (error) => showMutationError(error, labels.toasts.setupDeleteFailed),
-  });
+    onError: (error: unknown) => {
+      setPendingDelete(null);
+      showMutationError(error, labels.toasts.setupDeleteFailed);
+    },
+  };
+  const branchDeleteMutation =
+    useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantBranchEndpoint({
+      mutation: deleteMutationOptions,
+    });
+  const floorDeleteMutation =
+    useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorEndpoint({
+      mutation: deleteMutationOptions,
+    });
+  const areaDeleteMutation =
+    useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantAreaEndpoint({
+      mutation: deleteMutationOptions,
+    });
+  const tableDeleteMutation =
+    useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint({
+      mutation: deleteMutationOptions,
+    });
+  const floorPlanDeleteMutation =
+    useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpoint(
+      {
+        mutation: deleteMutationOptions,
+      },
+    );
+  const isDeletingSetup =
+    branchDeleteMutation.isPending ||
+    floorDeleteMutation.isPending ||
+    areaDeleteMutation.isPending ||
+    tableDeleteMutation.isPending ||
+    floorPlanDeleteMutation.isPending;
 
   const metrics = useMemo(
     () => [
@@ -255,7 +339,10 @@ export function RestaurantSetupPage() {
       { label: labels.setup.floors, value: snapshot?.floors.length ?? 0 },
       { label: labels.setup.areas, value: snapshot?.areas.length ?? 0 },
       { label: labels.setup.tables, value: snapshot?.tables.length ?? 0 },
-      { label: labels.setup.floorPlans, value: snapshot?.floorPlans.length ?? 0 },
+      {
+        label: labels.setup.floorPlans,
+        value: snapshot?.floorPlans.length ?? 0,
+      },
     ],
     [snapshot],
   );
@@ -263,9 +350,11 @@ export function RestaurantSetupPage() {
   function onCreateBranch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     branchMutation.mutate({
-      name: branchForm.name.trim(),
-      address: optionalText(branchForm.address),
-      timeZone: branchForm.timeZone.trim() || 'UTC',
+      data: {
+        name: branchForm.name.trim(),
+        address: optionalText(branchForm.address),
+        timeZone: branchForm.timeZone.trim() || "UTC",
+      },
     });
   }
 
@@ -275,9 +364,11 @@ export function RestaurantSetupPage() {
       return;
     }
     floorMutation.mutate({
-      branchId: floorBranchId,
-      name: floorForm.name.trim(),
-      sortOrder: floorForm.sortOrder,
+      data: {
+        branchId: floorBranchId,
+        name: floorForm.name.trim(),
+        sortOrder: floorForm.sortOrder,
+      },
     });
   }
 
@@ -287,11 +378,13 @@ export function RestaurantSetupPage() {
       return;
     }
     areaMutation.mutate({
-      branchId: areaBranchId,
-      floorId: areaFloorId,
-      name: areaForm.name.trim(),
-      type: areaForm.type,
-      sortOrder: areaForm.sortOrder,
+      data: {
+        branchId: areaBranchId,
+        floorId: areaFloorId,
+        name: areaForm.name.trim(),
+        type: areaForm.type,
+        sortOrder: areaForm.sortOrder,
+      },
     });
   }
 
@@ -301,14 +394,16 @@ export function RestaurantSetupPage() {
       return;
     }
     tableMutation.mutate({
-      branchId: tableBranchId,
-      floorId: tableFloorId,
-      areaId: tableForm.areaId || null,
-      label: tableForm.label.trim(),
-      minCapacity: tableForm.minCapacity,
-      maxCapacity: tableForm.maxCapacity,
-      defaultReservationMinutes: tableForm.defaultReservationMinutes,
-      shape: tableForm.shape,
+      data: {
+        branchId: tableBranchId,
+        floorId: tableFloorId,
+        areaId: tableForm.areaId || null,
+        label: tableForm.label.trim(),
+        minCapacity: tableForm.minCapacity,
+        maxCapacity: tableForm.maxCapacity,
+        defaultReservationMinutes: tableForm.defaultReservationMinutes,
+        shape: tableForm.shape,
+      },
     });
   }
 
@@ -318,28 +413,52 @@ export function RestaurantSetupPage() {
       return;
     }
     floorPlanMutation.mutate({
-      branchId: floorPlanBranchId,
-      floorId: floorPlanFloorId,
-      name: floorPlanForm.name.trim(),
-      canvasWidth: floorPlanForm.canvasWidth,
-      canvasHeight: floorPlanForm.canvasHeight,
-      gridSize: floorPlanForm.gridSize,
-      isActive: floorPlanForm.isActive,
+      data: {
+        branchId: floorPlanBranchId,
+        floorId: floorPlanFloorId,
+        name: floorPlanForm.name.trim(),
+        canvasWidth: floorPlanForm.canvasWidth,
+        canvasHeight: floorPlanForm.canvasHeight,
+        gridSize: floorPlanForm.gridSize,
+        isActive: floorPlanForm.isActive,
+      },
     });
   }
 
   function onDeleteSetupItem(input: SetupDeleteInput) {
-    if (!window.confirm(labels.setup.confirmDelete.replace('{name}', input.label))) {
+    if (
+      !window.confirm(labels.setup.confirmDelete.replace("{name}", input.label))
+    ) {
       return;
     }
 
-    deleteMutation.mutate(input);
+    setPendingDelete(input);
+    switch (input.kind) {
+      case "branch":
+        branchDeleteMutation.mutate({ branchId: input.id });
+        return;
+      case "floor":
+        floorDeleteMutation.mutate({ floorId: input.id });
+        return;
+      case "area":
+        areaDeleteMutation.mutate({ areaId: input.id });
+        return;
+      case "table":
+        tableDeleteMutation.mutate({ tableId: input.id });
+        return;
+      case "floorPlan":
+        floorPlanDeleteMutation.mutate({ floorPlanId: input.id });
+        return;
+    }
   }
 
   return (
     <main className="restaurant-page">
       <section className="restaurant-module-page">
-        <PanelHeader icon={<Settings size={18} />} title={labels.sections.setup} />
+        <PanelHeader
+          icon={<Settings size={18} />}
+          title={labels.sections.setup}
+        />
         {setupQuery.isLoading ? (
           <SkeletonRows count={2} />
         ) : setupQuery.isError ? (
@@ -347,7 +466,11 @@ export function RestaurantSetupPage() {
         ) : (
           <div className="setup-metric-grid">
             {metrics.map((metric) => (
-              <Metric key={metric.label} label={metric.label} value={metric.value} />
+              <Metric
+                key={metric.label}
+                label={metric.label}
+                value={metric.value}
+              />
             ))}
           </div>
         )}
@@ -355,52 +478,85 @@ export function RestaurantSetupPage() {
 
       <div className="setup-workbench">
         <section className="panel setup-form-panel">
-          <PanelHeader icon={<Building2 size={18} />} title={labels.setup.createBranch} />
+          <PanelHeader
+            icon={<Building2 size={18} />}
+            title={labels.setup.createBranch}
+          />
           <form className="booking-form" onSubmit={onCreateBranch}>
             <Field label={labels.setup.name}>
               <input
                 required
                 value={branchForm.name}
-                onChange={(event) => setBranchForm((current) => ({ ...current, name: event.target.value }))}
+                onChange={(event) =>
+                  setBranchForm((current) => ({
+                    ...current,
+                    name: event.target.value,
+                  }))
+                }
               />
             </Field>
             <Field label={labels.setup.address}>
               <input
                 value={branchForm.address}
-                onChange={(event) => setBranchForm((current) => ({ ...current, address: event.target.value }))}
+                onChange={(event) =>
+                  setBranchForm((current) => ({
+                    ...current,
+                    address: event.target.value,
+                  }))
+                }
               />
             </Field>
             <Field label={labels.setup.timeZone}>
               <input
                 required
                 value={branchForm.timeZone}
-                onChange={(event) => setBranchForm((current) => ({ ...current, timeZone: event.target.value }))}
+                onChange={(event) =>
+                  setBranchForm((current) => ({
+                    ...current,
+                    timeZone: event.target.value,
+                  }))
+                }
               />
             </Field>
-            <SubmitButton isPending={branchMutation.isPending} label={labels.setup.createBranch} />
+            <SubmitButton
+              isPending={branchMutation.isPending}
+              label={labels.setup.createBranch}
+            />
           </form>
         </section>
 
         <section className="panel setup-form-panel">
-          <PanelHeader icon={<Layers size={18} />} title={labels.setup.createFloor} />
+          <PanelHeader
+            icon={<Layers size={18} />}
+            title={labels.setup.createFloor}
+          />
           <form className="booking-form" onSubmit={onCreateFloor}>
             <BranchSelect
               branches={branches}
               value={floorBranchId}
-              onChange={(branchId) => setFloorForm((current) => ({ ...current, branchId }))}
+              onChange={(branchId) =>
+                setFloorForm((current) => ({ ...current, branchId }))
+              }
             />
             <Field label={labels.setup.name}>
               <input
                 required
                 value={floorForm.name}
-                onChange={(event) => setFloorForm((current) => ({ ...current, name: event.target.value }))}
+                onChange={(event) =>
+                  setFloorForm((current) => ({
+                    ...current,
+                    name: event.target.value,
+                  }))
+                }
               />
             </Field>
             <Field label={labels.setup.sortOrder}>
               <NumberInput
                 min={0}
                 value={floorForm.sortOrder}
-                onChange={(sortOrder) => setFloorForm((current) => ({ ...current, sortOrder }))}
+                onChange={(sortOrder) =>
+                  setFloorForm((current) => ({ ...current, sortOrder }))
+                }
               />
             </Field>
             <SubmitButton
@@ -412,30 +568,51 @@ export function RestaurantSetupPage() {
         </section>
 
         <section className="panel setup-form-panel">
-          <PanelHeader icon={<Grid3X3 size={18} />} title={labels.setup.createArea} />
+          <PanelHeader
+            icon={<Grid3X3 size={18} />}
+            title={labels.setup.createArea}
+          />
           <form className="booking-form" onSubmit={onCreateArea}>
             <BranchSelect
               branches={branches}
               value={areaBranchId}
-              onChange={(branchId) => setAreaForm((current) => ({ ...current, branchId, floorId: '' }))}
+              onChange={(branchId) =>
+                setAreaForm((current) => ({
+                  ...current,
+                  branchId,
+                  floorId: "",
+                }))
+              }
             />
             <FloorSelect
               floors={areaFloors}
               value={areaFloorId}
-              onChange={(floorId) => setAreaForm((current) => ({ ...current, floorId }))}
+              onChange={(floorId) =>
+                setAreaForm((current) => ({ ...current, floorId }))
+              }
             />
             <div className="form-row">
               <Field label={labels.setup.name}>
                 <input
                   required
                   value={areaForm.name}
-                  onChange={(event) => setAreaForm((current) => ({ ...current, name: event.target.value }))}
+                  onChange={(event) =>
+                    setAreaForm((current) => ({
+                      ...current,
+                      name: event.target.value,
+                    }))
+                  }
                 />
               </Field>
               <Field label={labels.setup.areaType}>
                 <select
                   value={areaForm.type}
-                  onChange={(event) => setAreaForm((current) => ({ ...current, type: Number(event.target.value) as RestaurantAreaType }))}
+                  onChange={(event) =>
+                    setAreaForm((current) => ({
+                      ...current,
+                      type: Number(event.target.value) as RestaurantAreaType,
+                    }))
+                  }
                 >
                   {areaTypeOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -449,7 +626,9 @@ export function RestaurantSetupPage() {
               <NumberInput
                 min={0}
                 value={areaForm.sortOrder}
-                onChange={(sortOrder) => setAreaForm((current) => ({ ...current, sortOrder }))}
+                onChange={(sortOrder) =>
+                  setAreaForm((current) => ({ ...current, sortOrder }))
+                }
               />
             </Field>
             <SubmitButton
@@ -461,22 +640,39 @@ export function RestaurantSetupPage() {
         </section>
 
         <section className="panel setup-form-panel">
-          <PanelHeader icon={<Utensils size={18} />} title={labels.setup.createTable} />
+          <PanelHeader
+            icon={<Utensils size={18} />}
+            title={labels.setup.createTable}
+          />
           <form className="booking-form" onSubmit={onCreateTable}>
             <BranchSelect
               branches={branches}
               value={tableBranchId}
-              onChange={(branchId) => setTableForm((current) => ({ ...current, branchId, floorId: '', areaId: '' }))}
+              onChange={(branchId) =>
+                setTableForm((current) => ({
+                  ...current,
+                  branchId,
+                  floorId: "",
+                  areaId: "",
+                }))
+              }
             />
             <FloorSelect
               floors={tableFloors}
               value={tableFloorId}
-              onChange={(floorId) => setTableForm((current) => ({ ...current, floorId, areaId: '' }))}
+              onChange={(floorId) =>
+                setTableForm((current) => ({ ...current, floorId, areaId: "" }))
+              }
             />
             <Field label={labels.setup.area}>
               <select
                 value={tableForm.areaId}
-                onChange={(event) => setTableForm((current) => ({ ...current, areaId: event.target.value }))}
+                onChange={(event) =>
+                  setTableForm((current) => ({
+                    ...current,
+                    areaId: event.target.value,
+                  }))
+                }
               >
                 <option value="">{labels.states.unassigned}</option>
                 {tableAreas.map((area) => (
@@ -491,13 +687,23 @@ export function RestaurantSetupPage() {
                 <input
                   required
                   value={tableForm.label}
-                  onChange={(event) => setTableForm((current) => ({ ...current, label: event.target.value }))}
+                  onChange={(event) =>
+                    setTableForm((current) => ({
+                      ...current,
+                      label: event.target.value,
+                    }))
+                  }
                 />
               </Field>
               <Field label={labels.fields.shape}>
                 <select
                   value={tableForm.shape}
-                  onChange={(event) => setTableForm((current) => ({ ...current, shape: Number(event.target.value) as RestaurantTableShape }))}
+                  onChange={(event) =>
+                    setTableForm((current) => ({
+                      ...current,
+                      shape: Number(event.target.value) as RestaurantTableShape,
+                    }))
+                  }
                 >
                   {shapeOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -525,7 +731,9 @@ export function RestaurantSetupPage() {
                 <NumberInput
                   min={tableForm.minCapacity}
                   value={tableForm.maxCapacity}
-                  onChange={(maxCapacity) => setTableForm((current) => ({ ...current, maxCapacity }))}
+                  onChange={(maxCapacity) =>
+                    setTableForm((current) => ({ ...current, maxCapacity }))
+                  }
                 />
               </Field>
             </div>
@@ -534,7 +742,10 @@ export function RestaurantSetupPage() {
                 min={15}
                 value={tableForm.defaultReservationMinutes}
                 onChange={(defaultReservationMinutes) =>
-                  setTableForm((current) => ({ ...current, defaultReservationMinutes }))
+                  setTableForm((current) => ({
+                    ...current,
+                    defaultReservationMinutes,
+                  }))
                 }
               />
             </Field>
@@ -547,23 +758,39 @@ export function RestaurantSetupPage() {
         </section>
 
         <section className="panel setup-form-panel">
-          <PanelHeader icon={<Map size={18} />} title={labels.setup.createFloorPlan} />
+          <PanelHeader
+            icon={<Map size={18} />}
+            title={labels.setup.createFloorPlan}
+          />
           <form className="booking-form" onSubmit={onCreateFloorPlan}>
             <BranchSelect
               branches={branches}
               value={floorPlanBranchId}
-              onChange={(branchId) => setFloorPlanForm((current) => ({ ...current, branchId, floorId: '' }))}
+              onChange={(branchId) =>
+                setFloorPlanForm((current) => ({
+                  ...current,
+                  branchId,
+                  floorId: "",
+                }))
+              }
             />
             <FloorSelect
               floors={floorPlanFloors}
               value={floorPlanFloorId}
-              onChange={(floorId) => setFloorPlanForm((current) => ({ ...current, floorId }))}
+              onChange={(floorId) =>
+                setFloorPlanForm((current) => ({ ...current, floorId }))
+              }
             />
             <Field label={labels.setup.name}>
               <input
                 required
                 value={floorPlanForm.name}
-                onChange={(event) => setFloorPlanForm((current) => ({ ...current, name: event.target.value }))}
+                onChange={(event) =>
+                  setFloorPlanForm((current) => ({
+                    ...current,
+                    name: event.target.value,
+                  }))
+                }
               />
             </Field>
             <div className="form-row">
@@ -571,14 +798,21 @@ export function RestaurantSetupPage() {
                 <NumberInput
                   min={400}
                   value={floorPlanForm.canvasWidth}
-                  onChange={(canvasWidth) => setFloorPlanForm((current) => ({ ...current, canvasWidth }))}
+                  onChange={(canvasWidth) =>
+                    setFloorPlanForm((current) => ({ ...current, canvasWidth }))
+                  }
                 />
               </Field>
               <Field label={labels.fields.height}>
                 <NumberInput
                   min={300}
                   value={floorPlanForm.canvasHeight}
-                  onChange={(canvasHeight) => setFloorPlanForm((current) => ({ ...current, canvasHeight }))}
+                  onChange={(canvasHeight) =>
+                    setFloorPlanForm((current) => ({
+                      ...current,
+                      canvasHeight,
+                    }))
+                  }
                 />
               </Field>
             </div>
@@ -586,14 +820,24 @@ export function RestaurantSetupPage() {
               <NumberInput
                 min={0}
                 value={floorPlanForm.gridSize}
-                onChange={(gridSize) => setFloorPlanForm((current) => ({ ...current, gridSize: gridSize || null }))}
+                onChange={(gridSize) =>
+                  setFloorPlanForm((current) => ({
+                    ...current,
+                    gridSize: gridSize || null,
+                  }))
+                }
               />
             </Field>
             <label className="editor-check-row">
               <input
                 checked={floorPlanForm.isActive}
                 type="checkbox"
-                onChange={(event) => setFloorPlanForm((current) => ({ ...current, isActive: event.target.checked }))}
+                onChange={(event) =>
+                  setFloorPlanForm((current) => ({
+                    ...current,
+                    isActive: event.target.checked,
+                  }))
+                }
               />
               <span>{labels.editor.activeManagedBySetup}</span>
             </label>
@@ -606,19 +850,27 @@ export function RestaurantSetupPage() {
         </section>
 
         <section className="panel setup-summary-panel">
-          <PanelHeader icon={<Settings size={18} />} title={labels.setup.currentSetup} />
+          <PanelHeader
+            icon={<Settings size={18} />}
+            title={labels.setup.currentSetup}
+          />
           {setupQuery.isLoading ? (
             <SkeletonRows count={4} />
           ) : setupQuery.isError ? (
             <InlineError error={setupQuery.error} />
           ) : snapshot ? (
             <SetupSummary
-              pendingDeleteKey={deleteMutation.isPending ? deleteKey(deleteMutation.variables) : ''}
+              pendingDeleteKey={
+                isDeletingSetup && pendingDelete ? deleteKey(pendingDelete) : ""
+              }
               snapshot={snapshot}
               onDelete={onDeleteSetupItem}
             />
           ) : (
-            <EmptyState icon={<Settings size={20} />} title={labels.setup.noSetup} />
+            <EmptyState
+              icon={<Settings size={20} />}
+              title={labels.setup.noSetup}
+            />
           )}
         </section>
       </div>
@@ -637,7 +889,11 @@ function BranchSelect({
 }) {
   return (
     <Field label={labels.setup.branch}>
-      <select required value={value} onChange={(event) => onChange(event.target.value)}>
+      <select
+        required
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      >
         <option value="">{labels.states.branchRequired}</option>
         {branches.map((branch) => (
           <option key={branch.id} value={branch.id}>
@@ -660,7 +916,11 @@ function FloorSelect({
 }) {
   return (
     <Field label={labels.setup.floor}>
-      <select required value={value} onChange={(event) => onChange(event.target.value)}>
+      <select
+        required
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      >
         <option value="">{labels.states.floorRequired}</option>
         {floors.map((floor) => (
           <option key={floor.id} value={floor.id}>
@@ -686,15 +946,27 @@ function NumberInput({
       min={min}
       required
       type="number"
-      value={value ?? ''}
+      value={value ?? ""}
       onChange={(event) => onChange(Number(event.target.value))}
     />
   );
 }
 
-function SubmitButton({ disabled = false, isPending, label }: { disabled?: boolean; isPending: boolean; label: string }) {
+function SubmitButton({
+  disabled = false,
+  isPending,
+  label,
+}: {
+  disabled?: boolean;
+  isPending: boolean;
+  label: string;
+}) {
   return (
-    <button className="primary-button" disabled={disabled || isPending} type="submit">
+    <button
+      className="primary-button"
+      disabled={disabled || isPending}
+      type="submit"
+    >
       {isPending ? (
         <>
           <Loader2 className="spin" size={16} />
@@ -723,7 +995,9 @@ function SetupSummary({
     snapshot.tables.length === 0 &&
     snapshot.floorPlans.length === 0
   ) {
-    return <EmptyState icon={<Settings size={20} />} title={labels.setup.noSetup} />;
+    return (
+      <EmptyState icon={<Settings size={20} />} title={labels.setup.noSetup} />
+    );
   }
 
   return (
@@ -757,7 +1031,9 @@ function SetupSummary({
         items={snapshot.tables}
         pendingDeleteKey={pendingDeleteKey}
         title={labels.setup.tables}
-        render={(table) => `${table.label} / ${table.minCapacity}-${table.maxCapacity}`}
+        render={(table) =>
+          `${table.label} / ${table.minCapacity}-${table.maxCapacity}`
+        }
         onDelete={onDelete}
       />
       <SummaryGroup
@@ -772,7 +1048,14 @@ function SetupSummary({
   );
 }
 
-function SummaryGroup<TItem extends RestaurantAreaDetail | RestaurantBranchDetail | RestaurantFloorDetail | RestaurantFloorPlanSummary | RestaurantTableDetail>({
+function SummaryGroup<
+  TItem extends
+    | RestaurantAreaDetail
+    | RestaurantBranchDetail
+    | RestaurantFloorDetail
+    | RestaurantFloorPlanSummary
+    | RestaurantTableDetail,
+>({
   kind,
   items,
   pendingDeleteKey,
@@ -795,7 +1078,11 @@ function SummaryGroup<TItem extends RestaurantAreaDetail | RestaurantBranchDetai
       ) : (
         items.map((item) => {
           const itemLabel = render(item);
-          const itemDeleteKey = deleteKey({ kind, id: item.id, label: itemLabel });
+          const itemDeleteKey = deleteKey({
+            kind,
+            id: item.id,
+            label: itemLabel,
+          });
           const isDeleting = pendingDeleteKey === itemDeleteKey;
           return (
             <div className="setup-summary-row" key={item.id}>
@@ -805,9 +1092,15 @@ function SummaryGroup<TItem extends RestaurantAreaDetail | RestaurantBranchDetai
                 className="danger-button setup-delete-button"
                 disabled={Boolean(pendingDeleteKey)}
                 type="button"
-                onClick={() => onDelete({ kind, id: item.id, label: itemLabel })}
+                onClick={() =>
+                  onDelete({ kind, id: item.id, label: itemLabel })
+                }
               >
-                {isDeleting ? <Loader2 className="spin" size={16} /> : <Trash2 size={16} />}
+                {isDeleting ? (
+                  <Loader2 className="spin" size={16} />
+                ) : (
+                  <Trash2 size={16} />
+                )}
               </button>
             </div>
           );
@@ -818,7 +1111,7 @@ function SummaryGroup<TItem extends RestaurantAreaDetail | RestaurantBranchDetai
 }
 
 function deleteKey(input: SetupDeleteInput | undefined) {
-  return input ? `${input.kind}:${input.id}` : '';
+  return input ? `${input.kind}:${input.id}` : "";
 }
 
 function clearDeletedSelection(
@@ -826,45 +1119,57 @@ function clearDeletedSelection(
   workspaceSetup: ReturnType<typeof useStoredSetup>[0],
   setWorkspaceSetup: ReturnType<typeof useStoredSetup>[1],
 ) {
-  if (deleted.kind === 'branch' && workspaceSetup.branchId === deleted.id) {
-    updateSetup(setWorkspaceSetup, { branchId: '', floorId: '', areaId: '', floorPlanId: '' });
+  if (deleted.kind === "branch" && workspaceSetup.branchId === deleted.id) {
+    updateSetup(setWorkspaceSetup, {
+      branchId: "",
+      floorId: "",
+      areaId: "",
+      floorPlanId: "",
+    });
     return;
   }
 
-  if (deleted.kind === 'floor' && workspaceSetup.floorId === deleted.id) {
-    updateSetup(setWorkspaceSetup, { floorId: '', areaId: '', floorPlanId: '' });
+  if (deleted.kind === "floor" && workspaceSetup.floorId === deleted.id) {
+    updateSetup(setWorkspaceSetup, {
+      floorId: "",
+      areaId: "",
+      floorPlanId: "",
+    });
     return;
   }
 
-  if (deleted.kind === 'area' && workspaceSetup.areaId === deleted.id) {
-    updateSetup(setWorkspaceSetup, { areaId: '' });
+  if (deleted.kind === "area" && workspaceSetup.areaId === deleted.id) {
+    updateSetup(setWorkspaceSetup, { areaId: "" });
     return;
   }
 
-  if (deleted.kind === 'floorPlan' && workspaceSetup.floorPlanId === deleted.id) {
-    updateSetup(setWorkspaceSetup, { floorPlanId: '' });
+  if (
+    deleted.kind === "floorPlan" &&
+    workspaceSetup.floorPlanId === deleted.id
+  ) {
+    updateSetup(setWorkspaceSetup, { floorPlanId: "" });
   }
 }
 
 function areaTypeLabel(type: RestaurantAreaType) {
-  return areaTypeOptions.find((option) => option.value === type)?.label ?? 'Otro';
+  return (
+    areaTypeOptions.find((option) => option.value === type)?.label ?? "Otro"
+  );
 }
 
-function pickId<TItem extends { id: string }>(items: TItem[], preferredId: string) {
-  return items.some((item) => item.id === preferredId) ? preferredId : (items[0]?.id ?? '');
+function pickId<TItem extends { id: string }>(
+  items: TItem[],
+  preferredId: string,
+) {
+  return items.some((item) => item.id === preferredId)
+    ? preferredId
+    : (items[0]?.id ?? "");
 }
 
-async function invalidateSetup(queryClient: QueryClient) {
-  await Promise.all([
-    queryClient.invalidateQueries({ queryKey: restaurantQueryKeys.setup() }),
-    queryClient.invalidateQueries({ queryKey: ['restaurant', 'floor-plans'] }),
-    queryClient.invalidateQueries({ queryKey: ['restaurant', 'floor-plan'] }),
-    queryClient.invalidateQueries({ queryKey: ['restaurant', 'floor-plan-status-map'] }),
-    queryClient.invalidateQueries({ queryKey: ['restaurant', 'reservation-filters'] }),
-  ]);
-}
-
-function showMutationError(error: unknown, fallback = labels.toasts.setupCreateFailed) {
+function showMutationError(
+  error: unknown,
+  fallback = labels.toasts.setupCreateFailed,
+) {
   if (error instanceof Error) {
     toast.error(fallback, { description: error.message });
     return;

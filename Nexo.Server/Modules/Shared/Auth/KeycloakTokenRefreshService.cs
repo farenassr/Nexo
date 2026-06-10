@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
@@ -54,42 +55,70 @@ public sealed class KeycloakTokenRefreshService(
             })
         };
 
-        using var response = await httpClient.SendAsync(request, cancellationToken);
-        if (!response.IsSuccessStatusCode)
+        HttpResponseMessage response;
+        try
         {
-            logger.LogWarning(
-                "Keycloak refresh failed with status code {StatusCode}.",
-                (int)response.StatusCode);
+            response = await httpClient.SendAsync(request, cancellationToken);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            logger.LogWarning("Keycloak refresh request was canceled before a response was received.");
+            return KeycloakTokenRefreshResult.Failed();
+        }
+        catch (HttpRequestException exception)
+        {
+            logger.LogWarning(exception, "Keycloak refresh request failed.");
             return KeycloakTokenRefreshResult.Failed();
         }
 
-        var payload = await response.Content.ReadFromJsonAsync<KeycloakTokenResponse>(
-            cancellationToken);
-        if (payload is null || string.IsNullOrWhiteSpace(payload.AccessToken))
+        using (response)
         {
-            logger.LogWarning("Keycloak refresh response did not include an access token.");
-            return KeycloakTokenRefreshResult.Failed();
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogWarning(
+                    "Keycloak refresh failed with status code {StatusCode}.",
+                    (int)response.StatusCode);
+                return KeycloakTokenRefreshResult.Failed();
+            }
+
+            KeycloakTokenResponse? payload;
+            try
+            {
+                payload = await response.Content.ReadFromJsonAsync<KeycloakTokenResponse>(
+                    cancellationToken);
+            }
+            catch (JsonException exception)
+            {
+                logger.LogWarning(exception, "Keycloak refresh response could not be parsed.");
+                return KeycloakTokenRefreshResult.Failed();
+            }
+
+            if (payload is null || string.IsNullOrWhiteSpace(payload.AccessToken))
+            {
+                logger.LogWarning("Keycloak refresh response did not include an access token.");
+                return KeycloakTokenRefreshResult.Failed();
+            }
+
+            properties.UpdateTokenValue("access_token", payload.AccessToken);
+
+            if (!string.IsNullOrWhiteSpace(payload.RefreshToken))
+            {
+                properties.UpdateTokenValue("refresh_token", payload.RefreshToken);
+            }
+
+            if (!string.IsNullOrWhiteSpace(payload.IdToken))
+            {
+                properties.UpdateTokenValue("id_token", payload.IdToken);
+            }
+
+            if (payload.ExpiresIn > 0)
+            {
+                var expiresAt = timeProvider.GetUtcNow().AddSeconds(payload.ExpiresIn);
+                properties.UpdateTokenValue("expires_at", expiresAt.ToString("o"));
+            }
+
+            return KeycloakTokenRefreshResult.Success();
         }
-
-        properties.UpdateTokenValue("access_token", payload.AccessToken);
-
-        if (!string.IsNullOrWhiteSpace(payload.RefreshToken))
-        {
-            properties.UpdateTokenValue("refresh_token", payload.RefreshToken);
-        }
-
-        if (!string.IsNullOrWhiteSpace(payload.IdToken))
-        {
-            properties.UpdateTokenValue("id_token", payload.IdToken);
-        }
-
-        if (payload.ExpiresIn > 0)
-        {
-            var expiresAt = timeProvider.GetUtcNow().AddSeconds(payload.ExpiresIn);
-            properties.UpdateTokenValue("expires_at", expiresAt.ToString("o"));
-        }
-
-        return KeycloakTokenRefreshResult.Success();
     }
 
     private sealed class KeycloakTokenResponse
