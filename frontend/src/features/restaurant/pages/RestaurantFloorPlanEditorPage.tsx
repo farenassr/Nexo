@@ -1,23 +1,41 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Activity, Loader2, Map as MapIcon, PenTool, Shapes } from 'lucide-react';
-import { type PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { toast } from 'sonner';
+import { useQueryClient } from "@tanstack/react-query";
 import {
-  getRestaurantContext,
-  getRestaurantFloorPlan,
-  getRestaurantSetup,
-  listRestaurantFloorPlans,
-  RestaurantApiError,
-  saveRestaurantFloorPlan,
-} from '../api/restaurantApi';
-import { FloorPlanCanvas } from '../components/FloorPlanCanvas';
+  Activity,
+  Loader2,
+  Map as MapIcon,
+  PenTool,
+  Shapes,
+} from "lucide-react";
+import {
+  type PointerEvent as ReactPointerEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { toast } from "sonner";
+import {
+  useNexoServerModulesRestaurantFeaturesFloorPlansGetDetailsGetRestaurantFloorPlanEndpoint,
+  useNexoServerModulesRestaurantFeaturesFloorPlansListListRestaurantFloorPlansEndpoint,
+  useNexoServerModulesRestaurantFeaturesFloorPlansSaveSaveRestaurantFloorPlanEndpoint,
+  useNexoServerModulesRestaurantFeaturesGetContextRestaurantContextEndpoint,
+  useNexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint,
+} from "../../../lib/api/generated/hooks";
+import { invalidateRestaurantSetup } from "../api/restaurantQueryInvalidation";
+import { FloorPlanCanvas } from "../components/FloorPlanCanvas";
 import {
   FloorPlanEditorToolbar,
   type FloorPlanEditorTool,
-} from '../components/floorPlanEditor/FloorPlanEditorToolbar';
-import { FloorPlanPropertiesPanel } from '../components/floorPlanEditor/FloorPlanPropertiesPanel';
-import { FloorPlanShapePalette } from '../components/floorPlanEditor/FloorPlanShapePalette';
-import { EmptyState, Field, InlineError, PanelHeader, SkeletonRows } from '../components/restaurantUi';
+} from "../components/floorPlanEditor/FloorPlanEditorToolbar";
+import { FloorPlanPropertiesPanel } from "../components/floorPlanEditor/FloorPlanPropertiesPanel";
+import { FloorPlanShapePalette } from "../components/floorPlanEditor/FloorPlanShapePalette";
+import {
+  EmptyState,
+  Field,
+  InlineError,
+  PanelHeader,
+  SkeletonRows,
+} from "../components/restaurantUi";
 import {
   applyEditorChange,
   addAreaLayoutFromSetup,
@@ -33,40 +51,50 @@ import {
   toSaveFloorPlanInput,
   undoEditorChange,
   type FloorPlanEditorState,
-} from '../floorPlanEditor';
-import labels from '../labels.es.json';
-import { restaurantQueryKeys } from '../queryKeys';
+} from "../floorPlanEditor";
+import labels from "../labels.es.json";
 import {
   isGuid,
-  readStoredSelectedTableId,
   updateSetup,
+  useRestaurantWorkspaceStore,
   useStoredSetup,
   type DragState,
-} from '../state/restaurantWorkspaceState';
-import { type RestaurantFloorPlanDetail, type RestaurantTableLayoutDetail } from '../types';
+} from "../state/restaurantWorkspaceState";
+import {
+  type RestaurantFloorPlanDetail,
+  type RestaurantTableLayoutDetail,
+} from "../types";
 
 export function RestaurantFloorPlanEditorPage() {
   const queryClient = useQueryClient();
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const [setup, setSetup] = useStoredSetup();
-  const [editorState, setEditorState] = useState<FloorPlanEditorState | null>(null);
-  const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
-  const [activeTool, setActiveTool] = useState<FloorPlanEditorTool>('select');
+  const [editorState, setEditorState] = useState<FloorPlanEditorState | null>(
+    null,
+  );
+  const selectedTableId = useRestaurantWorkspaceStore(
+    (state) => state.selectedTableId,
+  );
+  const setSelectedTableId = useRestaurantWorkspaceStore(
+    (state) => state.setSelectedTableId,
+  );
+  const clearSelectedTableId = useRestaurantWorkspaceStore(
+    (state) => state.clearSelectedTableId,
+  );
+  const [activeTool, setActiveTool] = useState<FloorPlanEditorTool>("select");
   const [dragState, setDragState] = useState<DragState | null>(null);
   const [zoom, setZoom] = useState(1);
 
   const hasFloorContext = isGuid(setup.branchId) && isGuid(setup.floorId);
 
-  const contextQuery = useQuery({
-    queryKey: restaurantQueryKeys.context(),
-    queryFn: getRestaurantContext,
-  });
+  const contextQuery =
+    useNexoServerModulesRestaurantFeaturesGetContextRestaurantContextEndpoint();
 
-  const floorPlansQuery = useQuery({
-    queryKey: restaurantQueryKeys.floorPlans(setup.branchId, setup.floorId),
-    queryFn: () => listRestaurantFloorPlans(setup.branchId, setup.floorId),
-    enabled: hasFloorContext,
-  });
+  const floorPlansQuery =
+    useNexoServerModulesRestaurantFeaturesFloorPlansListListRestaurantFloorPlansEndpoint(
+      { params: { branchId: setup.branchId, floorId: setup.floorId } },
+      { query: { enabled: hasFloorContext } },
+    );
 
   useEffect(() => {
     const firstFloorPlanId = floorPlansQuery.data?.[0]?.id;
@@ -75,20 +103,21 @@ export function RestaurantFloorPlanEditorPage() {
     }
   }, [floorPlansQuery.data, setSetup, setup.floorPlanId]);
 
-  const floorPlanQuery = useQuery({
-    queryKey: restaurantQueryKeys.floorPlan(setup.floorPlanId),
-    queryFn: () => getRestaurantFloorPlan(setup.floorPlanId),
-    enabled: isGuid(setup.floorPlanId),
-  });
+  const floorPlanQuery =
+    useNexoServerModulesRestaurantFeaturesFloorPlansGetDetailsGetRestaurantFloorPlanEndpoint(
+      { floorPlanId: setup.floorPlanId },
+      { query: { enabled: isGuid(setup.floorPlanId) } },
+    );
 
-  const setupQuery = useQuery({
-    queryKey: restaurantQueryKeys.setup(),
-    queryFn: getRestaurantSetup,
-  });
+  const setupQuery =
+    useNexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint();
 
   const setupBranches = setupQuery.data?.branches ?? [];
   const setupFloors = useMemo(
-    () => setupQuery.data?.floors.filter((floor) => floor.branchId === setup.branchId) ?? [],
+    () =>
+      setupQuery.data?.floors.filter(
+        (floor) => floor.branchId === setup.branchId,
+      ) ?? [],
     [setup.branchId, setupQuery.data],
   );
 
@@ -97,20 +126,24 @@ export function RestaurantFloorPlanEditorPage() {
       return;
     }
 
-    const nextBranchId = setupQuery.data.branches.some((branch) => branch.id === setup.branchId)
+    const nextBranchId = setupQuery.data.branches.some(
+      (branch) => branch.id === setup.branchId,
+    )
       ? setup.branchId
-      : (setupQuery.data.branches[0]?.id ?? '');
-    const nextFloors = setupQuery.data.floors.filter((floor) => floor.branchId === nextBranchId);
+      : (setupQuery.data.branches[0]?.id ?? "");
+    const nextFloors = setupQuery.data.floors.filter(
+      (floor) => floor.branchId === nextBranchId,
+    );
     const nextFloorId = nextFloors.some((floor) => floor.id === setup.floorId)
       ? setup.floorId
-      : (nextFloors[0]?.id ?? '');
+      : (nextFloors[0]?.id ?? "");
 
     if (nextBranchId !== setup.branchId || nextFloorId !== setup.floorId) {
       updateSetup(setSetup, {
         branchId: nextBranchId,
         floorId: nextFloorId,
-        floorPlanId: '',
-        areaId: '',
+        floorPlanId: "",
+        areaId: "",
       });
     }
   }, [setSetup, setup.branchId, setup.floorId, setupQuery.data]);
@@ -118,87 +151,130 @@ export function RestaurantFloorPlanEditorPage() {
   useEffect(() => {
     if (!floorPlanQuery.data) {
       setEditorState(null);
-      setSelectedTableId(null);
+      clearSelectedTableId();
       return;
     }
 
-    const storedTableId = readStoredSelectedTableId();
     setEditorState(createFloorPlanEditorState(floorPlanQuery.data));
-    setSelectedTableId((current) =>
-      current && floorPlanQuery.data.tableLayouts.some((table) => table.tableId === current)
-        ? current
-        : storedTableId && floorPlanQuery.data.tableLayouts.some((table) => table.tableId === storedTableId)
-          ? storedTableId
-          : floorPlanQuery.data.tableLayouts[0]?.tableId ?? null,
-    );
-  }, [floorPlanQuery.data]);
+    const nextTableId =
+      selectedTableId &&
+      floorPlanQuery.data.tableLayouts.some(
+        (table) => table.tableId === selectedTableId,
+      )
+        ? selectedTableId
+        : floorPlanQuery.data.tableLayouts[0]?.tableId;
+    if (nextTableId) {
+      setSelectedTableId(nextTableId);
+    } else {
+      clearSelectedTableId();
+    }
+  }, [
+    clearSelectedTableId,
+    floorPlanQuery.data,
+    selectedTableId,
+    setSelectedTableId,
+  ]);
 
   const floorPlan = editorState?.floorPlan ?? null;
-  const selectedTable = floorPlan?.tableLayouts.find((table) => table.tableId === selectedTableId) ?? null;
-  const visibleTables = floorPlan?.tableLayouts.filter((table) => !setup.areaId || table.areaId === setup.areaId) ?? [];
+  const selectedTable =
+    floorPlan?.tableLayouts.find(
+      (table) => table.tableId === selectedTableId,
+    ) ?? null;
+  const visibleTables =
+    floorPlan?.tableLayouts.filter(
+      (table) => !setup.areaId || table.areaId === setup.areaId,
+    ) ?? [];
   const emptyStatuses = useMemo(() => new Map(), []);
 
-  const saveLayoutMutation = useMutation({
-    mutationFn: async () => {
-      if (!editorState) {
-        throw new Error(labels.states.floorPlanRequired);
-      }
+  const saveLayoutMutation =
+    useNexoServerModulesRestaurantFeaturesFloorPlansSaveSaveRestaurantFloorPlanEndpoint(
+      {
+        mutation: {
+          onSuccess: async (floorPlanDetail) => {
+            toast.success(labels.toasts.layoutSaved);
+            setEditorState(createFloorPlanEditorState(floorPlanDetail));
+            await invalidateRestaurantSetup(queryClient);
+          },
+          onError: (error) =>
+            showMutationError(error, labels.toasts.layoutFailed),
+        },
+      },
+    );
 
-      return saveRestaurantFloorPlan(editorState.floorPlan.id, toSaveFloorPlanInput(editorState.floorPlan));
-    },
-    onSuccess: async (floorPlanDetail) => {
-      toast.success(labels.toasts.layoutSaved);
-      setEditorState(createFloorPlanEditorState(floorPlanDetail));
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: restaurantQueryKeys.floorPlan(floorPlanDetail.id) }),
-        queryClient.invalidateQueries({ queryKey: restaurantQueryKeys.floorPlans(floorPlanDetail.branchId, floorPlanDetail.floorId) }),
-      ]);
-    },
-    onError: (error) => showMutationError(error, labels.toasts.layoutFailed),
-  });
-
-  function applyFloorPlanChange(change: (floorPlan: RestaurantFloorPlanDetail) => RestaurantFloorPlanDetail) {
-    setEditorState((current) => (current ? applyEditorChange(current, change) : current));
+  function applyFloorPlanChange(
+    change: (floorPlan: RestaurantFloorPlanDetail) => RestaurantFloorPlanDetail,
+  ) {
+    setEditorState((current) =>
+      current ? applyEditorChange(current, change) : current,
+    );
   }
 
-  function beginTableDrag(event: ReactPointerEvent<HTMLButtonElement>, tableId: string) {
-    if (activeTool !== 'move' || !floorPlan) {
+  function beginTableDrag(
+    event: ReactPointerEvent<HTMLButtonElement>,
+    tableId: string,
+  ) {
+    if (activeTool !== "move" || !floorPlan) {
       return;
     }
 
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
     setSelectedTableId(tableId);
-    setDragState({ itemKind: 'table', itemId: tableId, startClientX: event.clientX, startClientY: event.clientY });
+    setDragState({
+      itemKind: "table",
+      itemId: tableId,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+    });
   }
 
-  function beginAreaDrag(event: ReactPointerEvent<HTMLDivElement>, areaId: string) {
-    if (activeTool !== 'move' || !floorPlan) {
+  function beginAreaDrag(
+    event: ReactPointerEvent<HTMLDivElement>,
+    areaId: string,
+  ) {
+    if (activeTool !== "move" || !floorPlan) {
       return;
     }
 
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
-    setDragState({ itemKind: 'area', itemId: areaId, startClientX: event.clientX, startClientY: event.clientY });
+    setDragState({
+      itemKind: "area",
+      itemId: areaId,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+    });
   }
 
-  function moveLayoutDrag(event: ReactPointerEvent<HTMLButtonElement | HTMLDivElement>) {
+  function moveLayoutDrag(
+    event: ReactPointerEvent<HTMLButtonElement | HTMLDivElement>,
+  ) {
     if (!dragState || !floorPlan || !canvasRef.current) {
       return;
     }
 
     const rect = canvasRef.current.getBoundingClientRect();
-    const deltaX = ((event.clientX - dragState.startClientX) / rect.width) * floorPlan.canvasWidth;
-    const deltaY = ((event.clientY - dragState.startClientY) / rect.height) * floorPlan.canvasHeight;
+    const deltaX =
+      ((event.clientX - dragState.startClientX) / rect.width) *
+      floorPlan.canvasWidth;
+    const deltaY =
+      ((event.clientY - dragState.startClientY) / rect.height) *
+      floorPlan.canvasHeight;
     applyFloorPlanChange((current) =>
-      dragState.itemKind === 'area'
+      dragState.itemKind === "area"
         ? moveAreaLayout(current, dragState.itemId, deltaX, deltaY)
         : moveTableLayout(current, dragState.itemId, deltaX, deltaY),
     );
-    setDragState({ ...dragState, startClientX: event.clientX, startClientY: event.clientY });
+    setDragState({
+      ...dragState,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+    });
   }
 
-  function endLayoutDrag(event: ReactPointerEvent<HTMLButtonElement | HTMLDivElement>) {
+  function endLayoutDrag(
+    event: ReactPointerEvent<HTMLButtonElement | HTMLDivElement>,
+  ) {
     if (dragState) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
@@ -206,12 +282,12 @@ export function RestaurantFloorPlanEditorPage() {
   }
 
   function handleToolChange(tool: FloorPlanEditorTool) {
-    if (tool === 'add-area') {
+    if (tool === "add-area") {
       addNextSetupAreaLayout();
       return;
     }
 
-    if (tool === 'add-table') {
+    if (tool === "add-table") {
       addNextSetupTableLayout();
       return;
     }
@@ -229,7 +305,9 @@ export function RestaurantFloorPlanEditorPage() {
       (area) =>
         area.branchId === setup.branchId &&
         area.floorId === setup.floorId &&
-        !editorState.floorPlan.areaLayouts.some((layout) => layout.areaId === area.id),
+        !editorState.floorPlan.areaLayouts.some(
+          (layout) => layout.areaId === area.id,
+        ),
     );
 
     if (!nextArea) {
@@ -238,10 +316,14 @@ export function RestaurantFloorPlanEditorPage() {
     }
 
     setEditorState((current) =>
-      current ? applyEditorChange(current, (floorPlanDetail) => addAreaLayoutFromSetup(floorPlanDetail, nextArea)) : current,
+      current
+        ? applyEditorChange(current, (floorPlanDetail) =>
+            addAreaLayoutFromSetup(floorPlanDetail, nextArea),
+          )
+        : current,
     );
     updateSetup(setSetup, { areaId: nextArea.id });
-    setActiveTool('select');
+    setActiveTool("select");
   }
 
   function addNextSetupTableLayout() {
@@ -255,7 +337,9 @@ export function RestaurantFloorPlanEditorPage() {
         table.branchId === setup.branchId &&
         table.floorId === setup.floorId &&
         (!setup.areaId || table.areaId === setup.areaId) &&
-        !editorState.floorPlan.tableLayouts.some((layout) => layout.tableId === table.id),
+        !editorState.floorPlan.tableLayouts.some(
+          (layout) => layout.tableId === table.id,
+        ),
     );
 
     if (!nextTable) {
@@ -264,18 +348,31 @@ export function RestaurantFloorPlanEditorPage() {
     }
 
     setEditorState((current) =>
-      current ? applyEditorChange(current, (floorPlanDetail) => addTableLayoutFromSetup(floorPlanDetail, nextTable)) : current,
+      current
+        ? applyEditorChange(current, (floorPlanDetail) =>
+            addTableLayoutFromSetup(floorPlanDetail, nextTable),
+          )
+        : current,
     );
     setSelectedTableId(nextTable.id);
-    setActiveTool('move');
+    setActiveTool("move");
   }
 
-  function changeSelectedTableShape(shape: RestaurantTableLayoutDetail['shape']) {
+  function changeSelectedTableShape(
+    shape: RestaurantTableLayoutDetail["shape"],
+  ) {
     if (!selectedTable) {
       return;
     }
 
-    applyFloorPlanChange((current) => changeTableShape(current, selectedTable.tableId, shape, selectedTable.seatLayouts.length || 4));
+    applyFloorPlanChange((current) =>
+      changeTableShape(
+        current,
+        selectedTable.tableId,
+        shape,
+        selectedTable.seatLayouts.length || 4,
+      ),
+    );
   }
 
   return (
@@ -286,10 +383,24 @@ export function RestaurantFloorPlanEditorPage() {
           <h1>{labels.sections.floorEditor}</h1>
         </div>
         <div className="topbar-actions">
-          {editorState?.isDirty && <span className="dirty-pill">{labels.states.dirty}</span>}
-          <div className="context-pill" data-state={contextQuery.isError ? 'error' : 'ready'}>
-            {contextQuery.isPending ? <Loader2 className="spin" size={16} /> : <Activity size={16} />}
-            <span>{contextQuery.data?.moduleKey ?? (contextQuery.isError ? labels.app.contextBlocked : labels.app.contextFallback)}</span>
+          {editorState?.isDirty && (
+            <span className="dirty-pill">{labels.states.dirty}</span>
+          )}
+          <div
+            className="context-pill"
+            data-state={contextQuery.isError ? "error" : "ready"}
+          >
+            {contextQuery.isPending ? (
+              <Loader2 className="spin" size={16} />
+            ) : (
+              <Activity size={16} />
+            )}
+            <span>
+              {contextQuery.data?.moduleKey ??
+                (contextQuery.isError
+                  ? labels.app.contextBlocked
+                  : labels.app.contextFallback)}
+            </span>
           </div>
         </div>
       </header>
@@ -299,7 +410,12 @@ export function RestaurantFloorPlanEditorPage() {
           <select
             value={setup.branchId}
             onChange={(event) =>
-              updateSetup(setSetup, { branchId: event.target.value, floorId: '', floorPlanId: '', areaId: '' })
+              updateSetup(setSetup, {
+                branchId: event.target.value,
+                floorId: "",
+                floorPlanId: "",
+                areaId: "",
+              })
             }
             disabled={setupQuery.isPending || setupBranches.length === 0}
           >
@@ -314,7 +430,13 @@ export function RestaurantFloorPlanEditorPage() {
         <Field label={labels.setup.floorId}>
           <select
             value={setup.floorId}
-            onChange={(event) => updateSetup(setSetup, { floorId: event.target.value, floorPlanId: '', areaId: '' })}
+            onChange={(event) =>
+              updateSetup(setSetup, {
+                floorId: event.target.value,
+                floorPlanId: "",
+                areaId: "",
+              })
+            }
             disabled={!setup.branchId || setupFloors.length === 0}
           >
             <option value="">{labels.states.floorRequired}</option>
@@ -328,7 +450,12 @@ export function RestaurantFloorPlanEditorPage() {
         <Field label={labels.setup.floorPlan}>
           <select
             value={setup.floorPlanId}
-            onChange={(event) => updateSetup(setSetup, { floorPlanId: event.target.value, areaId: '' })}
+            onChange={(event) =>
+              updateSetup(setSetup, {
+                floorPlanId: event.target.value,
+                areaId: "",
+              })
+            }
             disabled={!floorPlansQuery.data?.length}
           >
             <option value="">{labels.states.floorPlanRequired}</option>
@@ -340,7 +467,12 @@ export function RestaurantFloorPlanEditorPage() {
           </select>
         </Field>
         <Field label={labels.setup.areaFilter}>
-          <select value={setup.areaId} onChange={(event) => updateSetup(setSetup, { areaId: event.target.value })}>
+          <select
+            value={setup.areaId}
+            onChange={(event) =>
+              updateSetup(setSetup, { areaId: event.target.value })
+            }
+          >
             <option value="">{labels.setup.allAreas}</option>
             {floorPlan?.areaLayouts.map((area) => (
               <option key={area.areaId} value={area.areaId}>
@@ -351,7 +483,10 @@ export function RestaurantFloorPlanEditorPage() {
         </Field>
       </section>
 
-      <section className="restaurant-module-page editor-workbench" aria-label={labels.sections.floorEditor}>
+      <section
+        className="restaurant-module-page editor-workbench"
+        aria-label={labels.sections.floorEditor}
+      >
         <FloorPlanEditorToolbar
           activeTool={activeTool}
           canUndo={Boolean(editorState?.past.length)}
@@ -360,30 +495,65 @@ export function RestaurantFloorPlanEditorPage() {
           isSaving={saveLayoutMutation.isPending}
           zoom={zoom}
           onToolChange={handleToolChange}
-          onSave={() => saveLayoutMutation.mutate()}
-          onUndo={() => setEditorState((current) => (current ? undoEditorChange(current) : current))}
-          onRedo={() => setEditorState((current) => (current ? redoEditorChange(current) : current))}
+          onSave={() => {
+            if (!editorState) {
+              toast.error(labels.toasts.layoutFailed, {
+                description: labels.states.floorPlanRequired,
+              });
+              return;
+            }
+
+            saveLayoutMutation.mutate({
+              floorPlanId: editorState.floorPlan.id,
+              data: toSaveFloorPlanInput(editorState.floorPlan),
+            });
+          }}
+          onUndo={() =>
+            setEditorState((current) =>
+              current ? undoEditorChange(current) : current,
+            )
+          }
+          onRedo={() =>
+            setEditorState((current) =>
+              current ? redoEditorChange(current) : current,
+            )
+          }
           onZoomIn={() => setZoom((current) => Math.min(1.6, current + 0.1))}
           onZoomOut={() => setZoom((current) => Math.max(0.7, current - 0.1))}
           onResetZoom={() => setZoom(1)}
         />
 
         <div className="editor-layout-grid">
-          <section className="panel editor-canvas-panel" aria-labelledby="editor-canvas-heading">
-            <PanelHeader icon={<MapIcon size={18} />} title={labels.editor.canvas} />
-            {floorPlansQuery.isError && <InlineError error={floorPlansQuery.error} />}
-            {floorPlanQuery.isError && <InlineError error={floorPlanQuery.error} />}
-            {floorPlanQuery.isPending && setup.floorPlanId && <SkeletonRows count={3} />}
+          <section
+            className="panel editor-canvas-panel"
+            aria-labelledby="editor-canvas-heading"
+          >
+            <PanelHeader
+              icon={<MapIcon size={18} />}
+              title={labels.editor.canvas}
+            />
+            {floorPlansQuery.isError && (
+              <InlineError error={floorPlansQuery.error} />
+            )}
+            {floorPlanQuery.isError && (
+              <InlineError error={floorPlanQuery.error} />
+            )}
+            {floorPlanQuery.isPending && setup.floorPlanId && (
+              <SkeletonRows count={3} />
+            )}
             {floorPlan && (
               <div className="editor-canvas-viewport">
-                <div className="editor-canvas-scale" style={{ transform: `scale(${zoom})` }}>
+                <div
+                  className="editor-canvas-scale"
+                  style={{ transform: `scale(${zoom})` }}
+                >
                   <FloorPlanCanvas
                     canvasRef={canvasRef}
                     floorPlan={floorPlan}
                     tables={visibleTables}
                     statuses={emptyStatuses}
                     selectedTableId={selectedTableId}
-                    isEditingLayout={activeTool === 'move'}
+                    isEditingLayout={activeTool === "move"}
                     isFetchingStatus={false}
                     onSelectTable={setSelectedTableId}
                     onBeginAreaDrag={beginAreaDrag}
@@ -394,12 +564,20 @@ export function RestaurantFloorPlanEditorPage() {
                 </div>
               </div>
             )}
-            {!setup.floorPlanId && <EmptyState icon={<PenTool size={22} />} title={labels.states.floorPlanRequired} />}
+            {!setup.floorPlanId && (
+              <EmptyState
+                icon={<PenTool size={22} />}
+                title={labels.states.floorPlanRequired}
+              />
+            )}
           </section>
 
           <aside className="side-stack editor-side-stack">
             <section className="panel">
-              <PanelHeader icon={<Shapes size={18} />} title={labels.editor.shapePalette} />
+              <PanelHeader
+                icon={<Shapes size={18} />}
+                title={labels.editor.shapePalette}
+              />
               <FloorPlanShapePalette
                 selectedShape={selectedTable?.shape ?? null}
                 disabled={!selectedTable}
@@ -407,15 +585,50 @@ export function RestaurantFloorPlanEditorPage() {
               />
             </section>
             <section className="panel">
-              <PanelHeader icon={<PenTool size={18} />} title={labels.editor.properties} />
+              <PanelHeader
+                icon={<PenTool size={18} />}
+                title={labels.editor.properties}
+              />
               <FloorPlanPropertiesPanel
                 table={selectedTable}
                 areas={floorPlan?.areaLayouts ?? []}
-                onWidthChange={(width) => selectedTable && applyFloorPlanChange((current) => resizeTableLayout(current, selectedTable.tableId, width, selectedTable.height))}
-                onHeightChange={(height) => selectedTable && applyFloorPlanChange((current) => resizeTableLayout(current, selectedTable.tableId, selectedTable.width, height))}
-                onRotationChange={(rotation) => selectedTable && applyFloorPlanChange((current) => rotateTableLayout(current, selectedTable.tableId, rotation))}
+                onWidthChange={(width) =>
+                  selectedTable &&
+                  applyFloorPlanChange((current) =>
+                    resizeTableLayout(
+                      current,
+                      selectedTable.tableId,
+                      width,
+                      selectedTable.height,
+                    ),
+                  )
+                }
+                onHeightChange={(height) =>
+                  selectedTable &&
+                  applyFloorPlanChange((current) =>
+                    resizeTableLayout(
+                      current,
+                      selectedTable.tableId,
+                      selectedTable.width,
+                      height,
+                    ),
+                  )
+                }
+                onRotationChange={(rotation) =>
+                  selectedTable &&
+                  applyFloorPlanChange((current) =>
+                    rotateTableLayout(current, selectedTable.tableId, rotation),
+                  )
+                }
                 onChairCountChange={(chairCount) =>
-                  selectedTable && applyFloorPlanChange((current) => changeTableChairCount(current, selectedTable.tableId, chairCount))
+                  selectedTable &&
+                  applyFloorPlanChange((current) =>
+                    changeTableChairCount(
+                      current,
+                      selectedTable.tableId,
+                      chairCount,
+                    ),
+                  )
                 }
               />
             </section>
@@ -427,7 +640,7 @@ export function RestaurantFloorPlanEditorPage() {
 }
 
 function showMutationError(error: unknown, title: string) {
-  if (error instanceof RestaurantApiError) {
+  if (error instanceof Error) {
     toast.error(title, { description: error.message });
     return;
   }

@@ -12,11 +12,5 @@ export function AuthSessionProvider({ children }: { children: ReactNode }) {
 }
 
 export function useAuthSession() {
-  return useAuthSessionStore((state) => ({
-    session: state.session,
-    status: state.status,
-    reload: state.reload,
-    login: state.login,
-    logout: state.logout,
-  }));
+  return useAuthSessionStore();
 }

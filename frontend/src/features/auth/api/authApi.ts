@@ -1,61 +1,62 @@
-import { bffFetch, getApiBaseUrl } from '../../../lib/api/bffFetch';
+import {
+  nexoServerModulesSharedAuthFeaturesAuthMeEndpoint,
+  nexoServerModulesSharedAuthFeaturesLogoutEndpoint,
+  nexoServerModulesSharedAuthFeaturesRefreshEndpoint,
+} from "../../../lib/api/generated/clients";
+import type {
+  AuthClaimResponse,
+  AuthSessionResponse,
+} from "../../../lib/api/generated/types";
+import { getApiBaseUrl } from "../../../lib/api/bffFetch";
+import { ApiClientError } from "../../../lib/api/generatedClient";
 
-export interface AuthClaim {
-  type: string;
-  value: string;
-}
-
-export interface AuthSession {
-  isAuthenticated: boolean;
-  userId?: string | null;
-  name?: string | null;
-  email?: string | null;
-  companyId?: string | null;
-  roles: string[];
-  claims: AuthClaim[];
-}
+export type AuthClaim = AuthClaimResponse;
+export type AuthSession = AuthSessionResponse;
 
 export const anonymousSession: AuthSession = {
   isAuthenticated: false,
+  userId: null,
+  name: null,
+  email: null,
+  companyId: null,
   roles: [],
   claims: [],
 };
 
 export async function getCurrentSession(): Promise<AuthSession> {
-  const response = await bffFetch('/auth/me');
-  if (response.status === 401) {
-    return anonymousSession;
-  }
+  try {
+    return await nexoServerModulesSharedAuthFeaturesAuthMeEndpoint();
+  } catch (error) {
+    if (error instanceof ApiClientError && error.status === 401) {
+      return anonymousSession;
+    }
 
-  if (!response.ok) {
-    throw new Error('No se pudo restaurar la sesion.');
+    throw new Error("No se pudo restaurar la sesion.");
   }
-
-  return (await response.json()) as AuthSession;
 }
 
 export async function refreshSession(): Promise<void> {
-  const response = await bffFetch('/auth/refresh', { method: 'POST' });
-  if (!response.ok) {
-    throw new Error('No se pudo renovar la sesion.');
+  try {
+    await nexoServerModulesSharedAuthFeaturesRefreshEndpoint();
+  } catch {
+    throw new Error("No se pudo renovar la sesion.");
   }
 }
 
 export async function logout(): Promise<string | null> {
-  const response = await bffFetch('/auth/logout', { method: 'POST' });
-  if (response.status === 204) {
+  try {
+    await nexoServerModulesSharedAuthFeaturesLogoutEndpoint();
     return null;
+  } catch {
+    throw new Error("No se pudo cerrar la sesion.");
   }
-
-  if (!response.ok) {
-    throw new Error('No se pudo cerrar la sesion.');
-  }
-
-  const payload = (await response.json()) as { logoutUrl?: string };
-  return payload.logoutUrl ?? null;
 }
 
-export function redirectToLogin(returnUrl = globalThis.location?.pathname ?? '/') {
+export function redirectToLogin(
+  returnUrl = globalThis.location?.pathname ?? "/",
+) {
   const search = new URLSearchParams({ returnUrl });
-  globalThis.location.assign(`${getApiBaseUrl()}/auth/login?${search.toString()}`);
+  globalThis.location.assign(
+    `${getApiBaseUrl()}/auth/login?${search.toString()}`,
+  );
 }

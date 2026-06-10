@@ -54,6 +54,40 @@ public sealed class KeycloakTokenRefreshServiceTests
         await Assert.That(properties.GetTokenValue("refresh_token")).IsEqualTo("refresh-2");
     }
 
+    [Test]
+    public async Task RefreshAsync_ReturnsFailedWhenTokenRequestIsCanceledByHttpClient()
+    {
+        var service = new KeycloakTokenRefreshService(
+            new HttpClient(new CanceledTokenHandler()),
+            Options.Create(new KeycloakOptions
+            {
+                Authority = "https://identity.example.test/realms/nexo",
+                Realm = "nexo",
+                ClientId = "nexo-web-bff",
+                ClientSecret = "secret-from-user-secrets",
+                CallbackPath = "/auth/callback",
+                LogoutRedirectUri = "https://app.example.test/login",
+                Scopes = ["openid", "profile", "email"]
+            }),
+            TimeProvider.System,
+            NullLogger<KeycloakTokenRefreshService>.Instance);
+
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(
+            [new Claim(ClaimTypes.NameIdentifier, "user-1")],
+            NexoAuthSchemes.Session));
+        var properties = new AuthenticationProperties();
+        properties.StoreTokens(
+            [
+                new AuthenticationToken { Name = "refresh_token", Value = "refresh-1" },
+                new AuthenticationToken { Name = "access_token", Value = "old-access" }
+            ]);
+
+        var result = await service.RefreshAsync(principal, properties, CancellationToken.None);
+
+        await Assert.That(result.Succeeded).IsFalse();
+        await Assert.That(properties.GetTokenValue("access_token")).IsEqualTo("old-access");
+    }
+
     private sealed class RecordingTokenHandler : HttpMessageHandler
     {
         public Uri? RequestUri { get; private set; }
@@ -84,6 +118,16 @@ public sealed class KeycloakTokenRefreshServiceTests
                     }
                     """)
             };
+        }
+    }
+
+    private sealed class CanceledTokenHandler : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            throw new TaskCanceledException("The token endpoint request timed out.");
         }
     }
 }

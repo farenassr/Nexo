@@ -1,3 +1,11 @@
+import type {
+  RestaurantAreaType as GeneratedRestaurantAreaType,
+  RestaurantReservationSource as GeneratedRestaurantReservationSource,
+  RestaurantReservationStatus as GeneratedRestaurantReservationStatus,
+  RestaurantTableShape as GeneratedRestaurantTableShape,
+  RestaurantTableVisualStatus as GeneratedRestaurantTableVisualStatus,
+} from "../../lib/api/generated/types";
+
 export type {
   RestaurantAreaDetail,
   RestaurantAreaLayoutDetail,
@@ -24,7 +32,7 @@ export type {
   RestaurantTableSeatLayoutDetail,
   RestaurantTableStatusDetail,
   RestaurantUpcomingReservationSummary,
-} from '../../lib/api/generated/types';
+} from "../../lib/api/generated/types";
 
 export interface RestaurantOperationErrorResponse {
   code: string;
@@ -39,9 +47,7 @@ export const RestaurantReservationStatus = {
   Cancelled: 4,
   NoShow: 5,
 } as const;
-
-export type RestaurantReservationStatus =
-  number;
+export type RestaurantReservationStatus = GeneratedRestaurantReservationStatus;
 
 export const RestaurantReservationSource = {
   Phone: 0,
@@ -51,9 +57,7 @@ export const RestaurantReservationSource = {
   Partner: 4,
   Other: 5,
 } as const;
-
-export type RestaurantReservationSource =
-  number;
+export type RestaurantReservationSource = GeneratedRestaurantReservationSource;
 
 export const RestaurantTableVisualStatus = {
   Inactive: 0,
@@ -63,9 +67,7 @@ export const RestaurantTableVisualStatus = {
   Cleaning: 4,
   Available: 5,
 } as const;
-
-export type RestaurantTableVisualStatus =
-  number;
+export type RestaurantTableVisualStatus = GeneratedRestaurantTableVisualStatus;
 
 export const RestaurantTableShape = {
   Round: 0,
@@ -75,8 +77,7 @@ export const RestaurantTableShape = {
   Bar: 4,
   Custom: 5,
 } as const;
-
-export type RestaurantTableShape = number;
+export type RestaurantTableShape = GeneratedRestaurantTableShape;
 
 export const RestaurantAreaType = {
   DiningRoom: 0,
@@ -87,5 +88,4 @@ export const RestaurantAreaType = {
   Takeaway: 5,
   Other: 6,
 } as const;
-
-export type RestaurantAreaType = number;
+export type RestaurantAreaType = GeneratedRestaurantAreaType;
