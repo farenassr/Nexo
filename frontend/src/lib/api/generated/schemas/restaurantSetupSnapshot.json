@@ -5,7 +5,9 @@
     "floors",
     "areas",
     "tables",
-    "floorPlans"
+    "floorPlans",
+    "openingHours",
+    "specialDays"
   ],
   "type": "object",
   "properties": {
@@ -169,6 +171,54 @@
           "isActive": { "type": "boolean" }
         },
         "x-readme-ref-name": "RestaurantFloorPlanSummary"
+      }
+    },
+    "openingHours": {
+      "type": "array",
+      "items": {
+        "required": [
+          "id",
+          "branchId",
+          "dayOfWeek",
+          "opensAt",
+          "closesAt",
+          "isClosed"
+        ],
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "branchId": { "type": "string", "format": "uuid" },
+          "dayOfWeek": { "type": "integer", "x-readme-ref-name": "DayOfWeek" },
+          "opensAt": { "type": "string", "format": "time" },
+          "closesAt": { "type": "string", "format": "time" },
+          "isClosed": { "type": "boolean" }
+        },
+        "x-readme-ref-name": "RestaurantOpeningHourDetail"
+      }
+    },
+    "specialDays": {
+      "type": "array",
+      "items": {
+        "required": [
+          "id",
+          "branchId",
+          "date",
+          "name",
+          "isClosed",
+          "opensAt",
+          "closesAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "branchId": { "type": "string", "format": "uuid" },
+          "date": { "type": "string", "format": "date" },
+          "name": { "type": "string" },
+          "isClosed": { "type": "boolean" },
+          "opensAt": { "type": ["null", "string"], "format": "time" },
+          "closesAt": { "type": ["null", "string"], "format": "time" }
+        },
+        "x-readme-ref-name": "RestaurantSpecialDayDetail"
       }
     }
   },

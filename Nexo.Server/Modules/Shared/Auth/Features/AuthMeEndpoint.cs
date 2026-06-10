@@ -17,6 +17,7 @@ public sealed class AuthMeEndpoint : EndpointWithoutRequest<AuthSessionResponse>
     public override void Configure()
     {
         Get("/auth/me");
+        AllowAnonymous();
         Summary(summary => summary.Summary = "Returns the current BFF cookie session.");
     }
 

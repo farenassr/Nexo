@@ -1,0 +1,38 @@
+{
+  "required": [
+    "branchId",
+    "floorId",
+    "areaId",
+    "label",
+    "minCapacity",
+    "maxCapacity",
+    "defaultReservationMinutes",
+    "shape",
+    "isActive"
+  ],
+  "type": "object",
+  "properties": {
+    "branchId": { "type": "string", "format": "uuid" },
+    "floorId": { "type": "string", "format": "uuid" },
+    "areaId": { "type": ["null", "string"], "format": "uuid" },
+    "label": { "type": "string" },
+    "minCapacity": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": "integer",
+      "format": "int32"
+    },
+    "maxCapacity": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": "integer",
+      "format": "int32"
+    },
+    "defaultReservationMinutes": {
+      "pattern": "^-?(?:0|[1-9]\\d*)$",
+      "type": ["null", "integer"],
+      "format": "int32"
+    },
+    "shape": { "type": "integer", "x-readme-ref-name": "RestaurantTableShape" },
+    "isActive": { "type": "boolean" }
+  },
+  "x-readme-ref-name": "UpdateRestaurantTableRequest"
+}

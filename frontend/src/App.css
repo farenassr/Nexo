@@ -481,8 +481,60 @@
   margin-top: 16px;
 }
 
+.setup-edit-workbench {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(300px, 1fr));
+  gap: 16px;
+  align-items: start;
+  margin-top: 16px;
+}
+
 .setup-form-panel {
   min-height: 0;
+}
+
+.setup-hours-panel,
+.setup-special-days-panel {
+  min-height: 0;
+}
+
+.setup-hours-panel,
+.setup-special-days-panel {
+  grid-column: span 3;
+}
+
+.setup-hours-list,
+.setup-special-day-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setup-hours-row,
+.setup-special-day-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.65fr) minmax(120px, 0.7fr) minmax(120px, 0.7fr) minmax(120px, 0.7fr) minmax(104px, 0.45fr);
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fbfcfa;
+}
+
+.setup-special-day-form {
+  margin-bottom: 12px;
+}
+
+.setup-special-day-row {
+  grid-template-columns: minmax(260px, 1.2fr) minmax(320px, 1.4fr) minmax(180px, 0.65fr);
+}
+
+.setup-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .setup-summary-panel {
@@ -1600,6 +1652,7 @@ button:disabled {
   .setup-panel,
   .setup-metric-grid,
   .setup-workbench,
+  .setup-edit-workbench,
   .reservations-filter-panel,
   .live-toolbar,
   .dashboard-metric-grid,
@@ -1610,6 +1663,16 @@ button:disabled {
   .editor-layout-grid,
   .form-row,
   .floor-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .setup-hours-panel,
+  .setup-special-days-panel {
+    grid-column: auto;
+  }
+
+  .setup-hours-row,
+  .setup-special-day-row {
     grid-template-columns: 1fr;
   }
 

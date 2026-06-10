@@ -1,0 +1,12 @@
+{
+  "required": ["branchId", "dayOfWeek", "opensAt", "closesAt", "isClosed"],
+  "type": "object",
+  "properties": {
+    "branchId": { "type": "string", "format": "uuid" },
+    "dayOfWeek": { "type": "integer", "x-readme-ref-name": "DayOfWeek" },
+    "opensAt": { "type": "string", "format": "time" },
+    "closesAt": { "type": "string", "format": "time" },
+    "isClosed": { "type": "boolean" }
+  },
+  "x-readme-ref-name": "UpsertRestaurantOpeningHourRequest"
+}

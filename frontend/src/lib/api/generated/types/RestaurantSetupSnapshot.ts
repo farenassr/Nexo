@@ -7,6 +7,8 @@ import type { RestaurantAreaDetail } from "./RestaurantAreaDetail.ts";
 import type { RestaurantBranchDetail } from "./RestaurantBranchDetail.ts";
 import type { RestaurantFloorDetail } from "./RestaurantFloorDetail.ts";
 import type { RestaurantFloorPlanSummary } from "./RestaurantFloorPlanSummary.ts";
+import type { RestaurantOpeningHourDetail } from "./RestaurantOpeningHourDetail.ts";
+import type { RestaurantSpecialDayDetail } from "./RestaurantSpecialDayDetail.ts";
 import type { RestaurantTableDetail } from "./RestaurantTableDetail.ts";
 
 export interface RestaurantSetupSnapshot {
@@ -34,4 +36,12 @@ export interface RestaurantSetupSnapshot {
    * @type array
    */
   floorPlans: RestaurantFloorPlanSummary[];
+  /**
+   * @type array
+   */
+  openingHours: RestaurantOpeningHourDetail[];
+  /**
+   * @type array
+   */
+  specialDays: RestaurantSpecialDayDetail[];
 }

@@ -239,6 +239,7 @@ public sealed class RestaurantFloorPlanService(NexoDbContext dbContext, TimeProv
         var tableIds = request.TableLayouts.Select(static layout => layout.TableId).Distinct().ToArray();
 
         var matchingAreaCount = await dbContext.RestaurantAreas
+            .AsNoTracking()
             .Where(area => areaIds.Contains(area.Id)
                 && area.BranchId == floorPlan.BranchId
                 && area.FloorId == floorPlan.FloorId)
@@ -250,6 +251,7 @@ public sealed class RestaurantFloorPlanService(NexoDbContext dbContext, TimeProv
         }
 
         var matchingTableCount = await dbContext.RestaurantTables
+            .AsNoTracking()
             .Where(table => tableIds.Contains(table.Id)
                 && table.BranchId == floorPlan.BranchId
                 && table.FloorId == floorPlan.FloorId)

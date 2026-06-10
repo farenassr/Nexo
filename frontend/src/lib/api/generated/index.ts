@@ -21,8 +21,16 @@ export type { NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantAreaEndpoi
 export type { NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantBranchEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantBranchEndpoint.ts";
 export type { NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorEndpoint.ts";
 export type { NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpoint.ts";
+export type { NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpoint.ts";
 export type { NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint.ts";
 export type { NexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpointQueryKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint.ts";
+export type { NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpoint.ts";
+export type { NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpoint.ts";
+export type { NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpoint.ts";
+export type { NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpoint.ts";
+export type { NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpoint.ts";
+export type { NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpoint.ts";
+export type { NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpoint.ts";
 export type { NexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpoint.ts";
 export type { NexoServerModulesSharedAuthFeaturesAuthMeEndpointQueryKey } from "./hooks/useNexoServerModulesSharedAuthFeaturesAuthMeEndpoint.ts";
 export type { NexoServerModulesSharedAuthFeaturesLoginEndpointQueryKey } from "./hooks/useNexoServerModulesSharedAuthFeaturesLoginEndpoint.ts";
@@ -38,6 +46,7 @@ export type { CreateRestaurantFloorRequest } from "./types/CreateRestaurantFloor
 export type { CreateRestaurantReservationEndpointRequest } from "./types/CreateRestaurantReservationEndpointRequest.ts";
 export type { CreateRestaurantTableBlockEndpointRequest } from "./types/CreateRestaurantTableBlockEndpointRequest.ts";
 export type { CreateRestaurantTableRequest } from "./types/CreateRestaurantTableRequest.ts";
+export type { DayOfWeek } from "./types/DayOfWeek.ts";
 export type { GetRestaurantFloorPlanEndpointRequest } from "./types/GetRestaurantFloorPlanEndpointRequest.ts";
 export type { GetRestaurantFloorPlanStatusMapEndpointRequest } from "./types/GetRestaurantFloorPlanStatusMapEndpointRequest.ts";
 export type { GetRestaurantReservationEndpointRequest } from "./types/GetRestaurantReservationEndpointRequest.ts";
@@ -211,6 +220,13 @@ export type {
   NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpointPathParams,
 } from "./types/NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpoint.ts";
 export type {
+  NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpoint204,
+  NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpoint401,
+  NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpointMutation,
+  NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpointMutationResponse,
+  NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpointPathParams,
+} from "./types/NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpoint.ts";
+export type {
   NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint204,
   NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint401,
   NexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpointMutation,
@@ -223,6 +239,60 @@ export type {
   NexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpointQuery,
   NexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpointQueryResponse,
 } from "./types/NexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint.ts";
+export type {
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpoint200,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpoint401,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpointMutation,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpointMutationRequest,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpointMutationResponse,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpointPathParams,
+} from "./types/NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpoint.ts";
+export type {
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpoint200,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpoint401,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpointMutation,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpointMutationRequest,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpointMutationResponse,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpointPathParams,
+} from "./types/NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpoint.ts";
+export type {
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpoint200,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpoint401,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpointMutation,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpointMutationRequest,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpointMutationResponse,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpointPathParams,
+} from "./types/NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpoint.ts";
+export type {
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpoint200,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpoint401,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpointMutation,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpointMutationRequest,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpointMutationResponse,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpointPathParams,
+} from "./types/NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpoint.ts";
+export type {
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpoint200,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpoint401,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpointMutation,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpointMutationRequest,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpointMutationResponse,
+  NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpointPathParams,
+} from "./types/NexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpoint.ts";
+export type {
+  NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpoint200,
+  NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpoint401,
+  NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpointMutation,
+  NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpointMutationRequest,
+  NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpointMutationResponse,
+} from "./types/NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpoint.ts";
+export type {
+  NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpoint200,
+  NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpoint401,
+  NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpointMutation,
+  NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpointMutationRequest,
+  NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpointMutationResponse,
+} from "./types/NexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpoint.ts";
 export type {
   NexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpoint200,
   NexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpoint401,
@@ -270,6 +340,7 @@ export type { RestaurantFloorPlanDetail } from "./types/RestaurantFloorPlanDetai
 export type { RestaurantFloorPlanStatusMap } from "./types/RestaurantFloorPlanStatusMap.ts";
 export type { RestaurantFloorPlanSummary } from "./types/RestaurantFloorPlanSummary.ts";
 export type { RestaurantOccupancyByHourPoint } from "./types/RestaurantOccupancyByHourPoint.ts";
+export type { RestaurantOpeningHourDetail } from "./types/RestaurantOpeningHourDetail.ts";
 export type { RestaurantReservationCustomerDetail } from "./types/RestaurantReservationCustomerDetail.ts";
 export type { RestaurantReservationDetail } from "./types/RestaurantReservationDetail.ts";
 export type { RestaurantReservationSource } from "./types/RestaurantReservationSource.ts";
@@ -277,6 +348,7 @@ export type { RestaurantReservationStatus } from "./types/RestaurantReservationS
 export type { RestaurantReservationStatusHistoryDetail } from "./types/RestaurantReservationStatusHistoryDetail.ts";
 export type { RestaurantReservationTableDetail } from "./types/RestaurantReservationTableDetail.ts";
 export type { RestaurantSetupSnapshot } from "./types/RestaurantSetupSnapshot.ts";
+export type { RestaurantSpecialDayDetail } from "./types/RestaurantSpecialDayDetail.ts";
 export type { RestaurantTableBlockDetail } from "./types/RestaurantTableBlockDetail.ts";
 export type { RestaurantTableDetail } from "./types/RestaurantTableDetail.ts";
 export type { RestaurantTableLayoutDetail } from "./types/RestaurantTableLayoutDetail.ts";
@@ -290,8 +362,15 @@ export type { SaveRestaurantFloorPlanEndpointRequest } from "./types/SaveRestaur
 export type { SaveRestaurantTableLayoutRequest } from "./types/SaveRestaurantTableLayoutRequest.ts";
 export type { SaveRestaurantTableSeatLayoutRequest } from "./types/SaveRestaurantTableSeatLayoutRequest.ts";
 export type { SearchRestaurantAvailabilityEndpointRequest } from "./types/SearchRestaurantAvailabilityEndpointRequest.ts";
+export type { UpdateRestaurantAreaRequest } from "./types/UpdateRestaurantAreaRequest.ts";
+export type { UpdateRestaurantBranchRequest } from "./types/UpdateRestaurantBranchRequest.ts";
+export type { UpdateRestaurantFloorPlanMetadataRequest } from "./types/UpdateRestaurantFloorPlanMetadataRequest.ts";
+export type { UpdateRestaurantFloorRequest } from "./types/UpdateRestaurantFloorRequest.ts";
 export type { UpdateRestaurantReservationStatusEndpointRequest } from "./types/UpdateRestaurantReservationStatusEndpointRequest.ts";
 export type { UpdateRestaurantTableLayoutEndpointRequest } from "./types/UpdateRestaurantTableLayoutEndpointRequest.ts";
+export type { UpdateRestaurantTableRequest } from "./types/UpdateRestaurantTableRequest.ts";
+export type { UpsertRestaurantOpeningHourRequest } from "./types/UpsertRestaurantOpeningHourRequest.ts";
+export type { UpsertRestaurantSpecialDayRequest } from "./types/UpsertRestaurantSpecialDayRequest.ts";
 export { nexoServerModulesRestaurantFeaturesAvailabilitySearchSearchRestaurantAvailabilityEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesAvailabilitySearchSearchRestaurantAvailabilityEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesDashboardGetRestaurantDashboardGetRestaurantDashboardEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesDashboardGetRestaurantDashboardGetRestaurantDashboardEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesFloorPlansGetDetailsGetRestaurantFloorPlanEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesFloorPlansGetDetailsGetRestaurantFloorPlanEndpoint.ts";
@@ -315,8 +394,16 @@ export { nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantAreaEndpoint } 
 export { nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantBranchEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantBranchEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpoint } from "./clients/nexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpoint.ts";
 export { nexoServerModulesSharedAuthFeaturesAuthMeEndpoint } from "./clients/nexoServerModulesSharedAuthFeaturesAuthMeEndpoint.ts";
 export { nexoServerModulesSharedAuthFeaturesLoginEndpoint } from "./clients/nexoServerModulesSharedAuthFeaturesLoginEndpoint.ts";
@@ -391,12 +478,36 @@ export { useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorEndpoin
 export { nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpointMutationOptions } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpoint.ts";
 export { useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpoint } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantFloorPlanEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpointMutationOptions } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpoint.ts";
+export { useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpoint } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantSpecialDayEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpointMutationOptions } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint.ts";
 export { useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupDeleteRestaurantTableEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpointQueryKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpointQueryOptions } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint.ts";
 export { useNexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpointMutationOptions } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpoint.ts";
+export { useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpoint } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpointMutationOptions } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpoint.ts";
+export { useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpoint } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpointMutationOptions } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpoint.ts";
+export { useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpoint } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpointMutationOptions } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpoint.ts";
+export { useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpoint } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpointMutationOptions } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpoint.ts";
+export { useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpoint } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpointMutationOptions } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpoint.ts";
+export { useNexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpoint } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpsertRestaurantOpeningHourEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpoint.ts";
+export { nexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpointMutationOptions } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpoint.ts";
+export { useNexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpoint } from "./hooks/useNexoServerModulesRestaurantFeaturesSetupUpsertRestaurantSpecialDayEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpointMutationKey } from "./hooks/useNexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpoint.ts";
 export { nexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpointMutationOptions } from "./hooks/useNexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpoint.ts";
 export { useNexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpoint } from "./hooks/useNexoServerModulesRestaurantFeaturesTableBlocksCreateCreateRestaurantTableBlockEndpoint.ts";
