@@ -18,7 +18,7 @@ export const anonymousSession: AuthSession = {
   userId: null,
   name: null,
   email: null,
-  companyId: null,
+  organizationId: null,
   roles: [],
   claims: [],
 };

@@ -133,7 +133,7 @@ public sealed class RestaurantFloorPlanService(NexoDbContext dbContext, TimeProv
         {
             layout = new RestaurantTableLayout
             {
-                CompanyId = dbContext.CurrentCompanyId,
+                OrganizationId = dbContext.CurrentOrganizationId,
                 FloorPlanId = floorPlanId,
                 TableId = tableId,
                 CreatedAt = now
@@ -285,7 +285,7 @@ public sealed class RestaurantFloorPlanService(NexoDbContext dbContext, TimeProv
         {
             dbContext.RestaurantAreaLayouts.Add(new RestaurantAreaLayout
             {
-                CompanyId = dbContext.CurrentCompanyId,
+                OrganizationId = dbContext.CurrentOrganizationId,
                 FloorPlanId = floorPlan.Id,
                 AreaId = areaLayoutRequest.AreaId,
                 X = areaLayoutRequest.X,
@@ -303,7 +303,7 @@ public sealed class RestaurantFloorPlanService(NexoDbContext dbContext, TimeProv
         {
             var tableLayout = new RestaurantTableLayout
             {
-                CompanyId = dbContext.CurrentCompanyId,
+                OrganizationId = dbContext.CurrentOrganizationId,
                 FloorPlanId = floorPlan.Id,
                 TableId = tableLayoutRequest.TableId,
                 CreatedAt = now
@@ -338,7 +338,7 @@ public sealed class RestaurantFloorPlanService(NexoDbContext dbContext, TimeProv
         {
             dbContext.RestaurantTableSeatLayouts.Add(new RestaurantTableSeatLayout
             {
-                CompanyId = dbContext.CurrentCompanyId,
+                OrganizationId = dbContext.CurrentOrganizationId,
                 TableLayout = tableLayout,
                 SeatNumber = seatLayout.SeatNumber,
                 X = seatLayout.X,

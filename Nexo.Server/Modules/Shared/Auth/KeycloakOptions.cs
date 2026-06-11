@@ -16,7 +16,7 @@ public sealed class KeycloakOptions
 
     public string LogoutRedirectUri { get; set; } = "";
 
-    public string[] Scopes { get; set; } = ["openid", "profile", "email"];
+    public string[] Scopes { get; set; } = ["openid", "profile", "email", "organization"];
 
     public int AccessTokenRefreshSkewMinutes { get; set; } = 2;
 

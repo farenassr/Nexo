@@ -11,7 +11,7 @@ export interface RestaurantBranchDetail {
   /**
    * @type string, uuid
    */
-  companyId: string;
+  organizationId: string;
   /**
    * @type string
    */

@@ -58,6 +58,11 @@ public sealed class KeycloakOptionsValidator : IValidateOptions<KeycloakOptions>
             failures.Add("Keycloak:Scopes must include openid.");
         }
 
+        if (!options.Scopes.Contains("organization", StringComparer.Ordinal))
+        {
+            failures.Add("Keycloak:Scopes must include organization.");
+        }
+
         if (options.AccessTokenRefreshSkewMinutes < 1)
         {
             failures.Add("Keycloak:AccessTokenRefreshSkewMinutes must be at least 1.");

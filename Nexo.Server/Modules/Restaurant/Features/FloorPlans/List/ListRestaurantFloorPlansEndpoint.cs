@@ -14,7 +14,7 @@ public sealed class ListRestaurantFloorPlansEndpoint(
         Summary(summary =>
         {
             summary.Summary = "Lists restaurant floor plans.";
-            summary.Description = "Returns floor plan summaries for a branch and floor in the current company.";
+            summary.Description = "Returns floor plan summaries for a branch and floor in the current organization.";
         });
     }
 

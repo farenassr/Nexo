@@ -14,7 +14,7 @@ public sealed class RestaurantContextEndpoint(
         Summary(summary =>
         {
             summary.Summary = "Returns the server-resolved Restaurant module context.";
-            summary.Description = "Development-only context check for company scope, module gating, and permission contracts.";
+            summary.Description = "Development-only context check for organization scope, module gating, and permission contracts.";
         });
     }
 
@@ -32,7 +32,7 @@ public sealed class RestaurantContextEndpoint(
 
         await Send.OkAsync(
             new RestaurantContextResponse(
-                access.CompanyId!.Value,
+                access.OrganizationId!.Value,
                 NexoModules.Restaurant,
                 [RestaurantPermissions.ContextRead]),
             cancellationToken);

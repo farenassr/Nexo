@@ -133,7 +133,7 @@ describe('floorPlanEditor', () => {
 
     const changed = addTableLayoutFromSetup(floorPlan, {
       id: 'table-2',
-      companyId: 'company-1',
+      organizationId: 'organization-1',
       branchId: 'branch-1',
       floorId: 'floor-1',
       areaId: 'area-1',
@@ -166,6 +166,17 @@ describe('floorPlanEditor', () => {
       { seatNumber: 1, x: 20, y: 92, rotationDegrees: 180 },
       { seatNumber: 2, x: 50, y: 92, rotationDegrees: 180 },
       { seatNumber: 3, x: 80, y: 92, rotationDegrees: 180 },
+    ]);
+  });
+
+  it('keeps rectangular table seats inset from the table corners', () => {
+    expect(buildSeatLayouts(RestaurantTableShape.Rectangle, 6)).toEqual([
+      { seatNumber: 1, x: 18, y: -10, rotationDegrees: 0 },
+      { seatNumber: 2, x: 50, y: -10, rotationDegrees: 0 },
+      { seatNumber: 3, x: 82, y: -10, rotationDegrees: 0 },
+      { seatNumber: 4, x: 18, y: 110, rotationDegrees: 180 },
+      { seatNumber: 5, x: 50, y: 110, rotationDegrees: 180 },
+      { seatNumber: 6, x: 82, y: 110, rotationDegrees: 180 },
     ]);
   });
 

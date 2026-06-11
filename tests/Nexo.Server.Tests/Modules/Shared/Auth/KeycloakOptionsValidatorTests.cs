@@ -38,7 +38,7 @@ public sealed class KeycloakOptionsValidatorTests
             ClientSecret = "configured-outside-source-control",
             CallbackPath = "/auth/callback",
             LogoutRedirectUri = "https://app.example.test/login",
-            Scopes = ["openid", "profile", "email", "offline_access"]
+            Scopes = ["openid", "profile", "email", "organization", "offline_access"]
         };
 
         var result = new KeycloakOptionsValidator().Validate(Options.DefaultName, options);

@@ -6,12 +6,12 @@ namespace Nexo.Server.Modules.Restaurant.Data.Configurations;
 
 internal static class RestaurantConfigurationExtensions
 {
-    public static void ConfigureCompanyOwnedEntity<TEntity>(
+    public static void ConfigureOrganizationOwnedEntity<TEntity>(
         this EntityTypeBuilder<TEntity> builder)
-        where TEntity : class, ICompanyOwnedEntity
+        where TEntity : class, IOrganizationOwnedEntity
     {
-        builder.Property(entity => entity.CompanyId).HasColumnName("company_id");
-        builder.HasIndex(entity => entity.CompanyId);
+        builder.Property(entity => entity.OrganizationId).HasColumnName("organization_id");
+        builder.HasIndex(entity => entity.OrganizationId);
     }
 
     public static void ConfigureAuditColumns<TEntity>(

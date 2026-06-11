@@ -6,14 +6,6 @@ namespace Nexo.Server.Modules.Shared.Auth.Features;
 
 public sealed class AuthMeEndpoint : EndpointWithoutRequest<AuthSessionResponse>
 {
-    private static readonly string[] CompanyClaimTypes =
-    [
-        "company_id",
-        "organization",
-        "org_id",
-        "tenant_id"
-    ];
-
     public override void Configure()
     {
         Get("/auth/me");
@@ -33,7 +25,7 @@ public sealed class AuthMeEndpoint : EndpointWithoutRequest<AuthSessionResponse>
         await Send.OkAsync(BuildResponse(user), cancellationToken);
     }
 
-    internal static AuthSessionResponse BuildResponse(ClaimsPrincipal user)
+    public static AuthSessionResponse BuildResponse(ClaimsPrincipal user)
     {
         var claims = user.Claims
             .Select(claim => new AuthClaimResponse(claim.Type, claim.Value))
@@ -53,9 +45,9 @@ public sealed class AuthMeEndpoint : EndpointWithoutRequest<AuthSessionResponse>
             user.FindFirstValue("sub") ?? user.FindFirstValue(ClaimTypes.NameIdentifier),
             user.Identity?.Name ?? user.FindFirstValue("preferred_username"),
             user.FindFirstValue("email"),
-            CompanyClaimTypes
-                .Select(user.FindFirstValue)
-                .FirstOrDefault(value => !string.IsNullOrWhiteSpace(value)),
+            KeycloakOrganizationClaimParser.TryGetOrganizationId(user, out var organizationId)
+                ? organizationId.ToString()
+                : null,
             roles,
             claims);
     }

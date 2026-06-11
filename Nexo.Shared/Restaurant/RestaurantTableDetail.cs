@@ -2,7 +2,7 @@ namespace Nexo.Shared.Restaurant;
 
 public sealed record RestaurantTableDetail(
     Guid Id,
-    Guid CompanyId,
+    Guid OrganizationId,
     Guid BranchId,
     Guid FloorId,
     Guid? AreaId,

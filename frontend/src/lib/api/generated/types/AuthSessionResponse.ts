@@ -25,7 +25,7 @@ export interface AuthSessionResponse {
   /**
    * @type null,string
    */
-  companyId: string | null;
+  organizationId: string | null;
   /**
    * @type array
    */

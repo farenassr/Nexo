@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Nexo.Server.Data;
-using Nexo.Server.Modules.Core.CompanyContext;
+using Nexo.Server.Modules.Core.OrganizationContext;
 using Nexo.Server.Modules.Core.Data.Entities;
 using Nexo.Server.Modules.Restaurant.Data.Entities.Restaurant;
 using Nexo.Server.Modules.Restaurant.Features.Dashboard;
@@ -63,11 +63,11 @@ public sealed class RestaurantDashboardServiceTests
     {
         await using var dbContext = CreateContext();
         var fixture = SeedRestaurant(dbContext);
-        var otherCompanyId = Guid.Parse("20000000-0000-7000-8000-000000000001");
+        var otherOrganizationId = Guid.Parse("20000000-0000-7000-8000-000000000001");
         dbContext.RestaurantTables.Add(new RestaurantTable
         {
             Id = Guid.Parse("20000000-0000-7000-8000-000000000401"),
-            CompanyId = otherCompanyId,
+            OrganizationId = otherOrganizationId,
             BranchId = fixture.BranchId,
             FloorId = fixture.FloorId,
             Label = "Hidden",
@@ -77,7 +77,7 @@ public sealed class RestaurantDashboardServiceTests
             CreatedAt = Now,
             UpdatedAt = Now
         });
-        SeedReservation(dbContext, fixture with { CompanyId = otherCompanyId, Table1Id = Guid.Parse("20000000-0000-7000-8000-000000000401") }, fixture.Table1Id, RestaurantReservationStatus.Confirmed, "2026-06-08T11:00:00Z", "2026-06-08T12:00:00Z", 10, "Hidden Guest");
+        SeedReservation(dbContext, fixture with { OrganizationId = otherOrganizationId, Table1Id = Guid.Parse("20000000-0000-7000-8000-000000000401") }, fixture.Table1Id, RestaurantReservationStatus.Confirmed, "2026-06-08T11:00:00Z", "2026-06-08T12:00:00Z", 10, "Hidden Guest");
         await dbContext.SaveChangesAsync();
         var service = new RestaurantDashboardService(dbContext, new FixedTimeProvider(Now));
 
@@ -100,7 +100,7 @@ public sealed class RestaurantDashboardServiceTests
         dbContext.CoreBranches.Add(new CoreBranch
         {
             Id = fixture.BranchId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             Name = "Main",
             TimeZone = "UTC",
             IsActive = true,
@@ -110,7 +110,7 @@ public sealed class RestaurantDashboardServiceTests
         dbContext.RestaurantFloors.Add(new RestaurantFloor
         {
             Id = fixture.FloorId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             Name = "Dining room",
             IsActive = true,
@@ -122,7 +122,7 @@ public sealed class RestaurantDashboardServiceTests
             dbContext.RestaurantTables.Add(new RestaurantTable
             {
                 Id = tableId,
-                CompanyId = fixture.CompanyId,
+                OrganizationId = fixture.OrganizationId,
                 BranchId = fixture.BranchId,
                 FloorId = fixture.FloorId,
                 Label = label,
@@ -150,7 +150,7 @@ public sealed class RestaurantDashboardServiceTests
         var customer = new RestaurantCustomer
         {
             Id = Guid.CreateVersion7(),
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             FullName = customerName,
             CreatedAt = Now,
             UpdatedAt = Now
@@ -158,7 +158,7 @@ public sealed class RestaurantDashboardServiceTests
         var reservation = new RestaurantReservation
         {
             Id = Guid.CreateVersion7(),
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             CustomerId = customer.Id,
             Customer = customer,
@@ -175,7 +175,7 @@ public sealed class RestaurantDashboardServiceTests
         dbContext.RestaurantReservations.Add(reservation);
         dbContext.RestaurantReservationTables.Add(new RestaurantReservationTable
         {
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             ReservationId = reservation.Id,
             TableId = tableId,
             Table = dbContext.RestaurantTables.Local.SingleOrDefault(table => table.Id == tableId),
@@ -191,16 +191,16 @@ public sealed class RestaurantDashboardServiceTests
             .UseInMemoryDatabase($"nexo-restaurant-dashboard-{Guid.NewGuid()}")
             .Options;
 
-        return new NexoDbContext(options, new FixedCompanyContextProvider(Guid.Parse("10000000-0000-7000-8000-000000000001")));
+        return new NexoDbContext(options, new FixedOrganizationContextProvider(Guid.Parse("10000000-0000-7000-8000-000000000001")));
     }
 
-    private sealed record TestRestaurantFixture(Guid CompanyId, Guid BranchId, Guid FloorId, Guid Table1Id, Guid Table2Id, Guid Table3Id);
+    private sealed record TestRestaurantFixture(Guid OrganizationId, Guid BranchId, Guid FloorId, Guid Table1Id, Guid Table2Id, Guid Table3Id);
 
-    private sealed class FixedCompanyContextProvider(Guid companyId) : ICompanyContextProvider
+    private sealed class FixedOrganizationContextProvider(Guid organizationId) : IOrganizationContextProvider
     {
-        public ValueTask<CompanyContext> GetCurrentAsync(CancellationToken cancellationToken = default)
+        public ValueTask<OrganizationContext> GetCurrentAsync(CancellationToken cancellationToken = default)
         {
-            return ValueTask.FromResult(new CompanyContext(companyId));
+            return ValueTask.FromResult(new OrganizationContext(organizationId));
         }
     }
 

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Nexo.Server.Data;
-using Nexo.Server.Modules.Core.CompanyContext;
+using Nexo.Server.Modules.Core.OrganizationContext;
 using Nexo.Server.Modules.Core.Data.Entities;
 using Nexo.Server.Modules.Restaurant.Data.Entities.Restaurant;
 using TUnit.Assertions;
@@ -62,17 +62,17 @@ public sealed class RestaurantModelTests
     }
 
     [Test]
-    public async Task RestaurantQueries_FilterRowsToCurrentCompany()
+    public async Task RestaurantQueries_FilterRowsToCurrentOrganization()
     {
-        var currentCompanyId = Guid.Parse("20000000-0000-7000-8000-000000000001");
-        var otherCompanyId = Guid.Parse("20000000-0000-7000-8000-000000000002");
+        var currentOrganizationId = Guid.Parse("20000000-0000-7000-8000-000000000001");
+        var otherOrganizationId = Guid.Parse("20000000-0000-7000-8000-000000000002");
 
-        await using var dbContext = CreateInMemoryContext(currentCompanyId);
+        await using var dbContext = CreateInMemoryContext(currentOrganizationId);
         dbContext.RestaurantCustomers.AddRange(
             new RestaurantCustomer
             {
                 Id = Guid.Parse("30000000-0000-7000-8000-000000000001"),
-                CompanyId = currentCompanyId,
+                OrganizationId = currentOrganizationId,
                 FullName = "Visible customer",
                 CreatedAt = DateTimeOffset.Parse("2026-01-01T00:00:00Z"),
                 UpdatedAt = DateTimeOffset.Parse("2026-01-01T00:00:00Z")
@@ -80,7 +80,7 @@ public sealed class RestaurantModelTests
             new RestaurantCustomer
             {
                 Id = Guid.Parse("30000000-0000-7000-8000-000000000002"),
-                CompanyId = otherCompanyId,
+                OrganizationId = otherOrganizationId,
                 FullName = "Hidden customer",
                 CreatedAt = DateTimeOffset.Parse("2026-01-01T00:00:00Z"),
                 UpdatedAt = DateTimeOffset.Parse("2026-01-01T00:00:00Z")
@@ -90,7 +90,22 @@ public sealed class RestaurantModelTests
         var customers = await dbContext.RestaurantCustomers.ToListAsync();
 
         await Assert.That(customers).Count().IsEqualTo(1);
-        await Assert.That(customers[0].CompanyId).IsEqualTo(currentCompanyId);
+        await Assert.That(customers[0].OrganizationId).IsEqualTo(currentOrganizationId);
+    }
+
+    [Test]
+    public async Task Constructor_DoesNotResolveOrganizationBeforeTenantScopeIsNeeded()
+    {
+        var options = new DbContextOptionsBuilder<NexoDbContext>()
+            .UseInMemoryDatabase($"nexo-restaurant-model-{Guid.NewGuid()}")
+            .Options;
+
+        await using var dbContext = new NexoDbContext(options, new ThrowingOrganizationContextProvider());
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => Task.FromResult(dbContext.CurrentOrganizationId));
+
+        await Assert.That(exception!.Message).Contains("No organization context was available.");
     }
 
     private static async Task AssertTable(
@@ -104,39 +119,47 @@ public sealed class RestaurantModelTests
         await Assert.That(entityType).IsNotNull();
         await Assert.That(entityType!.GetSchema()).IsEqualTo(schema);
         await Assert.That(entityType.GetTableName()).IsEqualTo(tableName);
-        await Assert.That(HasCompanyColumn(entityType)).IsTrue();
+        await Assert.That(HasOrganizationColumn(entityType)).IsTrue();
     }
 
-    private static bool HasCompanyColumn(IEntityType entityType)
+    private static bool HasOrganizationColumn(IEntityType entityType)
     {
         var storeObject = StoreObjectIdentifier.Table(entityType.GetTableName()!, entityType.GetSchema());
 
-        return entityType.FindProperty("CompanyId")?.GetColumnName(storeObject) == "company_id";
+        return entityType.FindProperty("OrganizationId")?.GetColumnName(storeObject) == "organization_id";
     }
 
-    private static NexoDbContext CreateRelationalContext(Guid companyId)
+    private static NexoDbContext CreateRelationalContext(Guid organizationId)
     {
         var options = new DbContextOptionsBuilder<NexoDbContext>()
             .UseNpgsql("Host=localhost;Database=nexo_model_tests;Username=nexo;Password=nexo")
             .Options;
 
-        return new NexoDbContext(options, new FixedCompanyContextProvider(companyId));
+        return new NexoDbContext(options, new FixedOrganizationContextProvider(organizationId));
     }
 
-    private static NexoDbContext CreateInMemoryContext(Guid companyId)
+    private static NexoDbContext CreateInMemoryContext(Guid organizationId)
     {
         var options = new DbContextOptionsBuilder<NexoDbContext>()
             .UseInMemoryDatabase($"nexo-restaurant-model-{Guid.NewGuid()}")
             .Options;
 
-        return new NexoDbContext(options, new FixedCompanyContextProvider(companyId));
+        return new NexoDbContext(options, new FixedOrganizationContextProvider(organizationId));
     }
 
-    private sealed class FixedCompanyContextProvider(Guid companyId) : ICompanyContextProvider
+    private sealed class FixedOrganizationContextProvider(Guid organizationId) : IOrganizationContextProvider
     {
-        public ValueTask<CompanyContext> GetCurrentAsync(CancellationToken cancellationToken = default)
+        public ValueTask<OrganizationContext> GetCurrentAsync(CancellationToken cancellationToken = default)
         {
-            return ValueTask.FromResult(new CompanyContext(companyId));
+            return ValueTask.FromResult(new OrganizationContext(organizationId));
+        }
+    }
+
+    private sealed class ThrowingOrganizationContextProvider : IOrganizationContextProvider
+    {
+        public ValueTask<OrganizationContext> GetCurrentAsync(CancellationToken cancellationToken = default)
+        {
+            throw new InvalidOperationException("No organization context was available.");
         }
     }
 }

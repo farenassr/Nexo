@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Nexo.Server.Data;
-using Nexo.Server.Modules.Core.CompanyContext;
+using Nexo.Server.Modules.Core.OrganizationContext;
 using Nexo.Server.Modules.Restaurant.Features.Setup;
 using Nexo.Shared.Restaurant;
 using TUnit.Assertions;
@@ -10,7 +10,7 @@ namespace Nexo.Server.Tests.Modules.Restaurant.Setup;
 
 public sealed class RestaurantSetupServiceTests
 {
-    private static readonly Guid CompanyId = Guid.Parse("10000000-0000-7000-8000-000000000001");
+    private static readonly Guid OrganizationId = Guid.Parse("10000000-0000-7000-8000-000000000001");
     private static readonly DateTimeOffset Now = DateTimeOffset.Parse("2026-06-09T10:00:00Z");
 
     [Test]
@@ -48,8 +48,8 @@ public sealed class RestaurantSetupServiceTests
         await Assert.That(area.Succeeded).IsTrue();
         await Assert.That(table.Succeeded).IsTrue();
         await Assert.That(floorPlan.Succeeded).IsTrue();
-        await Assert.That(branch.Branch.CompanyId).IsEqualTo(CompanyId);
-        await Assert.That(table.Table!.CompanyId).IsEqualTo(CompanyId);
+        await Assert.That(branch.Branch.OrganizationId).IsEqualTo(OrganizationId);
+        await Assert.That(table.Table!.OrganizationId).IsEqualTo(OrganizationId);
         await Assert.That(await dbContext.RestaurantOpeningHours.CountAsync()).IsEqualTo(7);
         await Assert.That(floorPlan.FloorPlan!.TableLayouts.Single().TableId).IsEqualTo(table.Table.Id);
         await Assert.That(floorPlan.FloorPlan.AreaLayouts.Single().AreaId).IsEqualTo(area.Area.Id);
@@ -245,7 +245,7 @@ public sealed class RestaurantSetupServiceTests
         dbContext.CoreBranches.Add(new()
         {
             Id = Guid.Parse("20000000-0000-7000-8000-000000000101"),
-            CompanyId = Guid.Parse("20000000-0000-7000-8000-000000000001"),
+            OrganizationId = Guid.Parse("20000000-0000-7000-8000-000000000001"),
             Name = "Hidden",
             TimeZone = "UTC",
             IsActive = true,
@@ -315,14 +315,14 @@ public sealed class RestaurantSetupServiceTests
             .UseInMemoryDatabase($"nexo-restaurant-setup-{Guid.NewGuid()}")
             .Options;
 
-        return new NexoDbContext(options, new FixedCompanyContextProvider(CompanyId));
+        return new NexoDbContext(options, new FixedOrganizationContextProvider(OrganizationId));
     }
 
-    private sealed class FixedCompanyContextProvider(Guid companyId) : ICompanyContextProvider
+    private sealed class FixedOrganizationContextProvider(Guid organizationId) : IOrganizationContextProvider
     {
-        public ValueTask<CompanyContext> GetCurrentAsync(CancellationToken cancellationToken = default)
+        public ValueTask<OrganizationContext> GetCurrentAsync(CancellationToken cancellationToken = default)
         {
-            return ValueTask.FromResult(new CompanyContext(companyId));
+            return ValueTask.FromResult(new OrganizationContext(organizationId));
         }
     }
 

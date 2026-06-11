@@ -4,7 +4,7 @@
     "userId",
     "name",
     "email",
-    "companyId",
+    "organizationId",
     "roles",
     "claims"
   ],
@@ -14,7 +14,7 @@
     "userId": { "type": ["null", "string"] },
     "name": { "type": ["null", "string"] },
     "email": { "type": ["null", "string"] },
-    "companyId": { "type": ["null", "string"] },
+    "organizationId": { "type": ["null", "string"] },
     "roles": { "type": "array", "items": { "type": "string" } },
     "claims": {
       "type": "array",

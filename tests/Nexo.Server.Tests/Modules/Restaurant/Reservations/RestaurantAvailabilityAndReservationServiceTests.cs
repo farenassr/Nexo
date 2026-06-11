@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Nexo.Server.Data;
-using Nexo.Server.Modules.Core.CompanyContext;
+using Nexo.Server.Modules.Core.OrganizationContext;
 using Nexo.Server.Modules.Core.Data.Entities;
 using Nexo.Server.Modules.Restaurant.Data.Entities.Restaurant;
 using Nexo.Server.Modules.Restaurant.Features.Availability;
@@ -43,7 +43,7 @@ public sealed class RestaurantAvailabilityAndReservationServiceTests
         dbContext.RestaurantOpeningHours.Add(OpenHours(fixture, DayOfWeek.Monday, "09:00", "17:00"));
         dbContext.RestaurantSpecialDays.Add(new RestaurantSpecialDay
         {
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             Date = DateOnly.Parse("2026-06-08"),
             Name = "Holiday",
@@ -122,7 +122,7 @@ public sealed class RestaurantAvailabilityAndReservationServiceTests
         dbContext.RestaurantOpeningHours.Add(OpenHours(fixture, DayOfWeek.Monday, "09:00", "17:00"));
         dbContext.RestaurantTableBlocks.Add(new RestaurantTableBlock
         {
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             AreaId = fixture.AreaId,
             StartAt = DateTimeOffset.Parse("2026-06-08T11:00:00Z"),
@@ -368,7 +368,7 @@ public sealed class RestaurantAvailabilityAndReservationServiceTests
         dbContext.CoreBranches.Add(new CoreBranch
         {
             Id = fixture.BranchId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             Name = "Main",
             TimeZone = "UTC",
             IsActive = true,
@@ -378,7 +378,7 @@ public sealed class RestaurantAvailabilityAndReservationServiceTests
         dbContext.RestaurantFloors.Add(new RestaurantFloor
         {
             Id = fixture.FloorId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             Name = "Dining room",
             IsActive = true,
@@ -388,7 +388,7 @@ public sealed class RestaurantAvailabilityAndReservationServiceTests
         dbContext.RestaurantAreas.Add(new RestaurantArea
         {
             Id = fixture.AreaId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             FloorId = fixture.FloorId,
             Name = "Window",
@@ -399,7 +399,7 @@ public sealed class RestaurantAvailabilityAndReservationServiceTests
         dbContext.RestaurantTables.Add(new RestaurantTable
         {
             Id = fixture.TableId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             FloorId = fixture.FloorId,
             AreaId = fixture.AreaId,
@@ -423,7 +423,7 @@ public sealed class RestaurantAvailabilityAndReservationServiceTests
     {
         return new RestaurantOpeningHour
         {
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             DayOfWeek = dayOfWeek,
             OpensAt = TimeOnly.Parse(opensAt),
@@ -445,7 +445,7 @@ public sealed class RestaurantAvailabilityAndReservationServiceTests
         var customer = new RestaurantCustomer
         {
             Id = Guid.CreateVersion7(),
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             FullName = "Existing Guest",
             CreatedAt = Now,
             UpdatedAt = Now
@@ -453,7 +453,7 @@ public sealed class RestaurantAvailabilityAndReservationServiceTests
         var reservation = new RestaurantReservation
         {
             Id = Guid.CreateVersion7(),
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             CustomerId = customer.Id,
             Customer = customer,
@@ -470,7 +470,7 @@ public sealed class RestaurantAvailabilityAndReservationServiceTests
         dbContext.RestaurantReservations.Add(reservation);
         dbContext.RestaurantReservationTables.Add(new RestaurantReservationTable
         {
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             ReservationId = reservation.Id,
             TableId = fixture.TableId,
             CreatedAt = Now
@@ -479,23 +479,23 @@ public sealed class RestaurantAvailabilityAndReservationServiceTests
         return reservation.Id;
     }
 
-    private static NexoDbContext CreateContext(Guid? companyId = null)
+    private static NexoDbContext CreateContext(Guid? organizationId = null)
     {
-        var resolvedCompanyId = companyId ?? Guid.Parse("10000000-0000-7000-8000-000000000001");
+        var resolvedOrganizationId = organizationId ?? Guid.Parse("10000000-0000-7000-8000-000000000001");
         var options = new DbContextOptionsBuilder<NexoDbContext>()
             .UseInMemoryDatabase($"nexo-restaurant-phase3-{Guid.NewGuid()}")
             .Options;
 
-        return new NexoDbContext(options, new FixedCompanyContextProvider(resolvedCompanyId));
+        return new NexoDbContext(options, new FixedOrganizationContextProvider(resolvedOrganizationId));
     }
 
-    private sealed record TestRestaurantFixture(Guid CompanyId, Guid BranchId, Guid FloorId, Guid AreaId, Guid TableId);
+    private sealed record TestRestaurantFixture(Guid OrganizationId, Guid BranchId, Guid FloorId, Guid AreaId, Guid TableId);
 
-    private sealed class FixedCompanyContextProvider(Guid companyId) : ICompanyContextProvider
+    private sealed class FixedOrganizationContextProvider(Guid organizationId) : IOrganizationContextProvider
     {
-        public ValueTask<CompanyContext> GetCurrentAsync(CancellationToken cancellationToken = default)
+        public ValueTask<OrganizationContext> GetCurrentAsync(CancellationToken cancellationToken = default)
         {
-            return ValueTask.FromResult(new CompanyContext(companyId));
+            return ValueTask.FromResult(new OrganizationContext(organizationId));
         }
     }
 

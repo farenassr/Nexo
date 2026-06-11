@@ -81,16 +81,17 @@ Recommended client settings:
 - Scopes: `openid`, `profile`, `email`; add `offline_access` only when long
   lived refresh is required.
 
-If Keycloak organizations are enabled, map organization/company claims in
-Keycloak first. Nexo reads existing `company_id`, `organization`, `org_id`, or
-`tenant_id` claims but does not invent tenant claims.
+If Keycloak organizations are enabled, map organization claims in Keycloak
+first. Nexo reads the Keycloak `organization` claim and extracts the nested
+organization `id`; it does not invent tenant claims or accept a configured
+development organization id.
 
 ## Endpoints
 
 - `GET /auth/login`: starts the Keycloak challenge.
 - `/auth/callback`: OIDC middleware callback path.
 - `GET /auth/me`: returns the current authenticated session, claims, roles,
-  and possible company claim.
+  and possible organization id.
 - `POST /auth/refresh`: refreshes server-side tokens using the protected
   refresh token.
 - `POST /auth/logout`: clears the local session. Use `?federated=true` when

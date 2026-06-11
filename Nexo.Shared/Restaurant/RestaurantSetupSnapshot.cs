@@ -1,7 +1,7 @@
 namespace Nexo.Shared.Restaurant;
 
 public sealed record RestaurantSetupSnapshot(
-    Guid CompanyId,
+    Guid OrganizationId,
     IReadOnlyCollection<RestaurantBranchDetail> Branches,
     IReadOnlyCollection<RestaurantFloorDetail> Floors,
     IReadOnlyCollection<RestaurantAreaDetail> Areas,

@@ -9,13 +9,20 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Building2,
+  CalendarDays,
+  Clock3,
+  Edit3,
   Grid3X3,
   Layers,
+  ListChecks,
   Loader2,
   Map,
+  Plus,
+  Search,
   Settings,
   Trash2,
   Utensils,
+  type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -126,11 +133,27 @@ interface FloorPlanFormState {
 }
 
 type SetupDeleteKind = "branch" | "floor" | "area" | "table" | "floorPlan";
+type SetupModuleKey =
+  | "branches"
+  | "floors"
+  | "areas"
+  | "tables"
+  | "floorPlans"
+  | "openingHours"
+  | "specialDays";
+type SetupFormMode = "create" | "edit";
 
 interface SetupDeleteInput {
   kind: SetupDeleteKind;
   id: string;
   label: string;
+}
+
+interface SetupModuleDefinition {
+  key: SetupModuleKey;
+  label: string;
+  count: number;
+  icon: LucideIcon;
 }
 
 export function RestaurantSetupPage() {
@@ -175,6 +198,12 @@ export function RestaurantSetupPage() {
   const [pendingDelete, setPendingDelete] = useState<SetupDeleteInput | null>(
     null,
   );
+  const [activeSetupModule, setActiveSetupModule] =
+    useState<SetupModuleKey>("branches");
+  const [setupFormMode, setSetupFormMode] =
+    useState<SetupFormMode>("create");
+  const [selectedSetupItemId, setSelectedSetupItemId] = useState("");
+  const [setupSearch, setSetupSearch] = useState("");
 
   const setupQuery =
     useNexoServerModulesRestaurantFeaturesSetupGetRestaurantSetupEndpoint();
@@ -361,19 +390,61 @@ export function RestaurantSetupPage() {
     tableDeleteMutation.isPending ||
     floorPlanDeleteMutation.isPending;
 
-  const metrics = useMemo(
+  const setupModules = useMemo<SetupModuleDefinition[]>(
     () => [
-      { label: labels.setup.branches, value: snapshot?.branches.length ?? 0 },
-      { label: labels.setup.floors, value: snapshot?.floors.length ?? 0 },
-      { label: labels.setup.areas, value: snapshot?.areas.length ?? 0 },
-      { label: labels.setup.tables, value: snapshot?.tables.length ?? 0 },
       {
+        key: "branches",
+        label: labels.setup.branches,
+        count: snapshot?.branches.length ?? 0,
+        icon: Building2,
+      },
+      {
+        key: "floors",
+        label: labels.setup.floors,
+        count: snapshot?.floors.length ?? 0,
+        icon: Layers,
+      },
+      {
+        key: "areas",
+        label: labels.setup.areas,
+        count: snapshot?.areas.length ?? 0,
+        icon: Grid3X3,
+      },
+      {
+        key: "tables",
+        label: labels.setup.tables,
+        count: snapshot?.tables.length ?? 0,
+        icon: Utensils,
+      },
+      {
+        key: "floorPlans",
         label: labels.setup.floorPlans,
-        value: snapshot?.floorPlans.length ?? 0,
+        count: snapshot?.floorPlans.length ?? 0,
+        icon: Map,
+      },
+      {
+        key: "openingHours",
+        label: labels.setup.openingHours,
+        count: snapshot?.openingHours.length ?? 0,
+        icon: Clock3,
+      },
+      {
+        key: "specialDays",
+        label: labels.setup.specialDays,
+        count: snapshot?.specialDays.length ?? 0,
+        icon: CalendarDays,
       },
     ],
     [snapshot],
   );
+
+  const activeModule =
+    setupModules.find((module) => module.key === activeSetupModule) ??
+    setupModules[0];
+  const metrics = setupModules.slice(0, 5).map((module) => ({
+    label: module.label,
+    value: module.count,
+  }));
 
   function onCreateBranch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -478,6 +549,626 @@ export function RestaurantSetupPage() {
         floorPlanDeleteMutation.mutate({ floorPlanId: input.id });
         return;
     }
+  }
+
+  function onSelectSetupModule(moduleKey: SetupModuleKey) {
+    setActiveSetupModule(moduleKey);
+    setSetupFormMode("create");
+    setSelectedSetupItemId("");
+    setSetupSearch("");
+  }
+
+  function onCreateActiveModule() {
+    setSetupFormMode("create");
+    setSelectedSetupItemId("");
+  }
+
+  function onEditSetupItem(id: string) {
+    setSetupFormMode("edit");
+    setSelectedSetupItemId(id);
+  }
+
+  function renderCreateForm() {
+    switch (activeSetupModule) {
+      case "branches":
+        return (
+          <form className="booking-form setup-console-form" onSubmit={onCreateBranch}>
+            <Field label={labels.setup.name}>
+              <input
+                required
+                value={branchForm.name}
+                onChange={(event) =>
+                  setBranchForm((current) => ({
+                    ...current,
+                    name: event.target.value,
+                  }))
+                }
+              />
+            </Field>
+            <Field label={labels.setup.address}>
+              <input
+                value={branchForm.address}
+                onChange={(event) =>
+                  setBranchForm((current) => ({
+                    ...current,
+                    address: event.target.value,
+                  }))
+                }
+              />
+            </Field>
+            <Field label={labels.setup.timeZone}>
+              <input
+                required
+                value={branchForm.timeZone}
+                onChange={(event) =>
+                  setBranchForm((current) => ({
+                    ...current,
+                    timeZone: event.target.value,
+                  }))
+                }
+              />
+            </Field>
+            <SubmitButton
+              isPending={branchMutation.isPending}
+              label={labels.setup.createBranch}
+            />
+          </form>
+        );
+      case "floors":
+        return (
+          <form className="booking-form setup-console-form" onSubmit={onCreateFloor}>
+            <BranchSelect
+              branches={branches}
+              value={floorBranchId}
+              onChange={(branchId) =>
+                setFloorForm((current) => ({ ...current, branchId }))
+              }
+            />
+            <Field label={labels.setup.name}>
+              <input
+                required
+                value={floorForm.name}
+                onChange={(event) =>
+                  setFloorForm((current) => ({
+                    ...current,
+                    name: event.target.value,
+                  }))
+                }
+              />
+            </Field>
+            <Field label={labels.setup.sortOrder}>
+              <NumberInput
+                min={0}
+                value={floorForm.sortOrder}
+                onChange={(sortOrder) =>
+                  setFloorForm((current) => ({ ...current, sortOrder }))
+                }
+              />
+            </Field>
+            <SubmitButton
+              disabled={!floorBranchId}
+              isPending={floorMutation.isPending}
+              label={labels.setup.createFloor}
+            />
+          </form>
+        );
+      case "areas":
+        return (
+          <form className="booking-form setup-console-form" onSubmit={onCreateArea}>
+            <BranchSelect
+              branches={branches}
+              value={areaBranchId}
+              onChange={(branchId) =>
+                setAreaForm((current) => ({
+                  ...current,
+                  branchId,
+                  floorId: "",
+                }))
+              }
+            />
+            <FloorSelect
+              floors={areaFloors}
+              value={areaFloorId}
+              onChange={(floorId) =>
+                setAreaForm((current) => ({ ...current, floorId }))
+              }
+            />
+            <div className="form-row">
+              <Field label={labels.setup.name}>
+                <input
+                  required
+                  value={areaForm.name}
+                  onChange={(event) =>
+                    setAreaForm((current) => ({
+                      ...current,
+                      name: event.target.value,
+                    }))
+                  }
+                />
+              </Field>
+              <Field label={labels.setup.areaType}>
+                <select
+                  value={areaForm.type}
+                  onChange={(event) =>
+                    setAreaForm((current) => ({
+                      ...current,
+                      type: Number(event.target.value) as RestaurantAreaType,
+                    }))
+                  }
+                >
+                  {areaTypeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            </div>
+            <Field label={labels.setup.sortOrder}>
+              <NumberInput
+                min={0}
+                value={areaForm.sortOrder}
+                onChange={(sortOrder) =>
+                  setAreaForm((current) => ({ ...current, sortOrder }))
+                }
+              />
+            </Field>
+            <SubmitButton
+              disabled={!areaBranchId || !areaFloorId}
+              isPending={areaMutation.isPending}
+              label={labels.setup.createArea}
+            />
+          </form>
+        );
+      case "tables":
+        return (
+          <form className="booking-form setup-console-form" onSubmit={onCreateTable}>
+            <BranchSelect
+              branches={branches}
+              value={tableBranchId}
+              onChange={(branchId) =>
+                setTableForm((current) => ({
+                  ...current,
+                  branchId,
+                  floorId: "",
+                  areaId: "",
+                }))
+              }
+            />
+            <FloorSelect
+              floors={tableFloors}
+              value={tableFloorId}
+              onChange={(floorId) =>
+                setTableForm((current) => ({ ...current, floorId, areaId: "" }))
+              }
+            />
+            <Field label={labels.setup.area}>
+              <select
+                value={tableForm.areaId}
+                onChange={(event) =>
+                  setTableForm((current) => ({
+                    ...current,
+                    areaId: event.target.value,
+                  }))
+                }
+              >
+                <option value="">{labels.states.unassigned}</option>
+                {tableAreas.map((area) => (
+                  <option key={area.id} value={area.id}>
+                    {area.name}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <div className="form-row">
+              <Field label={labels.setup.tableLabel}>
+                <input
+                  required
+                  value={tableForm.label}
+                  onChange={(event) =>
+                    setTableForm((current) => ({
+                      ...current,
+                      label: event.target.value,
+                    }))
+                  }
+                />
+              </Field>
+              <Field label={labels.fields.shape}>
+                <select
+                  value={tableForm.shape}
+                  onChange={(event) =>
+                    setTableForm((current) => ({
+                      ...current,
+                      shape: Number(event.target.value) as RestaurantTableShape,
+                    }))
+                  }
+                >
+                  {shapeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+            </div>
+            <div className="form-row">
+              <Field label={labels.setup.minCapacity}>
+                <NumberInput
+                  min={1}
+                  value={tableForm.minCapacity}
+                  onChange={(minCapacity) =>
+                    setTableForm((current) => ({
+                      ...current,
+                      minCapacity,
+                      maxCapacity: Math.max(minCapacity, current.maxCapacity),
+                    }))
+                  }
+                />
+              </Field>
+              <Field label={labels.setup.maxCapacity}>
+                <NumberInput
+                  min={tableForm.minCapacity}
+                  value={tableForm.maxCapacity}
+                  onChange={(maxCapacity) =>
+                    setTableForm((current) => ({ ...current, maxCapacity }))
+                  }
+                />
+              </Field>
+            </div>
+            <Field label={labels.setup.defaultDuration}>
+              <NumberInput
+                min={15}
+                value={tableForm.defaultReservationMinutes}
+                onChange={(defaultReservationMinutes) =>
+                  setTableForm((current) => ({
+                    ...current,
+                    defaultReservationMinutes,
+                  }))
+                }
+              />
+            </Field>
+            <SubmitButton
+              disabled={!tableBranchId || !tableFloorId}
+              isPending={tableMutation.isPending}
+              label={labels.setup.createTable}
+            />
+          </form>
+        );
+      case "floorPlans":
+        return (
+          <form className="booking-form setup-console-form" onSubmit={onCreateFloorPlan}>
+            <BranchSelect
+              branches={branches}
+              value={floorPlanBranchId}
+              onChange={(branchId) =>
+                setFloorPlanForm((current) => ({
+                  ...current,
+                  branchId,
+                  floorId: "",
+                }))
+              }
+            />
+            <FloorSelect
+              floors={floorPlanFloors}
+              value={floorPlanFloorId}
+              onChange={(floorId) =>
+                setFloorPlanForm((current) => ({ ...current, floorId }))
+              }
+            />
+            <Field label={labels.setup.name}>
+              <input
+                required
+                value={floorPlanForm.name}
+                onChange={(event) =>
+                  setFloorPlanForm((current) => ({
+                    ...current,
+                    name: event.target.value,
+                  }))
+                }
+              />
+            </Field>
+            <div className="form-row">
+              <Field label={labels.fields.width}>
+                <NumberInput
+                  min={400}
+                  value={floorPlanForm.canvasWidth}
+                  onChange={(canvasWidth) =>
+                    setFloorPlanForm((current) => ({ ...current, canvasWidth }))
+                  }
+                />
+              </Field>
+              <Field label={labels.fields.height}>
+                <NumberInput
+                  min={300}
+                  value={floorPlanForm.canvasHeight}
+                  onChange={(canvasHeight) =>
+                    setFloorPlanForm((current) => ({
+                      ...current,
+                      canvasHeight,
+                    }))
+                  }
+                />
+              </Field>
+            </div>
+            <Field label={labels.setup.gridSize}>
+              <NumberInput
+                min={0}
+                value={floorPlanForm.gridSize}
+                onChange={(gridSize) =>
+                  setFloorPlanForm((current) => ({
+                    ...current,
+                    gridSize: gridSize || null,
+                  }))
+                }
+              />
+            </Field>
+            <ActiveCheckbox
+              checked={floorPlanForm.isActive}
+              onChange={(isActive) =>
+                setFloorPlanForm((current) => ({ ...current, isActive }))
+              }
+            />
+            <SubmitButton
+              disabled={!floorPlanBranchId || !floorPlanFloorId}
+              isPending={floorPlanMutation.isPending}
+              label={labels.setup.createFloorPlan}
+            />
+          </form>
+        );
+      case "openingHours":
+        return snapshot ? (
+          <OpeningHoursPanel
+            branchId={selectedBranchId}
+            branches={branches}
+            openingHours={snapshot.openingHours}
+          />
+        ) : null;
+      case "specialDays":
+        return snapshot ? (
+          <SpecialDaysPanel
+            branchId={selectedBranchId}
+            branches={branches}
+            specialDays={snapshot.specialDays}
+          />
+        ) : null;
+    }
+  }
+
+  function renderEditForm() {
+    if (!snapshot) {
+      return (
+        <EmptyState icon={<Settings size={20} />} title={labels.setup.noSetup} />
+      );
+    }
+
+    switch (activeSetupModule) {
+      case "branches":
+        return (
+          <BranchEditPanel
+            branches={branches}
+            preferredBranchId={selectedSetupItemId}
+          />
+        );
+      case "floors":
+        return (
+          <FloorEditPanel
+            branches={branches}
+            floors={floors}
+            preferredFloorId={selectedSetupItemId}
+          />
+        );
+      case "areas":
+        return (
+          <AreaEditPanel
+            areas={areas}
+            branches={branches}
+            floors={floors}
+            preferredAreaId={selectedSetupItemId}
+          />
+        );
+      case "tables":
+        return (
+          <TableEditPanel
+            areas={areas}
+            branches={branches}
+            floors={floors}
+            preferredTableId={selectedSetupItemId}
+            tables={snapshot.tables}
+          />
+        );
+      case "floorPlans":
+        return (
+          <FloorPlanMetadataPanel
+            branches={branches}
+            floorPlans={snapshot.floorPlans}
+            floors={floors}
+            preferredFloorPlanId={selectedSetupItemId}
+          />
+        );
+      case "openingHours":
+        return (
+          <OpeningHoursPanel
+            branchId={selectedBranchId}
+            branches={branches}
+            openingHours={snapshot.openingHours}
+          />
+        );
+      case "specialDays":
+        return (
+          <SpecialDaysPanel
+            branchId={selectedBranchId}
+            branches={branches}
+            specialDays={snapshot.specialDays}
+          />
+        );
+    }
+  }
+
+  const setupConsoleEnabled = Boolean(activeModule);
+
+  if (setupConsoleEnabled) {
+    const ActiveIcon = activeModule.icon;
+    const usesScheduleVariant =
+      activeSetupModule === "openingHours" ||
+      activeSetupModule === "specialDays";
+
+    return (
+      <main className="restaurant-page setup-console-page">
+        <header className="setup-console-header">
+          <div>
+            <span className="eyebrow">{labels.sections.setup}</span>
+            <h1>Configuracion</h1>
+          </div>
+          <button
+            className="primary-button setup-create-button"
+            type="button"
+            onClick={onCreateActiveModule}
+          >
+            <Plus size={17} />
+            Crear
+          </button>
+        </header>
+
+        {setupQuery.isLoading ? (
+          <section className="restaurant-module-page">
+            <SkeletonRows count={2} />
+          </section>
+        ) : setupQuery.isError ? (
+          <section className="restaurant-module-page">
+            <InlineError error={setupQuery.error} />
+          </section>
+        ) : (
+          <div className="setup-console-metrics">
+            {setupModules.slice(0, 5).map((module) => {
+              const ModuleIcon = module.icon;
+              return (
+                <button
+                  key={module.key}
+                  className="setup-console-metric"
+                  type="button"
+                  onClick={() => onSelectSetupModule(module.key)}
+                >
+                  <span className="setup-console-metric-icon">
+                    <ModuleIcon size={18} />
+                  </span>
+                  <span>
+                    <strong>{module.count}</strong>
+                    <small>{module.label}</small>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        <nav className="setup-console-tabs" aria-label={labels.sections.setup}>
+          {setupModules.map((module) => {
+            const ModuleIcon = module.icon;
+            return (
+              <button
+                key={module.key}
+                className="setup-console-tab"
+                data-active={module.key === activeSetupModule}
+                type="button"
+                onClick={() => onSelectSetupModule(module.key)}
+              >
+                <ModuleIcon size={17} />
+                <span>{module.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        <div
+          className="setup-console-workbench"
+          data-variant={usesScheduleVariant ? "schedule" : "form-first"}
+        >
+          <section className="panel setup-console-form-panel">
+            <div className="setup-console-panel-header">
+              <div>
+                <span className="eyebrow">
+                  {setupFormMode === "create"
+                    ? "Crear"
+                    : labels.actions.edit}
+                </span>
+                <h2>
+                  <ActiveIcon size={19} />
+                  {usesScheduleVariant
+                    ? activeModule.label
+                    : "Formulario principal"}
+                </h2>
+              </div>
+              <div className="setup-console-form-actions">
+                {usesScheduleVariant ? (
+                  <label className="setup-console-search">
+                    <Search size={15} />
+                    <input
+                      placeholder="Buscar / filtrar"
+                      value={setupSearch}
+                      onChange={(event) => setSetupSearch(event.target.value)}
+                    />
+                  </label>
+                ) : null}
+                {setupFormMode === "edit" ? (
+                  <button
+                    className="secondary-button setup-mode-button"
+                    type="button"
+                    onClick={onCreateActiveModule}
+                  >
+                    <Plus size={15} />
+                    Crear
+                  </button>
+                ) : null}
+              </div>
+            </div>
+            {setupFormMode === "create" ? renderCreateForm() : renderEditForm()}
+          </section>
+
+          <section className="panel setup-console-list-panel">
+            <div className="setup-console-panel-header">
+              <div>
+                <span className="eyebrow">{activeModule.label}</span>
+                <h2>
+                  <ListChecks size={19} />
+                  {usesScheduleVariant
+                    ? "Referencia"
+                    : "Seleccionar registro"}
+                </h2>
+              </div>
+              {!usesScheduleVariant ? (
+                <label className="setup-console-search">
+                  <Search size={15} />
+                  <input
+                    placeholder="Buscar / filtrar"
+                    value={setupSearch}
+                    onChange={(event) => setSetupSearch(event.target.value)}
+                  />
+                </label>
+              ) : null}
+            </div>
+            {snapshot ? (
+              <SetupModuleList
+                activeModule={activeSetupModule}
+                pendingDeleteKey={
+                  isDeletingSetup && pendingDelete
+                    ? deleteKey(pendingDelete)
+                    : ""
+                }
+                search={setupSearch}
+                snapshot={snapshot}
+                onDelete={onDeleteSetupItem}
+                onEdit={onEditSetupItem}
+              />
+            ) : (
+              <EmptyState
+                icon={<Settings size={20} />}
+                title={labels.setup.noSetup}
+              />
+            )}
+          </section>
+        </div>
+      </main>
+    );
   }
 
   return (
@@ -935,10 +1626,209 @@ export function RestaurantSetupPage() {
   );
 }
 
+function SetupModuleList({
+  activeModule,
+  pendingDeleteKey,
+  search,
+  snapshot,
+  onDelete,
+  onEdit,
+}: {
+  activeModule: SetupModuleKey;
+  pendingDeleteKey: string;
+  search: string;
+  snapshot: RestaurantSetupSnapshot;
+  onDelete: (input: SetupDeleteInput) => void;
+  onEdit: (id: string) => void;
+}) {
+  const rows = getSetupRows(activeModule, snapshot).filter((row) =>
+    row.searchText.toLowerCase().includes(search.trim().toLowerCase()),
+  );
+  const canDelete = moduleDeleteKind(activeModule) !== null;
+
+  if (rows.length === 0) {
+    return (
+      <EmptyState
+        icon={<Settings size={20} />}
+        title={search ? "Sin resultados" : labels.setup.noSetup}
+      />
+    );
+  }
+
+  return (
+    <div className="setup-console-table" data-can-delete={canDelete}>
+      <div className="setup-console-table-header">
+        <span>Nombre</span>
+        <span>Detalle</span>
+        <span>Estado</span>
+        <span />
+      </div>
+      {rows.map((row) => {
+        const deleteInput = row.deleteKind
+          ? { kind: row.deleteKind, id: row.id, label: row.title }
+          : null;
+        const isDeleting =
+          deleteInput && pendingDeleteKey === deleteKey(deleteInput);
+
+        return (
+          <div className="setup-console-row" key={`${activeModule}:${row.id}`}>
+            <strong>{row.title}</strong>
+            <span>{row.detail}</span>
+            <span>{row.status}</span>
+            <div className="setup-console-row-actions">
+              <button
+                className="secondary-button setup-row-edit-button"
+                type="button"
+                onClick={() => onEdit(row.id)}
+              >
+                <Edit3 size={15} />
+                {labels.actions.edit}
+              </button>
+              {deleteInput ? (
+                <button
+                  aria-label={`${labels.actions.delete} ${row.title}`}
+                  className="danger-button setup-row-delete-button"
+                  disabled={Boolean(pendingDeleteKey)}
+                  type="button"
+                  onClick={() => onDelete(deleteInput)}
+                >
+                  {isDeleting ? (
+                    <Loader2 className="spin" size={15} />
+                  ) : (
+                    <Trash2 size={15} />
+                  )}
+                </button>
+              ) : null}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+interface SetupListRow {
+  id: string;
+  title: string;
+  detail: string;
+  status: string;
+  searchText: string;
+  deleteKind: SetupDeleteKind | null;
+}
+
+function getSetupRows(
+  activeModule: SetupModuleKey,
+  snapshot: RestaurantSetupSnapshot,
+): SetupListRow[] {
+  switch (activeModule) {
+    case "branches":
+      return snapshot.branches.map((branch) => ({
+        id: branch.id,
+        title: branch.name,
+        detail: branch.timeZone,
+        status: branch.isActive ? labels.setup.isActive : labels.status.inactive,
+        searchText: `${branch.name} ${branch.address ?? ""} ${branch.timeZone}`,
+        deleteKind: "branch",
+      }));
+    case "floors":
+      return snapshot.floors.map((floor) => ({
+        id: floor.id,
+        title: floor.name,
+        detail: branchName(snapshot, floor.branchId),
+        status: floor.isActive ? labels.setup.isActive : labels.status.inactive,
+        searchText: `${floor.name} ${branchName(snapshot, floor.branchId)}`,
+        deleteKind: "floor",
+      }));
+    case "areas":
+      return snapshot.areas.map((area) => ({
+        id: area.id,
+        title: area.name,
+        detail: `${floorName(snapshot, area.floorId)} / ${areaTypeLabel(area.type)}`,
+        status: area.isActive ? labels.setup.isActive : labels.status.inactive,
+        searchText: `${area.name} ${floorName(snapshot, area.floorId)} ${areaTypeLabel(area.type)}`,
+        deleteKind: "area",
+      }));
+    case "tables":
+      return snapshot.tables.map((table) => ({
+        id: table.id,
+        title: table.label,
+        detail: `${floorName(snapshot, table.floorId)} / ${table.minCapacity}-${table.maxCapacity}`,
+        status: table.isActive ? labels.setup.isActive : labels.status.inactive,
+        searchText: `${table.label} ${floorName(snapshot, table.floorId)} ${table.minCapacity} ${table.maxCapacity}`,
+        deleteKind: "table",
+      }));
+    case "floorPlans":
+      return snapshot.floorPlans.map((floorPlan) => ({
+        id: floorPlan.id,
+        title: floorPlan.name,
+        detail: `${floorName(snapshot, floorPlan.floorId)} / ${floorPlan.canvasWidth}x${floorPlan.canvasHeight}`,
+        status: floorPlan.isActive ? labels.setup.isActive : labels.status.inactive,
+        searchText: `${floorPlan.name} ${floorName(snapshot, floorPlan.floorId)}`,
+        deleteKind: "floorPlan",
+      }));
+    case "openingHours":
+      return snapshot.openingHours.map((hour) => ({
+        id: `${hour.branchId}:${hour.dayOfWeek}`,
+        title: dayOptions.find((day) => day.value === hour.dayOfWeek)?.label ?? labels.setup.openingHours,
+        detail: branchName(snapshot, hour.branchId),
+        status: hour.isClosed
+          ? labels.setup.closed
+          : `${trimTime(hour.opensAt)} - ${trimTime(hour.closesAt)}`,
+        searchText: `${branchName(snapshot, hour.branchId)} ${hour.opensAt ?? ""} ${hour.closesAt ?? ""}`,
+        deleteKind: null,
+      }));
+    case "specialDays":
+      return snapshot.specialDays.map((day) => ({
+        id: day.id,
+        title: day.name,
+        detail: day.date,
+        status: day.isClosed
+          ? labels.setup.closed
+          : `${trimTime(day.opensAt)} - ${trimTime(day.closesAt)}`,
+        searchText: `${day.name} ${day.date}`,
+        deleteKind: null,
+      }));
+  }
+}
+
+function moduleDeleteKind(activeModule: SetupModuleKey): SetupDeleteKind | null {
+  switch (activeModule) {
+    case "branches":
+      return "branch";
+    case "floors":
+      return "floor";
+    case "areas":
+      return "area";
+    case "tables":
+      return "table";
+    case "floorPlans":
+      return "floorPlan";
+    case "openingHours":
+    case "specialDays":
+      return null;
+  }
+}
+
+function branchName(snapshot: RestaurantSetupSnapshot, branchId: string) {
+  return (
+    snapshot.branches.find((branch) => branch.id === branchId)?.name ??
+    labels.states.unassigned
+  );
+}
+
+function floorName(snapshot: RestaurantSetupSnapshot, floorId: string) {
+  return (
+    snapshot.floors.find((floor) => floor.id === floorId)?.name ??
+    labels.states.unassigned
+  );
+}
+
 function BranchEditPanel({
   branches,
+  preferredBranchId = "",
 }: {
   branches: RestaurantBranchDetail[];
+  preferredBranchId?: string;
 }) {
   const queryClient = useQueryClient();
   const [branchId, setBranchId] = useState("");
@@ -950,7 +1840,10 @@ function BranchEditPanel({
     isActive: true,
   });
   useEffect(() => {
-    const branch = selected ?? branches[0];
+    const branch =
+      branches.find((item) => item.id === preferredBranchId) ??
+      selected ??
+      branches[0];
     setBranchId(branch?.id ?? "");
     setForm({
       name: branch?.name ?? "",
@@ -958,7 +1851,7 @@ function BranchEditPanel({
       timeZone: branch?.timeZone ?? "UTC",
       isActive: branch?.isActive ?? true,
     });
-  }, [branches, selected]);
+  }, [branches, preferredBranchId, selected]);
 
   const mutation =
     useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantBranchEndpoint({
@@ -1026,9 +1919,11 @@ function BranchEditPanel({
 function FloorEditPanel({
   branches,
   floors,
+  preferredFloorId = "",
 }: {
   branches: RestaurantBranchDetail[];
   floors: RestaurantFloorDetail[];
+  preferredFloorId?: string;
 }) {
   const queryClient = useQueryClient();
   const [floorId, setFloorId] = useState("");
@@ -1040,7 +1935,10 @@ function FloorEditPanel({
     isActive: true,
   });
   useEffect(() => {
-    const floor = selected ?? floors[0];
+    const floor =
+      floors.find((item) => item.id === preferredFloorId) ??
+      selected ??
+      floors[0];
     setFloorId(floor?.id ?? "");
     setForm({
       branchId: floor?.branchId ?? branches[0]?.id ?? "",
@@ -1048,7 +1946,7 @@ function FloorEditPanel({
       sortOrder: floor?.sortOrder ?? 1,
       isActive: floor?.isActive ?? true,
     });
-  }, [branches, floors, selected]);
+  }, [branches, floors, preferredFloorId, selected]);
 
   const mutation =
     useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorEndpoint({
@@ -1118,10 +2016,12 @@ function AreaEditPanel({
   areas,
   branches,
   floors,
+  preferredAreaId = "",
 }: {
   areas: RestaurantAreaDetail[];
   branches: RestaurantBranchDetail[];
   floors: RestaurantFloorDetail[];
+  preferredAreaId?: string;
 }) {
   const queryClient = useQueryClient();
   const [areaId, setAreaId] = useState("");
@@ -1136,7 +2036,10 @@ function AreaEditPanel({
   });
   const filteredFloors = floors.filter((floor) => floor.branchId === form.branchId);
   useEffect(() => {
-    const area = selected ?? areas[0];
+    const area =
+      areas.find((item) => item.id === preferredAreaId) ??
+      selected ??
+      areas[0];
     setAreaId(area?.id ?? "");
     setForm({
       branchId: area?.branchId ?? branches[0]?.id ?? "",
@@ -1146,7 +2049,7 @@ function AreaEditPanel({
       sortOrder: area?.sortOrder ?? 1,
       isActive: area?.isActive ?? true,
     });
-  }, [areas, branches, selected]);
+  }, [areas, branches, preferredAreaId, selected]);
 
   const mutation =
     useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantAreaEndpoint({
@@ -1234,11 +2137,13 @@ function TableEditPanel({
   areas,
   branches,
   floors,
+  preferredTableId = "",
   tables,
 }: {
   areas: RestaurantAreaDetail[];
   branches: RestaurantBranchDetail[];
   floors: RestaurantFloorDetail[];
+  preferredTableId?: string;
   tables: RestaurantTableDetail[];
 }) {
   const queryClient = useQueryClient();
@@ -1258,7 +2163,10 @@ function TableEditPanel({
   const filteredFloors = floors.filter((floor) => floor.branchId === form.branchId);
   const filteredAreas = areas.filter((area) => area.branchId === form.branchId && area.floorId === form.floorId);
   useEffect(() => {
-    const table = selected ?? tables[0];
+    const table =
+      tables.find((item) => item.id === preferredTableId) ??
+      selected ??
+      tables[0];
     setTableId(table?.id ?? "");
     setForm({
       branchId: table?.branchId ?? branches[0]?.id ?? "",
@@ -1271,7 +2179,7 @@ function TableEditPanel({
       shape: table?.shape ?? RestaurantTableShape.Rectangle,
       isActive: table?.isActive ?? true,
     });
-  }, [branches, selected, tables]);
+  }, [branches, preferredTableId, selected, tables]);
 
   const mutation =
     useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantTableEndpoint({
@@ -1397,10 +2305,12 @@ function FloorPlanMetadataPanel({
   branches,
   floorPlans,
   floors,
+  preferredFloorPlanId = "",
 }: {
   branches: RestaurantBranchDetail[];
   floorPlans: RestaurantFloorPlanSummary[];
   floors: RestaurantFloorDetail[];
+  preferredFloorPlanId?: string;
 }) {
   const queryClient = useQueryClient();
   const [floorPlanId, setFloorPlanId] = useState("");
@@ -1416,7 +2326,10 @@ function FloorPlanMetadataPanel({
   });
   const filteredFloors = floors.filter((floor) => floor.branchId === form.branchId);
   useEffect(() => {
-    const floorPlan = selected ?? floorPlans[0];
+    const floorPlan =
+      floorPlans.find((item) => item.id === preferredFloorPlanId) ??
+      selected ??
+      floorPlans[0];
     setFloorPlanId(floorPlan?.id ?? "");
     setForm({
       branchId: floorPlan?.branchId ?? branches[0]?.id ?? "",
@@ -1427,7 +2340,7 @@ function FloorPlanMetadataPanel({
       gridSize: floorPlan?.gridSize ?? 20,
       isActive: floorPlan?.isActive ?? true,
     });
-  }, [branches, floorPlans, selected]);
+  }, [branches, floorPlans, preferredFloorPlanId, selected]);
 
   const mutation =
     useNexoServerModulesRestaurantFeaturesSetupUpdateRestaurantFloorPlanMetadataEndpoint({

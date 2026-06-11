@@ -11,7 +11,7 @@ public sealed class RestaurantFloorConfiguration : IEntityTypeConfiguration<Rest
     {
         builder.ToTable("floors", "restaurant");
         builder.HasKey(floor => floor.Id);
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
         builder.ConfigureAuditColumns();
 
         builder.Property(floor => floor.Id).HasColumnName("id");
@@ -25,8 +25,8 @@ public sealed class RestaurantFloorConfiguration : IEntityTypeConfiguration<Rest
             .HasForeignKey(floor => floor.BranchId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(floor => new { floor.CompanyId, floor.BranchId });
-        builder.HasIndex(floor => new { floor.CompanyId, floor.BranchId, floor.Name });
+        builder.HasIndex(floor => new { floor.OrganizationId, floor.BranchId });
+        builder.HasIndex(floor => new { floor.OrganizationId, floor.BranchId, floor.Name });
     }
 }
 
@@ -36,7 +36,7 @@ public sealed class RestaurantAreaConfiguration : IEntityTypeConfiguration<Resta
     {
         builder.ToTable("areas", "restaurant");
         builder.HasKey(area => area.Id);
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
         builder.ConfigureAuditColumns();
 
         builder.Property(area => area.Id).HasColumnName("id");
@@ -57,7 +57,7 @@ public sealed class RestaurantAreaConfiguration : IEntityTypeConfiguration<Resta
             .HasForeignKey(area => area.BranchId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(area => new { area.CompanyId, area.BranchId, area.FloorId });
+        builder.HasIndex(area => new { area.OrganizationId, area.BranchId, area.FloorId });
     }
 }
 
@@ -67,7 +67,7 @@ public sealed class RestaurantTableConfiguration : IEntityTypeConfiguration<Rest
     {
         builder.ToTable("tables", "restaurant");
         builder.HasKey(table => table.Id);
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
         builder.ConfigureAuditColumns();
 
         builder.Property(table => table.Id).HasColumnName("id");
@@ -96,9 +96,9 @@ public sealed class RestaurantTableConfiguration : IEntityTypeConfiguration<Rest
             .HasForeignKey(table => table.BranchId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(table => new { table.CompanyId, table.BranchId, table.FloorId });
-        builder.HasIndex(table => new { table.CompanyId, table.BranchId, table.IsActive });
-        builder.HasIndex(table => new { table.CompanyId, table.BranchId, table.Label });
+        builder.HasIndex(table => new { table.OrganizationId, table.BranchId, table.FloorId });
+        builder.HasIndex(table => new { table.OrganizationId, table.BranchId, table.IsActive });
+        builder.HasIndex(table => new { table.OrganizationId, table.BranchId, table.Label });
     }
 }
 
@@ -108,7 +108,7 @@ public sealed class RestaurantOpeningHourConfiguration : IEntityTypeConfiguratio
     {
         builder.ToTable("opening_hours", "restaurant");
         builder.HasKey(openingHour => openingHour.Id);
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
         builder.ConfigureAuditColumns();
 
         builder.Property(openingHour => openingHour.Id).HasColumnName("id");
@@ -123,7 +123,7 @@ public sealed class RestaurantOpeningHourConfiguration : IEntityTypeConfiguratio
             .HasForeignKey(openingHour => openingHour.BranchId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(openingHour => new { openingHour.CompanyId, openingHour.BranchId, openingHour.DayOfWeek });
+        builder.HasIndex(openingHour => new { openingHour.OrganizationId, openingHour.BranchId, openingHour.DayOfWeek });
     }
 }
 
@@ -133,7 +133,7 @@ public sealed class RestaurantSpecialDayConfiguration : IEntityTypeConfiguration
     {
         builder.ToTable("special_days", "restaurant");
         builder.HasKey(specialDay => specialDay.Id);
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
         builder.ConfigureAuditColumns();
 
         builder.Property(specialDay => specialDay.Id).HasColumnName("id");
@@ -149,7 +149,7 @@ public sealed class RestaurantSpecialDayConfiguration : IEntityTypeConfiguration
             .HasForeignKey(specialDay => specialDay.BranchId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(specialDay => new { specialDay.CompanyId, specialDay.BranchId, specialDay.Date }).IsUnique();
+        builder.HasIndex(specialDay => new { specialDay.OrganizationId, specialDay.BranchId, specialDay.Date }).IsUnique();
     }
 }
 
@@ -159,7 +159,7 @@ public sealed class RestaurantCustomerConfiguration : IEntityTypeConfiguration<R
     {
         builder.ToTable("customers", "restaurant");
         builder.HasKey(customer => customer.Id);
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
         builder.ConfigureAuditColumns();
 
         builder.Property(customer => customer.Id).HasColumnName("id");
@@ -168,8 +168,8 @@ public sealed class RestaurantCustomerConfiguration : IEntityTypeConfiguration<R
         builder.Property(customer => customer.Email).HasColumnName("email").HasMaxLength(320);
         builder.Property(customer => customer.Notes).HasColumnName("notes").HasMaxLength(2000);
 
-        builder.HasIndex(customer => new { customer.CompanyId, customer.Phone });
-        builder.HasIndex(customer => new { customer.CompanyId, customer.Email });
+        builder.HasIndex(customer => new { customer.OrganizationId, customer.Phone });
+        builder.HasIndex(customer => new { customer.OrganizationId, customer.Email });
     }
 }
 
@@ -179,7 +179,7 @@ public sealed class RestaurantReservationConfiguration : IEntityTypeConfiguratio
     {
         builder.ToTable("reservations", "restaurant");
         builder.HasKey(reservation => reservation.Id);
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
         builder.ConfigureAuditColumns();
 
         builder.Property(reservation => reservation.Id).HasColumnName("id");
@@ -206,8 +206,8 @@ public sealed class RestaurantReservationConfiguration : IEntityTypeConfiguratio
             .HasForeignKey(reservation => reservation.BranchId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(reservation => new { reservation.CompanyId, reservation.BranchId, reservation.StartAt });
-        builder.HasIndex(reservation => new { reservation.CompanyId, reservation.BranchId, reservation.Status, reservation.StartAt });
+        builder.HasIndex(reservation => new { reservation.OrganizationId, reservation.BranchId, reservation.StartAt });
+        builder.HasIndex(reservation => new { reservation.OrganizationId, reservation.BranchId, reservation.Status, reservation.StartAt });
     }
 }
 
@@ -217,7 +217,7 @@ public sealed class RestaurantReservationTableConfiguration : IEntityTypeConfigu
     {
         builder.ToTable("reservation_tables", "restaurant");
         builder.HasKey(reservationTable => new { reservationTable.ReservationId, reservationTable.TableId });
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
 
         builder.Property(reservationTable => reservationTable.ReservationId).HasColumnName("reservation_id");
         builder.Property(reservationTable => reservationTable.TableId).HasColumnName("table_id");
@@ -233,7 +233,7 @@ public sealed class RestaurantReservationTableConfiguration : IEntityTypeConfigu
             .HasForeignKey(reservationTable => reservationTable.TableId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(reservationTable => new { reservationTable.CompanyId, reservationTable.TableId });
+        builder.HasIndex(reservationTable => new { reservationTable.OrganizationId, reservationTable.TableId });
     }
 }
 
@@ -243,7 +243,7 @@ public sealed class RestaurantReservationStatusHistoryConfiguration : IEntityTyp
     {
         builder.ToTable("reservation_status_history", "restaurant");
         builder.HasKey(history => history.Id);
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
 
         builder.Property(history => history.Id).HasColumnName("id");
         builder.Property(history => history.ReservationId).HasColumnName("reservation_id");
@@ -258,7 +258,7 @@ public sealed class RestaurantReservationStatusHistoryConfiguration : IEntityTyp
             .HasForeignKey(history => history.ReservationId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(history => new { history.CompanyId, history.ReservationId, history.ChangedAt });
+        builder.HasIndex(history => new { history.OrganizationId, history.ReservationId, history.ChangedAt });
     }
 }
 
@@ -268,7 +268,7 @@ public sealed class RestaurantTableBlockConfiguration : IEntityTypeConfiguration
     {
         builder.ToTable("table_blocks", "restaurant");
         builder.HasKey(block => block.Id);
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
         builder.ConfigureAuditColumns();
 
         builder.Property(block => block.Id).HasColumnName("id");
@@ -301,8 +301,8 @@ public sealed class RestaurantTableBlockConfiguration : IEntityTypeConfiguration
             .HasForeignKey(block => block.TableId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(block => new { block.CompanyId, block.BranchId, block.StartAt, block.EndAt });
-        builder.HasIndex(block => new { block.CompanyId, block.TableId, block.StartAt, block.EndAt });
+        builder.HasIndex(block => new { block.OrganizationId, block.BranchId, block.StartAt, block.EndAt });
+        builder.HasIndex(block => new { block.OrganizationId, block.TableId, block.StartAt, block.EndAt });
     }
 }
 
@@ -312,7 +312,7 @@ public sealed class RestaurantFloorPlanConfiguration : IEntityTypeConfiguration<
     {
         builder.ToTable("floor_plans", "restaurant");
         builder.HasKey(floorPlan => floorPlan.Id);
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
         builder.ConfigureAuditColumns();
 
         builder.Property(floorPlan => floorPlan.Id).HasColumnName("id");
@@ -334,7 +334,7 @@ public sealed class RestaurantFloorPlanConfiguration : IEntityTypeConfiguration<
             .HasForeignKey(floorPlan => floorPlan.BranchId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(floorPlan => new { floorPlan.CompanyId, floorPlan.BranchId, floorPlan.FloorId, floorPlan.IsActive });
+        builder.HasIndex(floorPlan => new { floorPlan.OrganizationId, floorPlan.BranchId, floorPlan.FloorId, floorPlan.IsActive });
     }
 }
 
@@ -344,7 +344,7 @@ public sealed class RestaurantAreaLayoutConfiguration : IEntityTypeConfiguration
     {
         builder.ToTable("area_layouts", "restaurant");
         builder.HasKey(areaLayout => areaLayout.Id);
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
         builder.ConfigureAuditColumns();
 
         builder.Property(areaLayout => areaLayout.Id).HasColumnName("id");
@@ -367,7 +367,7 @@ public sealed class RestaurantAreaLayoutConfiguration : IEntityTypeConfiguration
             .HasForeignKey(areaLayout => areaLayout.AreaId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(areaLayout => new { areaLayout.CompanyId, areaLayout.FloorPlanId });
+        builder.HasIndex(areaLayout => new { areaLayout.OrganizationId, areaLayout.FloorPlanId });
     }
 }
 
@@ -377,7 +377,7 @@ public sealed class RestaurantTableLayoutConfiguration : IEntityTypeConfiguratio
     {
         builder.ToTable("table_layouts", "restaurant");
         builder.HasKey(tableLayout => tableLayout.Id);
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
         builder.ConfigureAuditColumns();
 
         builder.Property(tableLayout => tableLayout.Id).HasColumnName("id");
@@ -401,7 +401,7 @@ public sealed class RestaurantTableLayoutConfiguration : IEntityTypeConfiguratio
             .HasForeignKey(tableLayout => tableLayout.TableId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(tableLayout => new { tableLayout.CompanyId, tableLayout.FloorPlanId, tableLayout.TableId }).IsUnique();
+        builder.HasIndex(tableLayout => new { tableLayout.OrganizationId, tableLayout.FloorPlanId, tableLayout.TableId }).IsUnique();
     }
 }
 
@@ -411,7 +411,7 @@ public sealed class RestaurantTableSeatLayoutConfiguration : IEntityTypeConfigur
     {
         builder.ToTable("table_seat_layouts", "restaurant");
         builder.HasKey(seatLayout => seatLayout.Id);
-        builder.ConfigureCompanyOwnedEntity();
+        builder.ConfigureOrganizationOwnedEntity();
         builder.ConfigureAuditColumns();
 
         builder.Property(seatLayout => seatLayout.Id).HasColumnName("id");
@@ -426,6 +426,6 @@ public sealed class RestaurantTableSeatLayoutConfiguration : IEntityTypeConfigur
             .HasForeignKey(seatLayout => seatLayout.TableLayoutId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(seatLayout => new { seatLayout.CompanyId, seatLayout.TableLayoutId, seatLayout.SeatNumber });
+        builder.HasIndex(seatLayout => new { seatLayout.OrganizationId, seatLayout.TableLayoutId, seatLayout.SeatNumber });
     }
 }

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Nexo.Server.Modules.Core.CompanyContext;
+using Nexo.Server.Modules.Core.OrganizationContext;
 using Nexo.Server.Modules.Core.Data.Configurations;
 using Nexo.Server.Modules.Core.Data.Entities;
 using Nexo.Server.Modules.Restaurant.Data.Configurations;
@@ -9,9 +9,11 @@ namespace Nexo.Server.Data;
 
 public sealed class NexoDbContext(
     DbContextOptions<NexoDbContext> options,
-    ICompanyContextProvider companyContextProvider) : DbContext(options)
+    IOrganizationContextProvider organizationContextProvider) : DbContext(options)
 {
-    public Guid CurrentCompanyId { get; } = ResolveCompanyId(companyContextProvider);
+    private readonly IOrganizationContextProvider organizationContextProvider = organizationContextProvider;
+
+    public Guid CurrentOrganizationId => ResolveOrganizationId(organizationContextProvider);
 
     public DbSet<CoreBranch> CoreBranches => Set<CoreBranch>();
     public DbSet<RestaurantFloor> RestaurantFloors => Set<RestaurantFloor>();
@@ -47,31 +49,31 @@ public sealed class NexoDbContext(
         modelBuilder.ApplyConfiguration(new RestaurantTableLayoutConfiguration());
         modelBuilder.ApplyConfiguration(new RestaurantTableSeatLayoutConfiguration());
 
-        modelBuilder.Entity<CoreBranch>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantFloor>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantArea>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantTable>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantOpeningHour>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantSpecialDay>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantCustomer>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantReservation>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantReservationTable>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantReservationStatusHistory>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantTableBlock>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantFloorPlan>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantAreaLayout>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantTableLayout>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
-        modelBuilder.Entity<RestaurantTableSeatLayout>().HasQueryFilter(entity => entity.CompanyId == CurrentCompanyId);
+        modelBuilder.Entity<CoreBranch>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantFloor>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantArea>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantTable>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantOpeningHour>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantSpecialDay>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantCustomer>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantReservation>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantReservationTable>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantReservationStatusHistory>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantTableBlock>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantFloorPlan>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantAreaLayout>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantTableLayout>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
+        modelBuilder.Entity<RestaurantTableSeatLayout>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
     }
 
-    private static Guid ResolveCompanyId(ICompanyContextProvider companyContextProvider)
+    private static Guid ResolveOrganizationId(IOrganizationContextProvider organizationContextProvider)
     {
-        return companyContextProvider
+        return organizationContextProvider
             .GetCurrentAsync()
             .AsTask()
             .ConfigureAwait(false)
             .GetAwaiter()
             .GetResult()
-            .CompanyId;
+            .OrganizationId;
     }
 }

@@ -1,0 +1,190 @@
+<mxfile host="Electron">
+  <diagram id="database_schema" name="Implemented Database Schema">
+    <mxGraphModel dx="2500" dy="1500" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2600" pageHeight="1700" background="#f8fafc" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Title" value="Nexo implemented persistence&#xa;Schemas currently mapped by NexoDbContext: core and restaurant. There is no local companies table; company_id is a Guid tenant key resolved by development context today." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#cbd5e1;fontColor=#0f172a;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="2420" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="CoreBand" value="core schema" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eff6ff;strokeColor=#93c5fd;strokeWidth=2;fontColor=#1e3a8a;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="40" y="130" width="360" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="RestaurantSetupBand" value="restaurant schema - setup" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#86efac;strokeWidth=2;fontColor=#14532d;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="440" y="130" width="930" height="570" as="geometry" />
+        </mxCell>
+        <mxCell id="RestaurantReservationBand" value="restaurant schema - reservations and blocks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#fdba74;strokeWidth=2;fontColor=#7c2d12;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="130" width="1050" height="570" as="geometry" />
+        </mxCell>
+        <mxCell id="RestaurantLayoutBand" value="restaurant schema - floor-plan layout" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f3ff;strokeColor=#c4b5fd;strokeWidth=2;fontColor=#4c1d95;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="440" y="740" width="2020" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="PlannedBand" value="planned schemas, not implemented tables" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f5f9;strokeColor=#cbd5e1;strokeWidth=2;fontColor=#334155;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=4;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1290" width="2420" height="210" as="geometry" />
+        </mxCell>
+
+        <mxCell id="Branches" value="core.branches" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dbeafe;strokeColor=#2563eb;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="80" y="190" width="280" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="BranchesProps" value="id PK&#xa;company_id&#xa;name&#xa;address&#xa;time_zone&#xa;is_active&#xa;created_at, updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="Branches">
+          <mxGeometry y="38" width="280" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="Floors" value="restaurant.floors" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dcfce7;strokeColor=#16a34a;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="480" y="190" width="260" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="FloorsProps" value="id PK&#xa;company_id&#xa;branch_id FK&#xa;name&#xa;sort_order&#xa;is_active&#xa;created_at, updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="Floors">
+          <mxGeometry y="38" width="260" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="Areas" value="restaurant.areas" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dcfce7;strokeColor=#16a34a;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="790" y="190" width="260" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="AreasProps" value="id PK&#xa;company_id&#xa;branch_id FK&#xa;floor_id FK&#xa;name&#xa;type&#xa;sort_order&#xa;is_active&#xa;created_at, updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="Areas">
+          <mxGeometry y="38" width="260" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="Tables" value="restaurant.tables" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dcfce7;strokeColor=#16a34a;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="190" width="230" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="TablesProps" value="id PK&#xa;company_id&#xa;branch_id FK&#xa;floor_id FK&#xa;area_id FK nullable&#xa;label&#xa;min_capacity&#xa;max_capacity&#xa;default_reservation_minutes&#xa;shape&#xa;is_active&#xa;created_at, updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="Tables">
+          <mxGeometry y="38" width="230" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="OpeningHours" value="restaurant.opening_hours" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dcfce7;strokeColor=#16a34a;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="480" y="470" width="260" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="OpeningHoursProps" value="id PK&#xa;company_id&#xa;branch_id FK&#xa;day_of_week&#xa;opens_at&#xa;closes_at&#xa;is_closed&#xa;created_at, updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="OpeningHours">
+          <mxGeometry y="38" width="260" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="SpecialDays" value="restaurant.special_days" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dcfce7;strokeColor=#16a34a;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="790" y="470" width="260" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="SpecialDaysProps" value="id PK&#xa;company_id&#xa;branch_id FK&#xa;date&#xa;name&#xa;is_closed&#xa;opens_at nullable&#xa;closes_at nullable&#xa;created_at, updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="SpecialDays">
+          <mxGeometry y="38" width="260" height="150" as="geometry" />
+        </mxCell>
+
+        <mxCell id="Customers" value="restaurant.customers" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fed7aa;strokeColor=#ea580c;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="1450" y="190" width="250" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="CustomersProps" value="id PK&#xa;company_id&#xa;full_name&#xa;phone&#xa;email&#xa;notes&#xa;created_at, updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="Customers">
+          <mxGeometry y="38" width="250" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="Reservations" value="restaurant.reservations" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fed7aa;strokeColor=#ea580c;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="1760" y="190" width="290" height="310" as="geometry" />
+        </mxCell>
+        <mxCell id="ReservationsProps" value="id PK&#xa;company_id&#xa;branch_id FK&#xa;customer_id FK&#xa;party_size&#xa;start_at&#xa;end_at&#xa;turnover_buffer_minutes&#xa;status&#xa;source&#xa;special_requests&#xa;created_by_app_user_id&#xa;cancelled_at&#xa;cancellation_reason&#xa;created_at, updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="Reservations">
+          <mxGeometry y="38" width="290" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="ReservationTables" value="restaurant.reservation_tables" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fed7aa;strokeColor=#ea580c;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="2110" y="190" width="290" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="ReservationTablesProps" value="reservation_id PK/FK&#xa;table_id PK/FK&#xa;company_id&#xa;created_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="ReservationTables">
+          <mxGeometry y="38" width="290" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="ReservationStatusHistory" value="restaurant.reservation_status_history" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fed7aa;strokeColor=#ea580c;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="1450" y="430" width="270" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="ReservationStatusHistoryProps" value="id PK&#xa;company_id&#xa;reservation_id FK&#xa;from_status&#xa;to_status&#xa;reason&#xa;changed_by_app_user_id&#xa;changed_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="ReservationStatusHistory">
+          <mxGeometry y="38" width="270" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="TableBlocks" value="restaurant.table_blocks" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fed7aa;strokeColor=#ea580c;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="2110" y="390" width="290" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="TableBlocksProps" value="id PK&#xa;company_id&#xa;branch_id FK&#xa;floor_id FK nullable&#xa;area_id FK nullable&#xa;table_id FK nullable&#xa;start_at&#xa;end_at&#xa;reason&#xa;is_active&#xa;created_at, updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="TableBlocks">
+          <mxGeometry y="38" width="290" height="210" as="geometry" />
+        </mxCell>
+
+        <mxCell id="FloorPlans" value="restaurant.floor_plans" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#ede9fe;strokeColor=#7c3aed;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="480" y="810" width="290" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="FloorPlansProps" value="id PK&#xa;company_id&#xa;branch_id FK&#xa;floor_id FK&#xa;name&#xa;canvas_width&#xa;canvas_height&#xa;grid_size&#xa;is_active&#xa;created_at, updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="FloorPlans">
+          <mxGeometry y="38" width="290" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="AreaLayouts" value="restaurant.area_layouts" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#ede9fe;strokeColor=#7c3aed;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="850" y="810" width="300" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="AreaLayoutsProps" value="id PK&#xa;company_id&#xa;floor_plan_id FK&#xa;area_id FK&#xa;x, y&#xa;width, height&#xa;rotation_degrees&#xa;z_index&#xa;created_at, updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="AreaLayouts">
+          <mxGeometry y="38" width="300" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="TableLayouts" value="restaurant.table_layouts" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#ede9fe;strokeColor=#7c3aed;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="810" width="300" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="TableLayoutsProps" value="id PK&#xa;company_id&#xa;floor_plan_id FK&#xa;table_id FK&#xa;x, y&#xa;width, height&#xa;rotation_degrees&#xa;shape&#xa;z_index&#xa;created_at, updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="TableLayouts">
+          <mxGeometry y="38" width="300" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="TableSeatLayouts" value="restaurant.table_seat_layouts" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#ede9fe;strokeColor=#7c3aed;strokeWidth=2;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="1620" y="810" width="300" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="TableSeatLayoutsProps" value="id PK&#xa;company_id&#xa;table_layout_id FK&#xa;seat_number&#xa;x, y&#xa;rotation_degrees&#xa;created_at, updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" vertex="1" parent="TableSeatLayouts">
+          <mxGeometry y="38" width="300" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="PlannedIam" value="iam&#xa;Planned: users, memberships, roles, permissions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#94a3b8;fontColor=#334155;fontStyle=1;arcSize=4;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="1360" width="440" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="PlannedCalendar" value="calendar&#xa;Planned: events, availability, blocks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#94a3b8;fontColor=#334155;fontStyle=1;arcSize=4;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="660" y="1360" width="440" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="PlannedIntegrations" value="integrations&#xa;Planned: providers, company integrations, webhooks, sync jobs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#94a3b8;fontColor=#334155;fontStyle=1;arcSize=4;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="1360" width="440" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="PlannedAudit" value="audit&#xa;Planned: important actions and changes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#94a3b8;fontColor=#334155;fontStyle=1;arcSize=4;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="1780" y="1360" width="440" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="EBranchesFloors" value="branch" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#475569;strokeWidth=2;fontColor=#334155;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Branches" target="Floors">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EBranchesOpening" value="branch" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#475569;strokeWidth=2;fontColor=#334155;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Branches" target="OpeningHours">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EBranchesSpecial" value="branch" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#475569;strokeWidth=2;fontColor=#334155;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Branches" target="SpecialDays">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EFloorsAreas" value="floor" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#16a34a;strokeWidth=2;fontColor=#14532d;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Floors" target="Areas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EFloorsTables" value="floor" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#16a34a;strokeWidth=2;fontColor=#14532d;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Floors" target="Tables">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EAreasTables" value="optional area" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#16a34a;strokeWidth=2;fontColor=#14532d;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Areas" target="Tables">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ECustomerReservations" value="customer" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Customers" target="Reservations">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EReservationsReservationTables" value="tables" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Reservations" target="ReservationTables">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ETablesReservationTables" value="assigned table" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Tables" target="ReservationTables">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EReservationsHistory" value="status history" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Reservations" target="ReservationStatusHistory">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EBranchesTableBlocks" value="branch block" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Branches" target="TableBlocks">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ETablesTableBlocks" value="optional table" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Tables" target="TableBlocks">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EFloorsFloorPlans" value="floor" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#7c3aed;strokeWidth=2;fontColor=#4c1d95;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Floors" target="FloorPlans">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EFloorPlansAreaLayouts" value="canvas areas" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#7c3aed;strokeWidth=2;fontColor=#4c1d95;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="FloorPlans" target="AreaLayouts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EAreasAreaLayouts" value="area" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#7c3aed;strokeWidth=2;fontColor=#4c1d95;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Areas" target="AreaLayouts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EFloorPlansTableLayouts" value="canvas tables" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#7c3aed;strokeWidth=2;fontColor=#4c1d95;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="FloorPlans" target="TableLayouts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ETablesTableLayouts" value="table" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#7c3aed;strokeWidth=2;fontColor=#4c1d95;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="Tables" target="TableLayouts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ETableLayoutsSeatLayouts" value="seats" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#7c3aed;strokeWidth=2;fontColor=#4c1d95;labelBackgroundColor=#f8fafc;" edge="1" parent="1" source="TableLayouts" target="TableSeatLayouts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

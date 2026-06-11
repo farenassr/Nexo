@@ -26,7 +26,7 @@ Namespaces should mirror folder segments.
 - Return `IQueryable<TEntity>` for composable database queries.
 - Keep feature decisions, DTO construction, and provider calls out of query
   extensions.
-- Keep explicit `company_id` predicates for company-owned reads even when
+- Keep explicit `organization_id` predicates for organization-owned reads even when
   global query filters apply.
 - Use `IgnoreQueryFilters()` only in narrowly named helpers that immediately
   re-apply required company and aggregate predicates.

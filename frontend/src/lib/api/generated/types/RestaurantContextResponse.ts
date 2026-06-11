@@ -7,7 +7,7 @@ export interface RestaurantContextResponse {
   /**
    * @type string, uuid
    */
-  companyId: string;
+  organizationId: string;
   /**
    * @type string
    */

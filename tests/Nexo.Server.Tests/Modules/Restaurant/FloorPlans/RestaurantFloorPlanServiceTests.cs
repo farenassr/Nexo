@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Nexo.Server.Data;
-using Nexo.Server.Modules.Core.CompanyContext;
+using Nexo.Server.Modules.Core.OrganizationContext;
 using Nexo.Server.Modules.Core.Data.Entities;
 using Nexo.Server.Modules.Restaurant.Data.Entities.Restaurant;
 using Nexo.Server.Modules.Restaurant.Features.FloorPlans;
@@ -22,7 +22,7 @@ public sealed class RestaurantFloorPlanServiceTests
         dbContext.RestaurantFloorPlans.Add(new RestaurantFloorPlan
         {
             Id = fixture.FloorPlanId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             FloorId = fixture.FloorId,
             Name = "Main dining",
@@ -36,7 +36,7 @@ public sealed class RestaurantFloorPlanServiceTests
         dbContext.RestaurantFloorPlans.Add(new RestaurantFloorPlan
         {
             Id = Guid.Parse("10000000-0000-7000-8000-000000009999"),
-            CompanyId = Guid.Parse("20000000-0000-7000-8000-000000000001"),
+            OrganizationId = Guid.Parse("20000000-0000-7000-8000-000000000001"),
             BranchId = fixture.BranchId,
             FloorId = fixture.FloorId,
             Name = "Hidden",
@@ -115,7 +115,7 @@ public sealed class RestaurantFloorPlanServiceTests
         dbContext.RestaurantFloors.Add(new RestaurantFloor
         {
             Id = otherFloorId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             Name = "Patio",
             IsActive = true,
@@ -125,7 +125,7 @@ public sealed class RestaurantFloorPlanServiceTests
         dbContext.RestaurantTables.Add(new RestaurantTable
         {
             Id = otherTableId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             FloorId = otherFloorId,
             Label = "P1",
@@ -197,7 +197,7 @@ public sealed class RestaurantFloorPlanServiceTests
         dbContext.CoreBranches.Add(new CoreBranch
         {
             Id = fixture.BranchId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             Name = "Main",
             TimeZone = "UTC",
             IsActive = true,
@@ -207,7 +207,7 @@ public sealed class RestaurantFloorPlanServiceTests
         dbContext.RestaurantFloors.Add(new RestaurantFloor
         {
             Id = fixture.FloorId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             Name = "Dining room",
             IsActive = true,
@@ -217,7 +217,7 @@ public sealed class RestaurantFloorPlanServiceTests
         dbContext.RestaurantAreas.Add(new RestaurantArea
         {
             Id = fixture.AreaId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             FloorId = fixture.FloorId,
             Name = "Window",
@@ -228,7 +228,7 @@ public sealed class RestaurantFloorPlanServiceTests
         dbContext.RestaurantTables.Add(new RestaurantTable
         {
             Id = fixture.TableId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             FloorId = fixture.FloorId,
             AreaId = fixture.AreaId,
@@ -249,7 +249,7 @@ public sealed class RestaurantFloorPlanServiceTests
         dbContext.RestaurantFloorPlans.Add(new RestaurantFloorPlan
         {
             Id = fixture.FloorPlanId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             FloorId = fixture.FloorId,
             Name = "Main dining",
@@ -285,7 +285,7 @@ public sealed class RestaurantFloorPlanServiceTests
             dbContext.RestaurantTables.Add(new RestaurantTable
             {
                 Id = tableId,
-                CompanyId = fixture.CompanyId,
+                OrganizationId = fixture.OrganizationId,
                 BranchId = fixture.BranchId,
                 FloorId = fixture.FloorId,
                 AreaId = fixture.AreaId,
@@ -307,7 +307,7 @@ public sealed class RestaurantFloorPlanServiceTests
         {
             dbContext.RestaurantTableLayouts.Add(new RestaurantTableLayout
             {
-                CompanyId = fixture.CompanyId,
+                OrganizationId = fixture.OrganizationId,
                 FloorPlanId = fixture.FloorPlanId,
                 TableId = tableId,
                 X = 10,
@@ -327,7 +327,7 @@ public sealed class RestaurantFloorPlanServiceTests
     {
         dbContext.RestaurantTableBlocks.Add(new RestaurantTableBlock
         {
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             TableId = tableIds.Inactive,
             StartAt = DateTimeOffset.Parse("2026-06-08T11:00:00Z"),
@@ -339,7 +339,7 @@ public sealed class RestaurantFloorPlanServiceTests
         });
         dbContext.RestaurantTableBlocks.Add(new RestaurantTableBlock
         {
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             TableId = tableIds.Blocked,
             StartAt = DateTimeOffset.Parse("2026-06-08T11:00:00Z"),
@@ -368,7 +368,7 @@ public sealed class RestaurantFloorPlanServiceTests
         var customer = new RestaurantCustomer
         {
             Id = Guid.CreateVersion7(),
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             FullName = "Guest",
             CreatedAt = Now,
             UpdatedAt = Now
@@ -376,7 +376,7 @@ public sealed class RestaurantFloorPlanServiceTests
         var reservation = new RestaurantReservation
         {
             Id = Guid.CreateVersion7(),
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             CustomerId = customer.Id,
             Customer = customer,
@@ -394,7 +394,7 @@ public sealed class RestaurantFloorPlanServiceTests
         dbContext.RestaurantReservations.Add(reservation);
         dbContext.RestaurantReservationTables.Add(new RestaurantReservationTable
         {
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             ReservationId = reservation.Id,
             TableId = tableId,
             CreatedAt = Now
@@ -407,18 +407,18 @@ public sealed class RestaurantFloorPlanServiceTests
             .UseInMemoryDatabase($"nexo-restaurant-phase4-{Guid.NewGuid()}")
             .Options;
 
-        return new NexoDbContext(options, new FixedCompanyContextProvider(Guid.Parse("10000000-0000-7000-8000-000000000001")));
+        return new NexoDbContext(options, new FixedOrganizationContextProvider(Guid.Parse("10000000-0000-7000-8000-000000000001")));
     }
 
-    private sealed record TestRestaurantFixture(Guid CompanyId, Guid BranchId, Guid FloorId, Guid AreaId, Guid TableId, Guid FloorPlanId);
+    private sealed record TestRestaurantFixture(Guid OrganizationId, Guid BranchId, Guid FloorId, Guid AreaId, Guid TableId, Guid FloorPlanId);
 
     private sealed record StatusTableIds(Guid Inactive, Guid Blocked, Guid Occupied, Guid Reserved, Guid Cleaning, Guid Available);
 
-    private sealed class FixedCompanyContextProvider(Guid companyId) : ICompanyContextProvider
+    private sealed class FixedOrganizationContextProvider(Guid organizationId) : IOrganizationContextProvider
     {
-        public ValueTask<CompanyContext> GetCurrentAsync(CancellationToken cancellationToken = default)
+        public ValueTask<OrganizationContext> GetCurrentAsync(CancellationToken cancellationToken = default)
         {
-            return ValueTask.FromResult(new CompanyContext(companyId));
+            return ValueTask.FromResult(new OrganizationContext(organizationId));
         }
     }
 

@@ -6,7 +6,7 @@ public sealed class DevelopmentModuleGate(
     IOptions<DevelopmentModuleGateOptions> options) : IModuleGate
 {
     public ValueTask<ModuleGateResult> EnsureActiveAsync(
-        Guid companyId,
+        Guid organizationId,
         string moduleKey,
         CancellationToken cancellationToken = default)
     {

@@ -15,7 +15,7 @@ export interface RestaurantSetupSnapshot {
   /**
    * @type string, uuid
    */
-  companyId: string;
+  organizationId: string;
   /**
    * @type array
    */

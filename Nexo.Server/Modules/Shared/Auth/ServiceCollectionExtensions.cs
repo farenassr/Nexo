@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
@@ -13,8 +12,6 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        var useDevelopmentAuthentication = configuration.GetValue<bool>("Nexo:DevelopmentAuthentication:Enabled");
-
         services.AddOptions<KeycloakOptions>()
             .Bind(configuration.GetSection(KeycloakOptions.SectionName))
             .ValidateOnStart();
@@ -22,25 +19,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<NexoCookieAuthenticationEvents>();
         services.AddHttpClient<IKeycloakTokenRefreshService, KeycloakTokenRefreshService>();
 
-        var authenticationBuilder = services.AddAuthentication(options =>
+        services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = useDevelopmentAuthentication
-                    ? NexoAuthSchemes.Development
-                    : NexoAuthSchemes.Session;
+                options.DefaultAuthenticateScheme = NexoAuthSchemes.Session;
                 options.DefaultSignInScheme = NexoAuthSchemes.Session;
-                options.DefaultChallengeScheme = useDevelopmentAuthentication
-                    ? NexoAuthSchemes.Development
-                    : NexoAuthSchemes.Keycloak;
+                options.DefaultChallengeScheme = NexoAuthSchemes.Keycloak;
             })
             .AddCookie(NexoAuthSchemes.Session)
             .AddOpenIdConnect(NexoAuthSchemes.Keycloak, _ => { });
-
-        if (useDevelopmentAuthentication)
-        {
-            authenticationBuilder.AddScheme<AuthenticationSchemeOptions, DevelopmentAuthenticationHandler>(
-                NexoAuthSchemes.Development,
-                _ => { });
-        }
 
         services.AddOptions<CookieAuthenticationOptions>(NexoAuthSchemes.Session)
             .Configure<IOptions<KeycloakOptions>>((cookieOptions, keycloakOptionsAccessor) =>

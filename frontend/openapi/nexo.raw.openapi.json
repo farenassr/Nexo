@@ -1134,7 +1134,7 @@
           "userId",
           "name",
           "email",
-          "companyId",
+          "organizationId",
           "roles",
           "claims"
         ],
@@ -1161,7 +1161,7 @@
               "string"
             ]
           },
-          "companyId": {
+          "organizationId": {
             "type": [
               "null",
               "string"
@@ -1796,7 +1796,7 @@
       "RestaurantBranchDetail": {
         "required": [
           "id",
-          "companyId",
+          "organizationId",
           "name",
           "address",
           "timeZone",
@@ -1808,7 +1808,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "companyId": {
+          "organizationId": {
             "type": "string",
             "format": "uuid"
           },
@@ -1831,13 +1831,13 @@
       },
       "RestaurantContextResponse": {
         "required": [
-          "companyId",
+          "organizationId",
           "moduleKey",
           "permissionContracts"
         ],
         "type": "object",
         "properties": {
-          "companyId": {
+          "organizationId": {
             "type": "string",
             "format": "uuid"
           },
@@ -2374,7 +2374,7 @@
       },
       "RestaurantSetupSnapshot": {
         "required": [
-          "companyId",
+          "organizationId",
           "branches",
           "floors",
           "areas",
@@ -2385,7 +2385,7 @@
         ],
         "type": "object",
         "properties": {
-          "companyId": {
+          "organizationId": {
             "type": "string",
             "format": "uuid"
           },
@@ -2544,7 +2544,7 @@
       "RestaurantTableDetail": {
         "required": [
           "id",
-          "companyId",
+          "organizationId",
           "branchId",
           "floorId",
           "areaId",
@@ -2561,7 +2561,7 @@
             "type": "string",
             "format": "uuid"
           },
-          "companyId": {
+          "organizationId": {
             "type": "string",
             "format": "uuid"
           },

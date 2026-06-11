@@ -20,7 +20,7 @@ Before changing files:
    - `AIHarness/integration-model.md` for ports, provider selection,
      Keycloak, calendar providers, or integrations.
    - `AIHarness/security-rules.md` for secrets, authentication,
-     authorization, webhooks, logging, company isolation, or PII.
+     authorization, webhooks, logging, organization isolation, or PII.
    - `docs/data-model.md` for schemas, entities, relationships, and
      multi-tenant data design.
 6. Make small, reversible changes.
@@ -90,9 +90,9 @@ Run the narrowest useful check first, then broaden when risk warrants it.
   `Data/Extensions` folders. Avoid repeating filters in handlers.
 - Apply module schemas through EF configuration and ensure migrations create
   schemas they depend on.
-- Company-owned data must include `company_id` and use EF Core global query
+- Organization-owned data must include `organization_id` and use EF Core global query
   filters.
-- Internal entity IDs use `Guid.CreateVersion7()`. `company_id` is the
+- Internal entity IDs use `Guid.CreateVersion7()`. `organization_id` is the
   Keycloak organization id and is not generated locally.
 - Use `TimeProvider`; do not call `DateTime.Now` or `DateTime.UtcNow`
   directly.
@@ -160,17 +160,17 @@ src/
 
 ## Multi-Tenancy And Module Gating
 
-- Tenancy is per company through `company_id` on every tenant-owned row.
-- The company/organization is owned by Keycloak. Nexo has no internal
-  `core.companies` table.
-- `company_id` is resolved from the authenticated membership/session context.
-  Never trust a public request body for company scope.
+- Tenancy is per organization through `organization_id` on every tenant-owned row.
+- The organization is owned by Keycloak. Nexo has no internal
+  `core.organizations` table.
+- `organization_id` is resolved from the authenticated membership/session context.
+  Never trust a public request body for organization scope.
 - Database schemas are per module (`core`, `iam`, `calendar`, `restaurant`,
-  `clinic`, `retail`, `integrations`, `audit`), never per company.
-- `core.company_modules` is the source of truth for active modules.
+  `clinic`, `retail`, `integrations`, `audit`), never per organization.
+- `core.organization_modules` is the source of truth for active modules.
 - Backend module checks are mandatory. Frontend gating is only a UX
   convenience.
-- Roles and permissions are scoped per company and, where relevant, per
+- Roles and permissions are scoped per organization and, where relevant, per
   branch.
 
 ## Integrations
