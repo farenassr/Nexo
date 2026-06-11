@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Nexo.Server.Data;
-using Nexo.Server.Modules.Core.CompanyContext;
+using Nexo.Server.Modules.Core.OrganizationContext;
 using Nexo.Server.Modules.Core.Data.Entities;
 using Nexo.Server.Modules.Restaurant.Data.Entities.Restaurant;
 using Nexo.Server.Modules.Restaurant.Features.TableBlocks;
@@ -34,7 +34,7 @@ public sealed class RestaurantTableBlockServiceTests
         await Assert.That(result.Succeeded).IsTrue();
         await Assert.That(result.Block).IsNotNull();
         var block = await dbContext.RestaurantTableBlocks.SingleAsync();
-        await Assert.That(block.CompanyId).IsEqualTo(fixture.CompanyId);
+        await Assert.That(block.OrganizationId).IsEqualTo(fixture.OrganizationId);
         await Assert.That(block.BranchId).IsEqualTo(fixture.BranchId);
         await Assert.That(block.TableId).IsEqualTo(fixture.TableId);
         await Assert.That(block.Reason).IsEqualTo("VIP hold");
@@ -50,7 +50,7 @@ public sealed class RestaurantTableBlockServiceTests
         dbContext.RestaurantTables.Add(new RestaurantTable
         {
             Id = Guid.Parse("20000000-0000-7000-8000-000000000401"),
-            CompanyId = Guid.Parse("20000000-0000-7000-8000-000000000001"),
+            OrganizationId = Guid.Parse("20000000-0000-7000-8000-000000000001"),
             BranchId = fixture.BranchId,
             FloorId = fixture.FloorId,
             Label = "Hidden",
@@ -89,7 +89,7 @@ public sealed class RestaurantTableBlockServiceTests
         dbContext.CoreBranches.Add(new CoreBranch
         {
             Id = fixture.BranchId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             Name = "Main",
             TimeZone = "UTC",
             IsActive = true,
@@ -99,7 +99,7 @@ public sealed class RestaurantTableBlockServiceTests
         dbContext.RestaurantFloors.Add(new RestaurantFloor
         {
             Id = fixture.FloorId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             Name = "Dining room",
             IsActive = true,
@@ -109,7 +109,7 @@ public sealed class RestaurantTableBlockServiceTests
         dbContext.RestaurantAreas.Add(new RestaurantArea
         {
             Id = fixture.AreaId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             FloorId = fixture.FloorId,
             Name = "Window",
@@ -120,7 +120,7 @@ public sealed class RestaurantTableBlockServiceTests
         dbContext.RestaurantTables.Add(new RestaurantTable
         {
             Id = fixture.TableId,
-            CompanyId = fixture.CompanyId,
+            OrganizationId = fixture.OrganizationId,
             BranchId = fixture.BranchId,
             FloorId = fixture.FloorId,
             AreaId = fixture.AreaId,
@@ -141,16 +141,16 @@ public sealed class RestaurantTableBlockServiceTests
             .UseInMemoryDatabase($"nexo-restaurant-table-blocks-{Guid.NewGuid()}")
             .Options;
 
-        return new NexoDbContext(options, new FixedCompanyContextProvider(Guid.Parse("10000000-0000-7000-8000-000000000001")));
+        return new NexoDbContext(options, new FixedOrganizationContextProvider(Guid.Parse("10000000-0000-7000-8000-000000000001")));
     }
 
-    private sealed record TestRestaurantFixture(Guid CompanyId, Guid BranchId, Guid FloorId, Guid AreaId, Guid TableId);
+    private sealed record TestRestaurantFixture(Guid OrganizationId, Guid BranchId, Guid FloorId, Guid AreaId, Guid TableId);
 
-    private sealed class FixedCompanyContextProvider(Guid companyId) : ICompanyContextProvider
+    private sealed class FixedOrganizationContextProvider(Guid organizationId) : IOrganizationContextProvider
     {
-        public ValueTask<CompanyContext> GetCurrentAsync(CancellationToken cancellationToken = default)
+        public ValueTask<OrganizationContext> GetCurrentAsync(CancellationToken cancellationToken = default)
         {
-            return ValueTask.FromResult(new CompanyContext(companyId));
+            return ValueTask.FromResult(new OrganizationContext(organizationId));
         }
     }
 

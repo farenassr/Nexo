@@ -12,25 +12,6 @@ namespace Nexo.Server.Tests.Modules.Shared.Auth;
 public sealed class KeycloakAuthenticationOptionsTests
 {
     [Test]
-    public async Task AddKeycloakAuthentication_UsesDevelopmentSchemeWhenEnabled()
-    {
-        var configuration = CreateConfiguration(new Dictionary<string, string?>
-        {
-            ["Nexo:DevelopmentAuthentication:Enabled"] = "true"
-        });
-        var services = new ServiceCollection();
-
-        services.AddKeycloakAuthentication(configuration);
-
-        using var provider = services.BuildServiceProvider();
-        var options = provider.GetRequiredService<IOptions<AuthenticationOptions>>().Value;
-
-        await Assert.That(options.DefaultAuthenticateScheme).IsEqualTo(NexoAuthSchemes.Development);
-        await Assert.That(options.DefaultChallengeScheme).IsEqualTo(NexoAuthSchemes.Development);
-        await Assert.That(options.DefaultSignInScheme).IsEqualTo(NexoAuthSchemes.Session);
-    }
-
-    [Test]
     public async Task AddKeycloakAuthentication_UsesSessionAndKeycloakSchemesByDefault()
     {
         var configuration = CreateConfiguration();

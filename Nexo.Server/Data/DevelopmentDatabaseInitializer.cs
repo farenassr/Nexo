@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Nexo.Server.Modules.Core.OrganizationContext;
 using Nexo.Server.Modules.Restaurant.Features.Setup;
 using Nexo.Shared.Restaurant;
 
@@ -25,48 +26,64 @@ public sealed class DevelopmentDatabaseInitializer(
         }
 
         await dbContext.Database.EnsureCreatedAsync(cancellationToken);
-
-        var setupService = scope.ServiceProvider.GetRequiredService<RestaurantSetupService>();
-        var snapshot = await setupService.GetSnapshotAsync(cancellationToken);
-        if (snapshot.Branches.Count > 0)
+        var optionalOrganizationContextProvider = scope.ServiceProvider.GetService<IOptionalOrganizationContextProvider>();
+        if (optionalOrganizationContextProvider is not null
+            && await optionalOrganizationContextProvider.TryGetCurrentAsync(cancellationToken) is null)
         {
+            logger.LogInformation(
+                "Skipping tenant-scoped development database seed because no authenticated organization context is available.");
             return;
         }
 
-        var branch = await setupService.CreateBranchAsync(
-            new CreateRestaurantBranchRequest("Sucursal Principal", "Local development", "UTC"),
-            cancellationToken);
-        var floor = await setupService.CreateFloorAsync(
-            new CreateRestaurantFloorRequest(branch.Branch!.Id, "Salon principal", 1),
-            cancellationToken);
-        var area = await setupService.CreateAreaAsync(
-            new CreateRestaurantAreaRequest(branch.Branch.Id, floor.Floor!.Id, "Comedor", RestaurantAreaType.DiningRoom, 1),
-            cancellationToken);
+        try
+        {
+            var setupService = scope.ServiceProvider.GetRequiredService<RestaurantSetupService>();
+            var snapshot = await setupService.GetSnapshotAsync(cancellationToken);
+            if (snapshot.Branches.Count > 0)
+            {
+                return;
+            }
 
-        foreach (var (label, minCapacity, maxCapacity, shape) in new[]
-        {
-            ("A1", 1, 2, RestaurantTableShape.Square),
-            ("A2", 2, 4, RestaurantTableShape.Rectangle),
-            ("A3", 2, 4, RestaurantTableShape.Round),
-            ("B1", 4, 6, RestaurantTableShape.Rectangle)
-        })
-        {
-            await setupService.CreateTableAsync(
-                new CreateRestaurantTableRequest(
-                    branch.Branch.Id,
-                    floor.Floor.Id,
-                    area.Area!.Id,
-                    label,
-                    minCapacity,
-                    maxCapacity,
-                    90,
-                    shape),
+            var branch = await setupService.CreateBranchAsync(
+                new CreateRestaurantBranchRequest("Sucursal Principal", "Local development", "UTC"),
+                cancellationToken);
+            var floor = await setupService.CreateFloorAsync(
+                new CreateRestaurantFloorRequest(branch.Branch!.Id, "Salon principal", 1),
+                cancellationToken);
+            var area = await setupService.CreateAreaAsync(
+                new CreateRestaurantAreaRequest(branch.Branch.Id, floor.Floor!.Id, "Comedor", RestaurantAreaType.DiningRoom, 1),
+                cancellationToken);
+
+            foreach (var (label, minCapacity, maxCapacity, shape) in new[]
+            {
+                ("A1", 1, 2, RestaurantTableShape.Square),
+                ("A2", 2, 4, RestaurantTableShape.Rectangle),
+                ("A3", 2, 4, RestaurantTableShape.Round),
+                ("B1", 4, 6, RestaurantTableShape.Rectangle)
+            })
+            {
+                await setupService.CreateTableAsync(
+                    new CreateRestaurantTableRequest(
+                        branch.Branch.Id,
+                        floor.Floor.Id,
+                        area.Area!.Id,
+                        label,
+                        minCapacity,
+                        maxCapacity,
+                        90,
+                        shape),
+                    cancellationToken);
+            }
+
+            await setupService.CreateFloorPlanAsync(
+                new CreateRestaurantFloorPlanRequest(branch.Branch.Id, floor.Floor.Id, "Plano principal", 1200, 760, 20, true),
                 cancellationToken);
         }
-
-        await setupService.CreateFloorPlanAsync(
-            new CreateRestaurantFloorPlanRequest(branch.Branch.Id, floor.Floor.Id, "Plano principal", 1200, 760, 20, true),
-            cancellationToken);
+        catch (InvalidOperationException exception) when (IsMissingOrganizationContext(exception))
+        {
+            logger.LogInformation(
+                "Skipping tenant-scoped development database seed because no authenticated organization context is available.");
+        }
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
@@ -84,5 +101,11 @@ public sealed class DevelopmentDatabaseInitializer(
         {
             return false;
         }
+    }
+
+    private static bool IsMissingOrganizationContext(InvalidOperationException exception)
+    {
+        return exception.Message.Contains("valid organization id", StringComparison.Ordinal)
+            || exception.Message.Contains("authenticated session", StringComparison.Ordinal);
     }
 }

@@ -15,7 +15,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
             .OrderBy(static branch => branch.Name)
             .Select(static branch => new RestaurantBranchDetail(
                 branch.Id,
-                branch.CompanyId,
+                branch.OrganizationId,
                 branch.Name,
                 branch.Address,
                 branch.TimeZone,
@@ -57,7 +57,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
             .OrderBy(static table => table.Label)
             .Select(static table => new RestaurantTableDetail(
                 table.Id,
-                table.CompanyId,
+                table.OrganizationId,
                 table.BranchId,
                 table.FloorId,
                 table.AreaId,
@@ -114,7 +114,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
                 specialDay.ClosesAt))
             .ToArrayAsync(cancellationToken);
 
-        return new RestaurantSetupSnapshot(dbContext.CurrentCompanyId, branches, floors, areas, tables, floorPlans, openingHours, specialDays);
+        return new RestaurantSetupSnapshot(dbContext.CurrentOrganizationId, branches, floors, areas, tables, floorPlans, openingHours, specialDays);
     }
 
     public async Task<RestaurantSetupOperationResult> CreateBranchAsync(
@@ -131,7 +131,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
         var now = timeProvider.GetUtcNow();
         var branch = new CoreBranch
         {
-            CompanyId = dbContext.CurrentCompanyId,
+            OrganizationId = dbContext.CurrentOrganizationId,
             Name = request.Name.Trim(),
             Address = TrimToNull(request.Address),
             TimeZone = request.TimeZone.Trim(),
@@ -166,7 +166,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
         var now = timeProvider.GetUtcNow();
         var floor = new RestaurantFloor
         {
-            CompanyId = dbContext.CurrentCompanyId,
+            OrganizationId = dbContext.CurrentOrganizationId,
             BranchId = request.BranchId,
             Name = request.Name.Trim(),
             SortOrder = request.SortOrder,
@@ -200,7 +200,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
         var now = timeProvider.GetUtcNow();
         var area = new RestaurantArea
         {
-            CompanyId = dbContext.CurrentCompanyId,
+            OrganizationId = dbContext.CurrentOrganizationId,
             BranchId = request.BranchId,
             FloorId = request.FloorId,
             Name = request.Name.Trim(),
@@ -246,7 +246,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
         var now = timeProvider.GetUtcNow();
         var table = new RestaurantTable
         {
-            CompanyId = dbContext.CurrentCompanyId,
+            OrganizationId = dbContext.CurrentOrganizationId,
             BranchId = request.BranchId,
             FloorId = request.FloorId,
             AreaId = request.AreaId,
@@ -300,7 +300,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
         var now = timeProvider.GetUtcNow();
         var floorPlan = new RestaurantFloorPlan
         {
-            CompanyId = dbContext.CurrentCompanyId,
+            OrganizationId = dbContext.CurrentOrganizationId,
             BranchId = request.BranchId,
             FloorId = request.FloorId,
             Name = request.Name.Trim(),
@@ -544,7 +544,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
         {
             openingHour = new RestaurantOpeningHour
             {
-                CompanyId = dbContext.CurrentCompanyId,
+                OrganizationId = dbContext.CurrentOrganizationId,
                 BranchId = request.BranchId,
                 DayOfWeek = request.DayOfWeek,
                 CreatedAt = now
@@ -598,7 +598,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
         {
             specialDay = new RestaurantSpecialDay
             {
-                CompanyId = dbContext.CurrentCompanyId,
+                OrganizationId = dbContext.CurrentOrganizationId,
                 CreatedAt = now
             };
             dbContext.RestaurantSpecialDays.Add(specialDay);
@@ -778,7 +778,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
         {
             dbContext.RestaurantOpeningHours.Add(new RestaurantOpeningHour
             {
-                CompanyId = dbContext.CurrentCompanyId,
+                OrganizationId = dbContext.CurrentOrganizationId,
                 BranchId = branchId,
                 DayOfWeek = dayOfWeek,
                 OpensAt = new TimeOnly(11, 0),
@@ -903,7 +903,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
         {
             dbContext.RestaurantAreaLayouts.Add(new RestaurantAreaLayout
             {
-                CompanyId = dbContext.CurrentCompanyId,
+                OrganizationId = dbContext.CurrentOrganizationId,
                 FloorPlan = floorPlan,
                 AreaId = areas[index].Id,
                 X = 24 + (index * 24),
@@ -929,7 +929,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
             var height = table.Shape is RestaurantTableShape.Round or RestaurantTableShape.Square ? 72 : 64;
             var layout = new RestaurantTableLayout
             {
-                CompanyId = dbContext.CurrentCompanyId,
+                OrganizationId = dbContext.CurrentOrganizationId,
                 FloorPlan = floorPlan,
                 TableId = table.Id,
                 X = 80 + (column * 130),
@@ -955,7 +955,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
             var zeroBased = seatNumber - 1;
             dbContext.RestaurantTableSeatLayouts.Add(new RestaurantTableSeatLayout
             {
-                CompanyId = dbContext.CurrentCompanyId,
+                OrganizationId = dbContext.CurrentOrganizationId,
                 TableLayout = layout,
                 SeatNumber = seatNumber,
                 X = 12 + ((zeroBased % 2) * Math.Max(24, layout.Width - 24)),
@@ -1000,7 +1000,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
 
     private static RestaurantBranchDetail ToDetail(CoreBranch branch)
     {
-        return new RestaurantBranchDetail(branch.Id, branch.CompanyId, branch.Name, branch.Address, branch.TimeZone, branch.IsActive);
+        return new RestaurantBranchDetail(branch.Id, branch.OrganizationId, branch.Name, branch.Address, branch.TimeZone, branch.IsActive);
     }
 
     private static RestaurantFloorDetail ToDetail(RestaurantFloor floor)
@@ -1017,7 +1017,7 @@ public sealed class RestaurantSetupService(NexoDbContext dbContext, TimeProvider
     {
         return new RestaurantTableDetail(
             table.Id,
-            table.CompanyId,
+            table.OrganizationId,
             table.BranchId,
             table.FloorId,
             table.AreaId,

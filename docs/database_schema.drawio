@@ -1,161 +1,199 @@
 <mxfile host="Electron">
-  <diagram id="database_schema" name="Database Schema">
-    <mxGraphModel dx="2896" dy="1031" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="3000" pageHeight="1500" background="#f8fafc" math="0" shadow="0">
+  <diagram id="database_schema" name="Implemented Database Schema">
+    <mxGraphModel dx="2534" dy="903" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2600" pageHeight="1700" background="#f8fafc" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="BandCore" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eef6ff;strokeColor=#bfdbfe;strokeWidth=2;fontColor=#1e3a8a;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=6;shadow=0;dashed=0;" value="Company Core" vertex="1">
-          <mxGeometry height="590" width="1860" x="170" y="30" as="geometry" />
+        <mxCell id="Title" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#cbd5e1;fontColor=#0f172a;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=4;" value="Nexo implemented persistence&#xa;Schemas currently mapped by NexoDbContext: core and restaurant. There is no local organizations table; organization_id is a Guid tenant key resolved by development context today." vertex="1">
+          <mxGeometry height="80" width="2420" x="40" y="20" as="geometry" />
         </mxCell>
-        <mxCell id="BandConversation" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#bbf7d0;strokeWidth=2;fontColor=#14532d;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=6;shadow=0;dashed=0;" value="Customer Conversations" vertex="1">
-          <mxGeometry height="400" width="1860" x="170" y="650" as="geometry" />
+        <mxCell id="CoreBand" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eff6ff;strokeColor=#93c5fd;strokeWidth=2;fontColor=#1e3a8a;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=4;" value="core schema" vertex="1">
+          <mxGeometry height="260" width="360" x="40" y="130" as="geometry" />
         </mxCell>
-        <mxCell id="BandExecution" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#fed7aa;strokeWidth=2;fontColor=#7c2d12;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=6;shadow=0;dashed=0;" value="Messages and Execution" vertex="1">
-          <mxGeometry height="390" width="1860" x="170" y="1080" as="geometry" />
+        <mxCell id="RestaurantSetupBand" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f0fdf4;strokeColor=#86efac;strokeWidth=2;fontColor=#14532d;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=4;" value="restaurant schema - setup" vertex="1">
+          <mxGeometry height="570" width="930" x="440" y="130" as="geometry" />
         </mxCell>
-        <mxCell id="Company" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=8;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dbeafe;strokeColor=#1d4ed8;strokeWidth=2;fontColor=#0f172a;shadow=1;" value="Company" vertex="1">
-          <mxGeometry height="230" width="300" x="950" y="90" as="geometry" />
+        <mxCell id="RestaurantReservationBand" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#fdba74;strokeWidth=2;fontColor=#7c2d12;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=4;" value="restaurant schema - reservations and blocks" vertex="1">
+          <mxGeometry height="570" width="1050" x="1410" y="130" as="geometry" />
         </mxCell>
-        <mxCell id="Company_Props" parent="Company" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="Id : Guid [PK]&#xa;Name : string&#xa;WorkingHours : WorkingHours (JSONB)&#xa;TimeZoneId : string&#xa;Status : CompanyStatus&#xa;CreatedAt : DateTime&#xa;UpdatedAt : DateTime" vertex="1">
+        <mxCell id="RestaurantLayoutBand" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f3ff;strokeColor=#c4b5fd;strokeWidth=2;fontColor=#4c1d95;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=4;" value="restaurant schema - floor-plan layout" vertex="1">
+          <mxGeometry height="520" width="2020" x="440" y="740" as="geometry" />
+        </mxCell>
+        <mxCell id="PlannedBand" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1f5f9;strokeColor=#cbd5e1;strokeWidth=2;fontColor=#334155;fontStyle=1;align=left;verticalAlign=top;spacing=12;arcSize=4;dashed=1;" value="planned schemas, not implemented tables" vertex="1">
+          <mxGeometry height="210" width="2420" x="40" y="1290" as="geometry" />
+        </mxCell>
+        <mxCell id="Branches" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dbeafe;strokeColor=#2563eb;strokeWidth=2;fontColor=#0f172a;" value="core.branches" vertex="1">
+          <mxGeometry height="170" width="280" x="80" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="BranchesProps" parent="Branches" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;name&#xa;address&#xa;time_zone&#xa;is_active&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="130" width="280" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="Floors" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dcfce7;strokeColor=#16a34a;strokeWidth=2;fontColor=#0f172a;" value="restaurant.floors" vertex="1">
+          <mxGeometry height="170" width="260" x="480" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="FloorsProps" parent="Floors" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;branch_id FK&#xa;name&#xa;sort_order&#xa;is_active&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="130" width="260" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="Areas" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dcfce7;strokeColor=#16a34a;strokeWidth=2;fontColor=#0f172a;" value="restaurant.areas" vertex="1">
+          <mxGeometry height="190" width="260" x="790" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="AreasProps" parent="Areas" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;branch_id FK&#xa;floor_id FK&#xa;name&#xa;type&#xa;sort_order&#xa;is_active&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="150" width="260" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="Tables" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dcfce7;strokeColor=#16a34a;strokeWidth=2;fontColor=#0f172a;" value="restaurant.tables" vertex="1">
+          <mxGeometry height="250" width="230" x="1100" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="TablesProps" parent="Tables" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;branch_id FK&#xa;floor_id FK&#xa;area_id FK nullable&#xa;label&#xa;min_capacity&#xa;max_capacity&#xa;default_reservation_minutes&#xa;shape&#xa;is_active&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="210" width="230" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="OpeningHours" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dcfce7;strokeColor=#16a34a;strokeWidth=2;fontColor=#0f172a;" value="restaurant.opening_hours" vertex="1">
+          <mxGeometry height="190" width="260" x="480" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="OpeningHoursProps" parent="OpeningHours" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;branch_id FK&#xa;day_of_week&#xa;opens_at&#xa;closes_at&#xa;is_closed&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="150" width="260" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="SpecialDays" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dcfce7;strokeColor=#16a34a;strokeWidth=2;fontColor=#0f172a;" value="restaurant.special_days" vertex="1">
+          <mxGeometry height="190" width="260" x="790" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="SpecialDaysProps" parent="SpecialDays" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;branch_id FK&#xa;date&#xa;name&#xa;is_closed&#xa;opens_at nullable&#xa;closes_at nullable&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="150" width="260" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="Customers" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fed7aa;strokeColor=#ea580c;strokeWidth=2;fontColor=#0f172a;" value="restaurant.customers" vertex="1">
+          <mxGeometry height="170" width="250" x="1450" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="CustomersProps" parent="Customers" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;full_name&#xa;phone&#xa;email&#xa;notes&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="130" width="250" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="Reservations" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fed7aa;strokeColor=#ea580c;strokeWidth=2;fontColor=#0f172a;" value="restaurant.reservations" vertex="1">
+          <mxGeometry height="310" width="290" x="1760" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="ReservationsProps" parent="Reservations" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;branch_id FK&#xa;customer_id FK&#xa;party_size&#xa;start_at&#xa;end_at&#xa;turnover_buffer_minutes&#xa;status&#xa;source&#xa;special_requests&#xa;created_by_app_user_id&#xa;cancelled_at&#xa;cancellation_reason&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="270" width="290" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="ReservationTables" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fed7aa;strokeColor=#ea580c;strokeWidth=2;fontColor=#0f172a;" value="restaurant.reservation_tables" vertex="1">
+          <mxGeometry height="140" width="290" x="2110" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="ReservationTablesProps" parent="ReservationTables" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="reservation_id PK/FK&#xa;table_id PK/FK&#xa;organization_id&#xa;created_at" vertex="1">
+          <mxGeometry height="100" width="290" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="ReservationStatusHistory" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fed7aa;strokeColor=#ea580c;strokeWidth=2;fontColor=#0f172a;" value="restaurant.reservation_status_history" vertex="1">
+          <mxGeometry height="210" width="270" x="1450" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="ReservationStatusHistoryProps" parent="ReservationStatusHistory" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;reservation_id FK&#xa;from_status&#xa;to_status&#xa;reason&#xa;changed_by_app_user_id&#xa;changed_at" vertex="1">
+          <mxGeometry height="170" width="270" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="TableBlocks" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fed7aa;strokeColor=#ea580c;strokeWidth=2;fontColor=#0f172a;" value="restaurant.table_blocks" vertex="1">
+          <mxGeometry height="250" width="290" x="2110" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="TableBlocksProps" parent="TableBlocks" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;branch_id FK&#xa;floor_id FK nullable&#xa;area_id FK nullable&#xa;table_id FK nullable&#xa;start_at&#xa;end_at&#xa;reason&#xa;is_active&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="210" width="290" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="FloorPlans" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#ede9fe;strokeColor=#7c3aed;strokeWidth=2;fontColor=#0f172a;" value="restaurant.floor_plans" vertex="1">
+          <mxGeometry height="210" width="290" x="480" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="FloorPlansProps" parent="FloorPlans" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;branch_id FK&#xa;floor_id FK&#xa;name&#xa;canvas_width&#xa;canvas_height&#xa;grid_size&#xa;is_active&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="170" width="290" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="AreaLayouts" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#ede9fe;strokeColor=#7c3aed;strokeWidth=2;fontColor=#0f172a;" value="restaurant.area_layouts" vertex="1">
+          <mxGeometry height="220" width="300" x="850" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="AreaLayoutsProps" parent="AreaLayouts" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;floor_plan_id FK&#xa;area_id FK&#xa;x, y&#xa;width, height&#xa;rotation_degrees&#xa;z_index&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="180" width="300" y="38" as="geometry" />
+        </mxCell>
+        <mxCell id="TableLayouts" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#ede9fe;strokeColor=#7c3aed;strokeWidth=2;fontColor=#0f172a;" value="restaurant.table_layouts" vertex="1">
+          <mxGeometry height="230" width="300" x="1230" y="810" as="geometry" />
+        </mxCell>
+        <mxCell id="TableLayoutsProps" parent="TableLayouts" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;floor_plan_id FK&#xa;table_id FK&#xa;x, y&#xa;width, height&#xa;rotation_degrees&#xa;shape&#xa;z_index&#xa;created_at, updated_at" vertex="1">
           <mxGeometry height="190" width="300" y="38" as="geometry" />
         </mxCell>
-        <mxCell id="AgentProfile" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=8;startSize=34;fillColor=#ffffff;swimlaneFillColor=#e0e7ff;strokeColor=#4f46e5;strokeWidth=2;fontColor=#0f172a;shadow=1;" value="AgentProfile" vertex="1">
-          <mxGeometry height="250" width="280" x="300" y="350" as="geometry" />
+        <mxCell id="TableSeatLayouts" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=6;startSize=34;fillColor=#ffffff;swimlaneFillColor=#ede9fe;strokeColor=#7c3aed;strokeWidth=2;fontColor=#0f172a;" value="restaurant.table_seat_layouts" vertex="1">
+          <mxGeometry height="170" width="300" x="1620" y="810" as="geometry" />
         </mxCell>
-        <mxCell id="AgentProfile_Props" parent="AgentProfile" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="Id : Guid [PK]&#xa;CompanyId : Guid [FK]&#xa;ModelName : string&#xa;DisplayName : string&#xa;Language : string&#xa;PromptOverride : string&#xa;CreatedAt : DateTime&#xa;UpdatedAt : DateTime" vertex="1">
-          <mxGeometry height="210" width="280" y="38" as="geometry" />
+        <mxCell id="TableSeatLayoutsProps" parent="TableSeatLayouts" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="id PK&#xa;organization_id&#xa;table_layout_id FK&#xa;seat_number&#xa;x, y&#xa;rotation_degrees&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="130" width="300" y="38" as="geometry" />
         </mxCell>
-        <mxCell id="CompanyChannel" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=8;startSize=34;fillColor=#ffffff;swimlaneFillColor=#e0f2fe;strokeColor=#0284c7;strokeWidth=2;fontColor=#0f172a;shadow=1;" value="CompanyChannel" vertex="1">
-          <mxGeometry height="250" width="280" x="700" y="350" as="geometry" />
+        <mxCell id="PlannedIam" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#94a3b8;fontColor=#334155;fontStyle=1;arcSize=4;dashed=1;" value="iam&#xa;Planned: users, memberships, roles, permissions" vertex="1">
+          <mxGeometry height="90" width="440" x="100" y="1360" as="geometry" />
         </mxCell>
-        <mxCell id="CompanyChannel_Props" parent="CompanyChannel" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="Id : Guid [PK]&#xa;CompanyId : Guid [FK]&#xa;Provider : string&#xa;ProviderChannelId : string&#xa;Metadata : ChannelMetadata (JSONB)&#xa;CredentialReferenceId : Guid [FK]&#xa;CreatedAt : DateTime&#xa;UpdatedAt : DateTime" vertex="1">
-          <mxGeometry height="210" width="280" y="38" as="geometry" />
+        <mxCell id="PlannedCalendar" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#94a3b8;fontColor=#334155;fontStyle=1;arcSize=4;dashed=1;" value="calendar&#xa;Planned: events, availability, blocks" vertex="1">
+          <mxGeometry height="90" width="440" x="660" y="1360" as="geometry" />
         </mxCell>
-        <mxCell id="CompanyTool" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=8;startSize=34;fillColor=#ffffff;swimlaneFillColor=#ede9fe;strokeColor=#7c3aed;strokeWidth=2;fontColor=#0f172a;shadow=1;" value="CompanyTool" vertex="1">
-          <mxGeometry height="250" width="280" x="1220" y="350" as="geometry" />
+        <mxCell id="PlannedIntegrations" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#94a3b8;fontColor=#334155;fontStyle=1;arcSize=4;dashed=1;" value="integrations&#xa;Planned: providers, company integrations, webhooks, sync jobs" vertex="1">
+          <mxGeometry height="90" width="440" x="1220" y="1360" as="geometry" />
         </mxCell>
-        <mxCell id="CompanyTool_Props" parent="CompanyTool" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="Id : Guid [PK]&#xa;CompanyId : Guid [FK]&#xa;ToolKey : string&#xa;IsEnabled : bool&#xa;CredentialReferenceId : Guid [FK]&#xa;Configuration : ToolConfiguration (JSONB)&#xa;CreatedAt : DateTime&#xa;UpdatedAt : DateTime" vertex="1">
-          <mxGeometry height="210" width="280" y="38" as="geometry" />
+        <mxCell id="PlannedAudit" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#94a3b8;fontColor=#334155;fontStyle=1;arcSize=4;dashed=1;" value="audit&#xa;Planned: important actions and changes" vertex="1">
+          <mxGeometry height="90" width="440" x="1780" y="1360" as="geometry" />
         </mxCell>
-        <mxCell id="IntegrationCredentialReference" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=8;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fef3c7;strokeColor=#d97706;strokeWidth=2;fontColor=#0f172a;shadow=1;" value="IntegrationCredentialReference" vertex="1">
-          <mxGeometry height="250" width="310" x="1620" y="350" as="geometry" />
-        </mxCell>
-        <mxCell id="IntegrationCredentialReference_Props" parent="IntegrationCredentialReference" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="Id : Guid [PK]&#xa;CompanyId : Guid [FK]&#xa;Provider : IntegrationProvider&#xa;Purpose : string&#xa;Reference : string&#xa;Metadata : CredentialMetadata (JSONB)&#xa;CreatedAt : DateTime&#xa;UpdatedAt : DateTime" vertex="1">
-          <mxGeometry height="210" width="310" y="38" as="geometry" />
-        </mxCell>
-        <mxCell id="Customer" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=8;startSize=34;fillColor=#ffffff;swimlaneFillColor=#dcfce7;strokeColor=#16a34a;strokeWidth=2;fontColor=#0f172a;shadow=1;" value="Customer" vertex="1">
-          <mxGeometry height="230" width="280" x="380" y="740" as="geometry" />
-        </mxCell>
-        <mxCell id="Customer_Props" parent="Customer" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="Id : Guid [PK]&#xa;CompanyId : Guid [FK]&#xa;CompanyChannelId : Guid [FK]&#xa;ExternalCustomerId : string&#xa;DisplayName : string&#xa;CreatedAt : DateTime&#xa;UpdatedAt : DateTime" vertex="1">
-          <mxGeometry height="190" width="280" y="38" as="geometry" />
-        </mxCell>
-        <mxCell id="Conversation" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=8;startSize=34;fillColor=#ffffff;swimlaneFillColor=#bbf7d0;strokeColor=#15803d;strokeWidth=2;fontColor=#0f172a;shadow=1;" value="Conversation" vertex="1">
-          <mxGeometry height="270" width="300" x="950" y="720" as="geometry" />
-        </mxCell>
-        <mxCell id="Conversation_Props" parent="Conversation" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="Id : Guid [PK]&lt;br&gt;CompanyId : Guid [FK]&lt;br&gt;CustomerId : Guid [FK]&lt;br&gt;CompanyChannelId : Guid [FK]&lt;br&gt;AgentProfileId : Guid [FK]&lt;br&gt;Status : ConversationStatus&lt;br&gt;LastMessageAt : DateTime&lt;br&gt;CreatedAt : DateTime&lt;br&gt;UpdatedAt : DateTime" vertex="1">
-          <mxGeometry height="230" width="300" y="38" as="geometry" />
-        </mxCell>
-        <mxCell id="ConversationState" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=8;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fecaca;strokeColor=#dc2626;strokeWidth=2;fontColor=#0f172a;shadow=1;" value="ConversationState" vertex="1">
-          <mxGeometry height="210" width="320" x="1500" y="750" as="geometry" />
-        </mxCell>
-        <mxCell id="ConversationState_Props" parent="ConversationState" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="Id : Guid [PK]&lt;br&gt;CompanyId : Guid [FK]&lt;br&gt;ConversationId : Guid [FK]&lt;br&gt;Snapshot : ConversationStateSnapshot (JSONB)&lt;br&gt;CreatedAt : DateTime&lt;br&gt;UpdatedAt : DateTime" vertex="1">
-          <mxGeometry height="170" width="280" y="38" as="geometry" />
-        </mxCell>
-        <mxCell id="Message" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=8;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fed7aa;strokeColor=#ea580c;strokeWidth=2;fontColor=#0f172a;shadow=1;" value="Message" vertex="1">
-          <mxGeometry height="320" width="320" x="620" y="1140" as="geometry" />
-        </mxCell>
-        <mxCell id="Message_Props" parent="Message" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="Id : Guid [PK]&lt;br&gt;CompanyId : Guid [FK]&lt;br&gt;ConversationId : Guid [FK]&lt;br&gt;Role : MessageRole&lt;br&gt;Type : MessageType&lt;br&gt;MessageText : string&lt;br&gt;ProviderMessageId : string&lt;br&gt;Payload : MessagePayload (JSONB)&lt;br&gt;OccurredAt : DateTime&lt;br&gt;CreatedAt : DateTime&lt;br&gt;UpdatedAt : DateTime" vertex="1">
-          <mxGeometry height="280" width="320" y="38" as="geometry" />
-        </mxCell>
-        <mxCell id="ToolExecution" parent="1" style="swimlane;whiteSpace=wrap;html=1;fontStyle=1;rounded=1;arcSize=8;startSize=34;fillColor=#ffffff;swimlaneFillColor=#fde68a;strokeColor=#ca8a04;strokeWidth=2;fontColor=#0f172a;shadow=1;" value="ToolExecution" vertex="1">
-          <mxGeometry height="300" width="330" x="1248" y="1140" as="geometry" />
-        </mxCell>
-        <mxCell id="ToolExecution_Props" parent="ToolExecution" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;spacing=10;fontFamily=Consolas;fontSize=12;fontColor=#334155;" value="Id : Guid [PK]&#xa;CompanyId : Guid [FK]&#xa;ConversationId : Guid [FK]&#xa;CompanyToolId : Guid [FK]&#xa;TriggerMessageId : Guid [FK]&#xa;ResultMessageId : Guid [FK]&#xa;ToolKey : string&#xa;IdempotencyKey : string&#xa;Status : ToolExecutionStatus&#xa;Request : ToolExecutionRequest (JSONB)&#xa;Result : ToolExecutionResult (JSONB)&#xa;FailureReason : string&#xa;CreatedAt : DateTime&#xa;UpdatedAt : DateTime" vertex="1">
-          <mxGeometry height="260" width="330" y="38" as="geometry" />
-        </mxCell>
-        <mxCell id="E1" edge="1" parent="1" source="Company" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#475569;strokeWidth=2;fontColor=#334155;labelBackgroundColor=#f8fafc;" target="CompanyChannel" value="has">
+        <mxCell id="EBranchesFloors" edge="1" parent="1" source="Branches" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#475569;strokeWidth=2;fontColor=#334155;labelBackgroundColor=#f8fafc;" target="Floors" value="branch">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="E2" edge="1" parent="1" source="Company" style="rounded=1;html=1;endArrow=ERone;startArrow=ERone;strokeColor=#475569;strokeWidth=2;fontColor=#334155;labelBackgroundColor=#f8fafc;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="AgentProfile" value="configures">
+        <mxCell id="EBranchesOpening" edge="1" parent="1" source="Branches" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#475569;strokeWidth=2;fontColor=#334155;labelBackgroundColor=#f8fafc;" target="OpeningHours" value="branch">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="440" y="210" />
+              <mxPoint x="550" y="250" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="E3" edge="1" parent="1" source="Company" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#475569;strokeWidth=2;fontColor=#334155;labelBackgroundColor=#f8fafc;" target="CompanyTool" value="enables">
+        <mxCell id="EBranchesSpecial" edge="1" parent="1" source="Branches" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#475569;strokeWidth=2;fontColor=#334155;labelBackgroundColor=#f8fafc;" target="SpecialDays" value="branch">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="1360" y="205" />
+              <mxPoint x="920" y="320" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="E4" edge="1" parent="1" source="Company" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#475569;strokeWidth=2;fontColor=#334155;labelBackgroundColor=#f8fafc;" target="IntegrationCredentialReference" value="stores">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="1775" y="260" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="E5" edge="1" parent="1" source="CompanyChannel_Props" style="rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#0284c7;strokeWidth=2;fontColor=#075985;labelBackgroundColor=#f8fafc;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Customer" value="identifies">
+        <mxCell id="EFloorsAreas" edge="1" parent="1" source="Floors" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#16a34a;strokeWidth=2;fontColor=#14532d;labelBackgroundColor=#f8fafc;" target="Areas" value="floor">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="E6" edge="1" parent="1" source="CompanyChannel" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#0284c7;strokeWidth=2;fontColor=#075985;labelBackgroundColor=#f8fafc;" target="Conversation" value="carries">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="840" y="680" />
-              <mxPoint x="1100" y="680" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="E7" edge="1" parent="1" source="AgentProfile_Props" style="rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#4f46e5;strokeWidth=2;fontColor=#312e81;labelBackgroundColor=#f8fafc;entryX=0.75;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="Conversation" value="snapshotted by">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="440" y="640" />
-              <mxPoint x="1175" y="640" />
-            </Array>
-            <mxPoint x="449.99882352941216" y="570.0000000000002" as="sourcePoint" />
-            <mxPoint x="1109.9988235294122" y="689.9999999999998" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="E8" edge="1" parent="1" source="Customer" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#16a34a;strokeWidth=2;fontColor=#14532d;labelBackgroundColor=#f8fafc;" target="Conversation" value="participates in">
+        <mxCell id="EFloorsTables" edge="1" parent="1" source="Floors" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#16a34a;strokeWidth=2;fontColor=#14532d;labelBackgroundColor=#f8fafc;" target="Tables" value="floor">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="E9" edge="1" parent="1" source="Conversation" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERone;startArrow=ERone;strokeColor=#16a34a;strokeWidth=2;fontColor=#14532d;labelBackgroundColor=#f8fafc;" target="ConversationState" value="maintains">
+        <mxCell id="EAreasTables" edge="1" parent="1" source="Areas" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#16a34a;strokeWidth=2;fontColor=#14532d;labelBackgroundColor=#f8fafc;" target="Tables" value="optional area">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="E10" edge="1" parent="1" source="Conversation" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;labelBackgroundColor=#f8fafc;" target="Message" value="contains">
+        <mxCell id="ECustomerReservations" edge="1" parent="1" source="Customers" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;labelBackgroundColor=#f8fafc;" target="Reservations" value="customer">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="E11" edge="1" parent="1" source="Conversation_Props" style="rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ca8a04;strokeWidth=2;fontColor=#713f12;labelBackgroundColor=#f8fafc;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="ToolExecution" value="logs">
+        <mxCell id="EReservationsReservationTables" edge="1" parent="1" source="Reservations" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;labelBackgroundColor=#f8fafc;" target="ReservationTables" value="tables">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ETablesReservationTables" edge="1" parent="1" source="Tables" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;labelBackgroundColor=#f8fafc;" target="ReservationTables" value="assigned table">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EReservationsHistory" edge="1" parent="1" source="Reservations" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;labelBackgroundColor=#f8fafc;" target="ReservationStatusHistory" value="status history">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EBranchesTableBlocks" edge="1" parent="1" source="Branches" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;labelBackgroundColor=#f8fafc;" target="TableBlocks" value="branch block">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="1175" y="1060" />
-              <mxPoint x="1413" y="1060" />
+              <mxPoint x="220" y="720" />
+              <mxPoint x="2255" y="720" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="E13" edge="1" parent="1" source="Message" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ca8a04;strokeWidth=2;fontColor=#713f12;labelBackgroundColor=#f8fafc;" target="ToolExecution" value="triggers/result">
+        <mxCell id="ETablesTableBlocks" edge="1" parent="1" source="Tables" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;labelBackgroundColor=#f8fafc;" target="TableBlocks" value="optional table">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="E14" edge="1" parent="1" source="CompanyTool" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#7c3aed;strokeWidth=2;fontColor=#4c1d95;labelBackgroundColor=#f8fafc;" target="ToolExecution" value="executes">
+        <mxCell id="EFloorsFloorPlans" edge="1" parent="1" source="Floors" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#7c3aed;strokeWidth=2;fontColor=#4c1d95;labelBackgroundColor=#f8fafc;" target="FloorPlans" value="floor">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="1360" y="660" />
-              <mxPoint x="1840" y="660" />
-              <mxPoint x="1840" y="1290" />
+              <mxPoint x="660" y="585" />
+              <mxPoint x="550" y="585" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="E15" edge="1" parent="1" source="IntegrationCredentialReference_Props" style="rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#d97706;strokeWidth=2;fontColor=#92400e;labelBackgroundColor=#f8fafc;entryX=0.75;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="CompanyChannel_Props" value="authenticates">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="1775" y="630" />
-              <mxPoint x="910" y="630" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="EFloorPlansAreaLayouts" edge="1" parent="1" source="FloorPlans" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#7c3aed;strokeWidth=2;fontColor=#4c1d95;labelBackgroundColor=#f8fafc;" target="AreaLayouts" value="canvas areas">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="E16" edge="1" parent="1" source="IntegrationCredentialReference" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#d97706;strokeWidth=2;fontColor=#92400e;labelBackgroundColor=#f8fafc;" target="CompanyTool" value="authenticates">
+        <mxCell id="EAreasAreaLayouts" edge="1" parent="1" source="Areas" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#7c3aed;strokeWidth=2;fontColor=#4c1d95;labelBackgroundColor=#f8fafc;" target="AreaLayouts" value="area">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EFloorPlansTableLayouts" edge="1" parent="1" source="FloorPlans" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#7c3aed;strokeWidth=2;fontColor=#4c1d95;labelBackgroundColor=#f8fafc;" target="TableLayouts" value="canvas tables">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ETablesTableLayouts" edge="1" parent="1" source="Tables" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#7c3aed;strokeWidth=2;fontColor=#4c1d95;labelBackgroundColor=#f8fafc;" target="TableLayouts" value="table">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ETableLayoutsSeatLayouts" edge="1" parent="1" source="TableLayouts" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=ERmany;startArrow=ERone;strokeColor=#7c3aed;strokeWidth=2;fontColor=#4c1d95;labelBackgroundColor=#f8fafc;" target="TableSeatLayouts" value="seats">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>

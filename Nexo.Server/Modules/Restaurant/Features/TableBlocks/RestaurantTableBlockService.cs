@@ -45,7 +45,7 @@ public sealed class RestaurantTableBlockService(NexoDbContext dbContext, TimePro
         var now = timeProvider.GetUtcNow();
         var block = new RestaurantTableBlock
         {
-            CompanyId = dbContext.CurrentCompanyId,
+            OrganizationId = dbContext.CurrentOrganizationId,
             BranchId = request.BranchId,
             FloorId = request.FloorId,
             AreaId = request.AreaId,

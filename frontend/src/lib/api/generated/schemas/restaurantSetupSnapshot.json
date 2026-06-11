@@ -1,6 +1,6 @@
 {
   "required": [
-    "companyId",
+    "organizationId",
     "branches",
     "floors",
     "areas",
@@ -11,13 +11,13 @@
   ],
   "type": "object",
   "properties": {
-    "companyId": { "type": "string", "format": "uuid" },
+    "organizationId": { "type": "string", "format": "uuid" },
     "branches": {
       "type": "array",
       "items": {
         "required": [
           "id",
-          "companyId",
+          "organizationId",
           "name",
           "address",
           "timeZone",
@@ -26,7 +26,7 @@
         "type": "object",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
-          "companyId": { "type": "string", "format": "uuid" },
+          "organizationId": { "type": "string", "format": "uuid" },
           "name": { "type": "string" },
           "address": { "type": ["null", "string"] },
           "timeZone": { "type": "string" },
@@ -91,7 +91,7 @@
       "items": {
         "required": [
           "id",
-          "companyId",
+          "organizationId",
           "branchId",
           "floorId",
           "areaId",
@@ -105,7 +105,7 @@
         "type": "object",
         "properties": {
           "id": { "type": "string", "format": "uuid" },
-          "companyId": { "type": "string", "format": "uuid" },
+          "organizationId": { "type": "string", "format": "uuid" },
           "branchId": { "type": "string", "format": "uuid" },
           "floorId": { "type": "string", "format": "uuid" },
           "areaId": { "type": ["null", "string"], "format": "uuid" },

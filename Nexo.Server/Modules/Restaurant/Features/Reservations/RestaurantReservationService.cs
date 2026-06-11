@@ -53,7 +53,7 @@ public sealed class RestaurantReservationService(
         var now = timeProvider.GetUtcNow();
         var customer = new RestaurantCustomer
         {
-            CompanyId = dbContext.CurrentCompanyId,
+            OrganizationId = dbContext.CurrentOrganizationId,
             FullName = request.CustomerFullName.Trim(),
             Phone = string.IsNullOrWhiteSpace(request.CustomerPhone) ? null : request.CustomerPhone.Trim(),
             Email = string.IsNullOrWhiteSpace(request.CustomerEmail) ? null : request.CustomerEmail.Trim(),
@@ -62,7 +62,7 @@ public sealed class RestaurantReservationService(
         };
         var reservation = new RestaurantReservation
         {
-            CompanyId = dbContext.CurrentCompanyId,
+            OrganizationId = dbContext.CurrentOrganizationId,
             BranchId = request.BranchId,
             Customer = customer,
             CustomerId = customer.Id,
@@ -83,7 +83,7 @@ public sealed class RestaurantReservationService(
         {
             dbContext.RestaurantReservationTables.Add(new RestaurantReservationTable
             {
-                CompanyId = dbContext.CurrentCompanyId,
+                OrganizationId = dbContext.CurrentOrganizationId,
                 ReservationId = reservation.Id,
                 TableId = tableId,
                 CreatedAt = now
@@ -92,7 +92,7 @@ public sealed class RestaurantReservationService(
 
         dbContext.RestaurantReservationStatusHistory.Add(new RestaurantReservationStatusHistory
         {
-            CompanyId = dbContext.CurrentCompanyId,
+            OrganizationId = dbContext.CurrentOrganizationId,
             ReservationId = reservation.Id,
             FromStatus = null,
             ToStatus = RestaurantReservationStatus.Pending,
@@ -180,7 +180,7 @@ public sealed class RestaurantReservationService(
 
         dbContext.RestaurantReservationStatusHistory.Add(new RestaurantReservationStatusHistory
         {
-            CompanyId = dbContext.CurrentCompanyId,
+            OrganizationId = dbContext.CurrentOrganizationId,
             ReservationId = reservation.Id,
             FromStatus = fromStatus,
             ToStatus = request.Status,

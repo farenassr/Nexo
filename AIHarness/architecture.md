@@ -10,7 +10,7 @@ Nexo is a .NET Aspire modular monolith:
 ```text
 frontend (React + Vite)
   -> Nexo.Server (FastEndpoints API)
-       resolves active company context, validates membership, permissions, and
+       resolves active organization context, validates membership, permissions, and
        active modules, then executes the feature slice
   -> PostgreSQL + Redis + external Keycloak + external providers
 ```
@@ -74,8 +74,8 @@ belong behind ports and integration implementations.
 - Mediator only; no MediatR.
 - EF Core directly through `NexoDbContext`; no generic repositories or custom
   Unit of Work.
-- Company isolation through `company_id` and EF Core global query filters.
-- PostgreSQL schemas are per module, never per company.
+- Organization isolation through `organization_id` and EF Core global query filters.
+- PostgreSQL schemas are per module, never per organization.
 - Backend module activation checks are required for gated features.
 - No agent-applied migrations.
 - No raw secrets in repository files or credential rows.
@@ -83,7 +83,7 @@ belong behind ports and integration implementations.
 ## Review Questions
 
 - Does the change respect module boundaries and vertical-slice placement?
-- Does it preserve company isolation?
+- Does it preserve organization isolation?
 - Does it enforce backend module activation and permission checks where needed?
 - Are provider details behind ports?
 - Are tests and docs proportionate to the risk?

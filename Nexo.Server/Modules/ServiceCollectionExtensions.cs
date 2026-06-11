@@ -1,5 +1,5 @@
 using Nexo.Server.Data;
-using Nexo.Server.Modules.Core.CompanyContext;
+using Nexo.Server.Modules.Core.OrganizationContext;
 using Nexo.Server.Modules.Core.ModuleGating;
 using Nexo.Server.Modules.Restaurant.Authorization;
 
@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration)
     {
         services.AddNexoPersistence(configuration);
-        services.AddCompanyContext(configuration);
+        services.AddOrganizationContext(configuration);
         services.AddModuleGating(configuration);
         services.AddRestaurantModule(configuration);
 

@@ -1,10 +1,10 @@
-using Nexo.Server.Modules.Core.CompanyContext;
+using Nexo.Server.Modules.Core.OrganizationContext;
 using Nexo.Server.Modules.Core.ModuleGating;
 
 namespace Nexo.Server.Modules.Restaurant.Authorization;
 
 public sealed class RestaurantAccessService(
-    ICompanyContextProvider companyContextProvider,
+    IOrganizationContextProvider organizationContextProvider,
     IModuleGate moduleGate,
     IRestaurantPermissionAuthorizer permissionAuthorizer)
 {
@@ -12,28 +12,28 @@ public sealed class RestaurantAccessService(
         string permission,
         CancellationToken cancellationToken = default)
     {
-        var companyContext = await companyContextProvider.GetCurrentAsync(cancellationToken);
+        var organizationContext = await organizationContextProvider.GetCurrentAsync(cancellationToken);
         var moduleGateResult = await moduleGate.EnsureActiveAsync(
-            companyContext.CompanyId,
+            organizationContext.OrganizationId,
             NexoModules.Restaurant,
             cancellationToken);
 
         if (!moduleGateResult.IsActive)
         {
             return RestaurantAccessResult.Denied(
-                companyContext.CompanyId,
+                organizationContext.OrganizationId,
                 RestaurantAccessFailure.ModuleInactive);
         }
 
         var permissionResult = await permissionAuthorizer.AuthorizeAsync(
-            companyContext.CompanyId,
+            organizationContext.OrganizationId,
             permission,
             cancellationToken);
 
         return permissionResult.IsAllowed
-            ? RestaurantAccessResult.Allowed(companyContext.CompanyId)
+            ? RestaurantAccessResult.Allowed(organizationContext.OrganizationId)
             : RestaurantAccessResult.Denied(
-                companyContext.CompanyId,
+                organizationContext.OrganizationId,
                 RestaurantAccessFailure.PermissionDenied);
     }
 }

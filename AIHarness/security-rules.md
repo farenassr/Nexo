@@ -23,24 +23,24 @@ values.
 - Keycloak is the identity provider.
 - The API validates JWTs and resolves the internal user through
   `keycloak_user_id` mapped to the token `sub` claim.
-- Keycloak owns the company/organization identity. `company_id` is the
+- Keycloak owns the organization identity. `organization_id` is the
   external Keycloak organization id, not a Nexo-generated id.
 - Nexo owns branches, memberships, roles, permissions, active modules, business
-  rules, and audit records scoped to that external `company_id`.
-- Authorization checks must run for every company-owned request. Never trust
+  rules, and audit records scoped to that external `organization_id`.
+- Authorization checks must run for every organization-owned request. Never trust
   the client for tenant, module, role, or permission scope.
 
 ## Multi-Tenancy
 
-- Every company-owned table includes `company_id`.
-- Company-owned queries rely on EF Core global query filters.
-- Public requests must not supply authoritative `company_id` values.
-- Resolve inbound integration events to a company through stored integration or
+- Every organization-owned table includes `organization_id`.
+- Organization-owned queries rely on EF Core global query filters.
+- Public requests must not supply authoritative `organization_id` values.
+- Resolve inbound integration events to an organization through stored integration or
   credential mappings, not client-supplied identifiers.
 
 ## Module Gating
 
-- A company can use only modules active in `core.company_modules`.
+- An organization can use only modules active in `core.organization_modules`.
 - Backend module activation checks are mandatory for gated features.
 - Frontend gating is only a UX convenience.
 - Role/permission checks and module checks are separate; both must pass when a
@@ -61,7 +61,7 @@ values.
 Allowed by default:
 
 - correlation IDs
-- company IDs
+- organization IDs
 - branch IDs
 - internal user IDs
 - module and feature names

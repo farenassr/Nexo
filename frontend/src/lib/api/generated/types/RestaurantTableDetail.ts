@@ -13,7 +13,7 @@ export interface RestaurantTableDetail {
   /**
    * @type string, uuid
    */
-  companyId: string;
+  organizationId: string;
   /**
    * @type string, uuid
    */

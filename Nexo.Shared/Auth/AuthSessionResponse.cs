@@ -5,7 +5,7 @@ public sealed record AuthSessionResponse(
     string? UserId,
     string? Name,
     string? Email,
-    string? CompanyId,
+    string? OrganizationId,
     IReadOnlyCollection<string> Roles,
     IReadOnlyCollection<AuthClaimResponse> Claims);
 

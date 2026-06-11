@@ -9,7 +9,7 @@ describe('authSessionStore', () => {
       userId: 'user-1',
       name: 'Ada',
       email: 'ada@example.com',
-      companyId: 'company-1',
+      organizationId: 'organization-1',
       roles: ['admin'],
       claims: [],
     };

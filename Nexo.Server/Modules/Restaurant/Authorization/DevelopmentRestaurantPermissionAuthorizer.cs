@@ -6,7 +6,7 @@ public sealed class DevelopmentRestaurantPermissionAuthorizer(
     IOptions<DevelopmentRestaurantPermissionOptions> options) : IRestaurantPermissionAuthorizer
 {
     public ValueTask<RestaurantPermissionResult> AuthorizeAsync(
-        Guid companyId,
+        Guid organizationId,
         string permission,
         CancellationToken cancellationToken = default)
     {

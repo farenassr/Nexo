@@ -3,7 +3,7 @@ namespace Nexo.Server.Modules.Core.ModuleGating;
 public interface IModuleGate
 {
     ValueTask<ModuleGateResult> EnsureActiveAsync(
-        Guid companyId,
+        Guid organizationId,
         string moduleKey,
         CancellationToken cancellationToken = default);
 }

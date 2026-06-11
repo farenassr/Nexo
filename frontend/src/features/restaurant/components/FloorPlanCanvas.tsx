@@ -126,7 +126,7 @@ function TableChairs({ table }: { table: RestaurantTableLayoutDetail }) {
           style={{
             left: `${seat.x}%`,
             top: `${seat.y}%`,
-            transform: `rotate(${seat.rotationDegrees}deg)`,
+            transform: `translate(-50%, -50%) rotate(${seat.rotationDegrees}deg)`,
           }}
         />
       ))}
@@ -177,11 +177,11 @@ function defaultSeatLayouts(shape: RestaurantTableShape) {
   }
 
   return [
-    { seatNumber: 1, x: 12, y: -8, rotationDegrees: 0 },
-    { seatNumber: 2, x: 50, y: -8, rotationDegrees: 0 },
-    { seatNumber: 3, x: 88, y: -8, rotationDegrees: 0 },
-    { seatNumber: 4, x: 12, y: 92, rotationDegrees: 180 },
-    { seatNumber: 5, x: 50, y: 92, rotationDegrees: 180 },
-    { seatNumber: 6, x: 88, y: 92, rotationDegrees: 180 },
+    { seatNumber: 1, x: 18, y: -10, rotationDegrees: 0 },
+    { seatNumber: 2, x: 50, y: -10, rotationDegrees: 0 },
+    { seatNumber: 3, x: 82, y: -10, rotationDegrees: 0 },
+    { seatNumber: 4, x: 18, y: 110, rotationDegrees: 180 },
+    { seatNumber: 5, x: 50, y: 110, rotationDegrees: 180 },
+    { seatNumber: 6, x: 82, y: 110, rotationDegrees: 180 },
   ];
 }

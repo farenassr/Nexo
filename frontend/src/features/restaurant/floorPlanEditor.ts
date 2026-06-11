@@ -331,8 +331,8 @@ export function buildSeatLayouts(
   const topCount = Math.ceil(safeChairCount / 2);
   const bottomCount = safeChairCount - topCount;
   return [
-    ...distributeAlongEdge(topCount, -8, 0),
-    ...distributeAlongEdge(bottomCount, 92, 180, topCount),
+    ...distributeAlongEdge(topCount, -10, 0, 0, 18),
+    ...distributeAlongEdge(bottomCount, 110, 180, topCount, 18),
   ];
 }
 

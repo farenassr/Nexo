@@ -13,7 +13,7 @@ public sealed class CoreBranchConfiguration : IEntityTypeConfiguration<CoreBranc
         builder.HasKey(branch => branch.Id);
 
         builder.Property(branch => branch.Id).HasColumnName("id");
-        builder.Property(branch => branch.CompanyId).HasColumnName("company_id");
+        builder.Property(branch => branch.OrganizationId).HasColumnName("organization_id");
         builder.Property(branch => branch.Name).HasColumnName("name").HasMaxLength(160).IsRequired();
         builder.Property(branch => branch.Address).HasColumnName("address").HasMaxLength(400);
         builder.Property(branch => branch.TimeZone).HasColumnName("time_zone").HasMaxLength(100).IsRequired();
@@ -21,7 +21,7 @@ public sealed class CoreBranchConfiguration : IEntityTypeConfiguration<CoreBranc
         builder.Property(branch => branch.CreatedAt).HasColumnName("created_at");
         builder.Property(branch => branch.UpdatedAt).HasColumnName("updated_at");
 
-        builder.HasIndex(branch => new { branch.CompanyId, branch.IsActive });
-        builder.HasIndex(branch => new { branch.CompanyId, branch.Name });
+        builder.HasIndex(branch => new { branch.OrganizationId, branch.IsActive });
+        builder.HasIndex(branch => new { branch.OrganizationId, branch.Name });
     }
 }

@@ -3,10 +3,10 @@ using Nexo.Shared.Restaurant;
 
 namespace Nexo.Server.Modules.Restaurant.Data.Entities.Restaurant;
 
-public sealed class RestaurantReservation : ICompanyOwnedEntity
+public sealed class RestaurantReservation : IOrganizationOwnedEntity
 {
     public Guid Id { get; set; } = Guid.CreateVersion7();
-    public Guid CompanyId { get; set; }
+    public Guid OrganizationId { get; set; }
     public Guid BranchId { get; set; }
     public Guid CustomerId { get; set; }
     public RestaurantCustomer? Customer { get; set; }
