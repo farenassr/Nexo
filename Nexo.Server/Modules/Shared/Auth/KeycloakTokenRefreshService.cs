@@ -44,15 +44,21 @@ public sealed class KeycloakTokenRefreshService(
             return KeycloakTokenRefreshResult.Failed();
         }
 
+        var tokenRequest = new Dictionary<string, string>
+        {
+            ["grant_type"] = "refresh_token",
+            ["client_id"] = options.ClientId,
+            ["refresh_token"] = refreshToken
+        };
+
+        if (!string.IsNullOrWhiteSpace(options.ClientSecret))
+        {
+            tokenRequest["client_secret"] = options.ClientSecret;
+        }
+
         using var request = new HttpRequestMessage(HttpMethod.Post, options.TokenEndpoint)
         {
-            Content = new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                ["grant_type"] = "refresh_token",
-                ["client_id"] = options.ClientId,
-                ["client_secret"] = options.ClientSecret,
-                ["refresh_token"] = refreshToken
-            })
+            Content = new FormUrlEncodedContent(tokenRequest)
         };
 
         HttpResponseMessage response;

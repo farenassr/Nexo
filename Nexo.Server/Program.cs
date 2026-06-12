@@ -2,8 +2,8 @@ using FastEndpoints;
 using Azure.Identity;
 using Microsoft.AspNetCore.HttpOverrides;
 using Nexo.Server.Modules;
+using Nexo.Server.OpenApi;
 using Nexo.Server.Modules.Shared.Auth;
-using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +26,10 @@ builder.Services.AddKeycloakAuthorization();
 builder.Services.AddNexoModules(builder.Configuration);
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<KeycloakOpenApiSecurityTransformer>();
+});
 
 var app = builder.Build();
 
@@ -47,7 +50,7 @@ app.Use(async (context, next) =>
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.MapNexoScalarApiReference();
 }
 
 if (app.Environment.IsDevelopment())

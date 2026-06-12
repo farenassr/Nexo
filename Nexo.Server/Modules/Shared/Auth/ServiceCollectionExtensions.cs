@@ -51,7 +51,11 @@ public static class ServiceCollectionExtensions
                 var keycloakOptions = keycloakOptionsAccessor.Value;
                 oidcOptions.Authority = keycloakOptions.Authority;
                 oidcOptions.ClientId = keycloakOptions.ClientId;
-                oidcOptions.ClientSecret = keycloakOptions.ClientSecret;
+                if (!string.IsNullOrWhiteSpace(keycloakOptions.ClientSecret))
+                {
+                    oidcOptions.ClientSecret = keycloakOptions.ClientSecret;
+                }
+
                 oidcOptions.CallbackPath = keycloakOptions.CallbackPath;
                 oidcOptions.GetClaimsFromUserInfoEndpoint = true;
                 oidcOptions.MapInboundClaims = false;

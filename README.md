@@ -133,15 +133,12 @@ Use `Nexo.AppHost` for the Aspire local runtime. It starts PostgreSQL, Redis,
 `Nexo.Server`, and the Vite frontend, then publishes the frontend into the
 server container output.
 
-Keycloak is external to AppHost. Configure it through AppHost user-secrets,
-environment variables, or Aspire parameters:
+Keycloak is external to AppHost. Non-sensitive realm metadata lives in
+`Nexo.Server/appsettings.json`. Configure the public client id through
+`Nexo.Server` user-secrets:
 
 ```powershell
-dotnet user-secrets set --project .\Nexo.AppHost "KEYCLOAK_ISSUER" "<realm-issuer-url>"
-dotnet user-secrets set --project .\Nexo.AppHost "KEYCLOAK_REALM" "<realm-name>"
-dotnet user-secrets set --project .\Nexo.AppHost "KEYCLOAK_CLIENT_ID" "<client-id>"
-dotnet user-secrets set --project .\Nexo.AppHost "KEYCLOAK_CLIENT_SECRET" "<secret-value>"
-dotnet user-secrets set --project .\Nexo.AppHost "KEYCLOAK_REDIRECT_URI" "http://localhost:5173/login"
+dotnet user-secrets set --project .\Nexo.Server "Keycloak:ClientId" "ceo-agent-web"
 ```
 
 See `docs/AUTH/KEYCLOAK_BFF_AUTH.md` for auth setup and

@@ -55,6 +55,42 @@ public sealed class KeycloakTokenRefreshServiceTests
     }
 
     [Test]
+    public async Task RefreshAsync_OmitsClientSecretForPublicClient()
+    {
+        var handler = new RecordingTokenHandler();
+        var service = new KeycloakTokenRefreshService(
+            new HttpClient(handler),
+            Options.Create(new KeycloakOptions
+            {
+                Authority = "https://identity.example.test/realms/nexo",
+                Realm = "nexo",
+                ClientId = "ceo-agent-web",
+                CallbackPath = "/auth/callback",
+                LogoutRedirectUri = "https://app.example.test/login",
+                Scopes = ["openid", "profile", "email", "organization"]
+            }),
+            TimeProvider.System,
+            NullLogger<KeycloakTokenRefreshService>.Instance);
+
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(
+            [new Claim(ClaimTypes.NameIdentifier, "user-1")],
+            NexoAuthSchemes.Session));
+        var properties = new AuthenticationProperties();
+        properties.StoreTokens(
+            [
+                new AuthenticationToken { Name = "refresh_token", Value = "refresh-1" },
+                new AuthenticationToken { Name = "access_token", Value = "old-access" }
+            ]);
+
+        var result = await service.RefreshAsync(principal, properties, CancellationToken.None);
+
+        await Assert.That(result.Succeeded).IsTrue();
+        await Assert.That(handler.Form["client_id"]).IsEqualTo("ceo-agent-web");
+        await Assert.That(handler.Form.ContainsKey("client_secret")).IsFalse();
+        await Assert.That(handler.Form["refresh_token"]).IsEqualTo("refresh-1");
+    }
+
+    [Test]
     public async Task RefreshAsync_ReturnsFailedWhenTokenRequestIsCanceledByHttpClient()
     {
         var service = new KeycloakTokenRefreshService(

@@ -137,9 +137,8 @@ foreach ($file in Get-ProductionFile -ProjectDirectory "Nexo.Server" -Patterns @
     }
 }
 
-# Baseline configuration must not point at another product or shared identity
-# environment. Local or production Keycloak values belong in user-secrets,
-# environment variables, Aspire parameters, or deployment configuration.
+# Baseline configuration may include non-sensitive identity metadata, but it
+# must not commit client credentials.
 $baselineConfigFiles = @(
     Join-Path $repoRoot "Nexo.Server/appsettings.json"
 )
@@ -150,32 +149,12 @@ foreach ($configFile in $baselineConfigFiles) {
 
     $relativePath = Get-RepoRelativePath -Path $configFile
     $content = Get-Content -LiteralPath $configFile -Raw
-    if ($content.IndexOf("ceo-agent", [StringComparison]::OrdinalIgnoreCase) -ge 0) {
-        Add-Violation "$relativePath contains ceo-agent baseline Keycloak configuration"
+    if ($content.IndexOf('"ClientId"', [StringComparison]::OrdinalIgnoreCase) -ge 0) {
+        Add-Violation "$relativePath contains committed Keycloak ClientId configuration"
     }
-}
 
-$appHostFile = Join-Path $repoRoot "Nexo.AppHost/AppHost.cs"
-if (Test-Path -LiteralPath $appHostFile) {
-    $relativePath = Get-RepoRelativePath -Path $appHostFile
-    $content = Get-Content -LiteralPath $appHostFile -Raw
-    $requiredKeycloakAppHostMarkers = @(
-        "KEYCLOAK_ISSUER",
-        "KEYCLOAK_REALM",
-        "KEYCLOAK_CLIENT_ID",
-        "KEYCLOAK_CLIENT_SECRET",
-        "KEYCLOAK_REDIRECT_URI",
-        "Keycloak__Authority",
-        "Keycloak__Realm",
-        "Keycloak__ClientId",
-        "Keycloak__ClientSecret",
-        "Keycloak__LogoutRedirectUri"
-    )
-
-    foreach ($marker in $requiredKeycloakAppHostMarkers) {
-        if (-not $content.Contains($marker)) {
-            Add-Violation "$relativePath does not map AppHost Keycloak user secret marker $marker"
-        }
+    if ($content.IndexOf('"ClientSecret"', [StringComparison]::OrdinalIgnoreCase) -ge 0) {
+        Add-Violation "$relativePath contains committed Keycloak ClientSecret configuration"
     }
 }
 

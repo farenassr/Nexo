@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Nexo.Server.Modules.Shared.Auth;
+using System.Text.Json;
 using TUnit.Assertions;
 using TUnit.Core;
 
@@ -42,6 +43,22 @@ public sealed class KeycloakAuthenticationOptionsTests
         await Assert.That(options.PushedAuthorizationBehavior).IsEqualTo(PushedAuthorizationBehavior.Disable);
     }
 
+    [Test]
+    public async Task AppSettings_StoresNonSecretKeycloakValuesAndOmitsClientCredentials()
+    {
+        var appSettingsPath = Path.Combine(FindRepositoryRoot(), "Nexo.Server", "appsettings.json");
+        using var document = JsonDocument.Parse(File.ReadAllText(appSettingsPath));
+        var keycloak = document.RootElement.GetProperty("Keycloak");
+
+        await Assert.That(keycloak.GetProperty("Authority").GetString())
+            .IsEqualTo("https://ceo-agent-keycloak.icybush-34e28ac8.westus2.azurecontainerapps.io/realms/ceo-agent");
+        await Assert.That(keycloak.GetProperty("Realm").GetString()).IsEqualTo("ceo-agent");
+        await Assert.That(keycloak.GetProperty("CallbackPath").GetString()).IsEqualTo("/auth/callback");
+        await Assert.That(keycloak.GetProperty("LogoutRedirectUri").GetString()).IsEqualTo("http://localhost:5173/login");
+        await Assert.That(keycloak.TryGetProperty("ClientId", out _)).IsFalse();
+        await Assert.That(keycloak.TryGetProperty("ClientSecret", out _)).IsFalse();
+    }
+
     private static IConfiguration CreateConfiguration(Dictionary<string, string?>? overrides = null)
     {
         var values = new Dictionary<string, string?>
@@ -68,5 +85,17 @@ public sealed class KeycloakAuthenticationOptionsTests
         return new ConfigurationBuilder()
             .AddInMemoryCollection(values)
             .Build();
+    }
+
+    private static string FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Nexo.slnx")))
+        {
+            directory = directory.Parent;
+        }
+
+        return directory?.FullName
+               ?? throw new InvalidOperationException("Could not locate repository root.");
     }
 }
