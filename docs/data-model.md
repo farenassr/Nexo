@@ -13,7 +13,7 @@ filters for the current organization.
 | --- | --- | --- | --- |
 | Core | `core` | Implemented | `branches` |
 | Restaurant | `restaurant` | Implemented | `floors`, `areas`, `tables`, `opening_hours`, `special_days`, `customers`, `reservations`, `reservation_tables`, `reservation_status_history`, `table_blocks`, `floor_plans`, `area_layouts`, `table_layouts`, `table_seat_layouts` |
-| Shared auth | none | Implemented without local auth tables | Keycloak BFF routes, protected session cookie, CSRF middleware, token refresh |
+| Shared auth | none | Implemented without local auth tables | Keycloak BFF routes, protected session cookie, CSRF middleware, token refresh, minimal `/auth/me` session contract |
 | IAM | `iam` | Planned | Users, memberships, roles, permissions |
 | Calendar | `calendar` | Planned | Events, availability, blocks |
 | Integrations | `integrations` | Planned | Providers, organization integrations, webhooks, sync jobs |

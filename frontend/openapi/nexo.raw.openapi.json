@@ -1113,21 +1113,6 @@
   },
   "components": {
     "schemas": {
-      "AuthClaimResponse": {
-        "required": [
-          "type",
-          "value"
-        ],
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string"
-          },
-          "value": {
-            "type": "string"
-          }
-        }
-      },
       "AuthSessionResponse": {
         "required": [
           "isAuthenticated",
@@ -1135,8 +1120,7 @@
           "name",
           "email",
           "organizationId",
-          "roles",
-          "claims"
+          "roles"
         ],
         "type": "object",
         "properties": {
@@ -1171,12 +1155,6 @@
             "type": "array",
             "items": {
               "type": "string"
-            }
-          },
-          "claims": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AuthClaimResponse"
             }
           }
         }

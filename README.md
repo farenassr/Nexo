@@ -36,13 +36,14 @@ frontend (React + Vite + TypeScript)
        serves the Keycloak BFF auth routes, resolves organization context, validates
        development module/permission gates, then executes vertical-slice
        features
-  -> PostgreSQL + Redis + external Keycloak + external integrations
+  -> PostgreSQL + external Keycloak + external integrations
 ```
 
 Main projects:
 
-- `Nexo.AppHost`: local Aspire orchestration for PostgreSQL, Redis, API, and
-  frontend. Keycloak is not orchestrated locally; AppHost forwards external
+- `Nexo.AppHost`: local Aspire orchestration for PostgreSQL, API, and
+  frontend. Redis-backed caching is deferred until a domain cache strategy is
+  approved. Keycloak is not orchestrated locally; AppHost forwards external
   Keycloak configuration into `Nexo.Server`.
 - `Nexo.Server`: FastEndpoints API, EF Core persistence, module registration,
   Keycloak BFF authentication, and vertical slices under `Modules/<Module>/`.
@@ -58,7 +59,7 @@ Orchestration:  .NET Aspire
 Frontend:       React, Vite, TypeScript, Tailwind CSS, TanStack Router,
                 TanStack Query
 Database:       PostgreSQL
-Cache:          Redis
+Cache:          Deferred; Redis is not currently published
 Identity:       External Keycloak through server-side BFF cookies
 Testing:        TUnit, Shouldly, NSubstitute, Verify, Testcontainers,
                 Aspire Testing
@@ -111,6 +112,10 @@ Implemented routes are grouped around:
 In non-development environments, `/v1/restaurant/context` is filtered out of
 FastEndpoints registration.
 
+HTTP API errors use RFC 7807 Problem Details through the server-level
+`IExceptionHandler` pipeline. See `docs/api-errors.md` for the response shape
+and extension fields.
+
 ## Local Development
 
 Prefer the harness wrappers:
@@ -129,9 +134,9 @@ dotnet build Nexo.slnx --no-restore
 dotnet test Nexo.slnx --no-build
 ```
 
-Use `Nexo.AppHost` for the Aspire local runtime. It starts PostgreSQL, Redis,
+Use `Nexo.AppHost` for the Aspire local runtime. It starts PostgreSQL,
 `Nexo.Server`, and the Vite frontend, then publishes the frontend into the
-server container output.
+server container output. Redis is not published by AppHost for now.
 
 Keycloak is external to AppHost. Non-sensitive realm metadata lives in
 `Nexo.Server/appsettings.json`. Configure the public client id through
@@ -155,5 +160,6 @@ See `docs/AUTH/KEYCLOAK_BFF_AUTH.md` for auth setup and
 - `docs/data-model.md`: implemented database model and planned schemas.
 - `docs/database_schema.drawio`: implemented Core and Restaurant persistence
   diagram.
+- `docs/api-errors.md`: Problem Details error response contract.
 - `docs/AUTH/KEYCLOAK_BFF_AUTH.md`: Keycloak BFF flow and configuration.
 - `docs/persistence-query-extensions.md`: reusable EF Core query guidance.

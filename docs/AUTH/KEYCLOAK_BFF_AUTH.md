@@ -82,15 +82,18 @@ development organization id.
 
 - `GET /auth/login`: starts the Keycloak challenge.
 - `/auth/callback`: OIDC middleware callback path.
-- `GET /auth/me`: returns the current authenticated session, claims, roles,
-  and possible organization id.
+- `GET /auth/me`: returns the current authenticated session, user id, display
+  fields, roles, and possible organization id. It does not expose raw identity
+  provider claims to React.
 - `POST /auth/refresh`: refreshes server-side tokens using the protected
   refresh token.
 - `POST /auth/logout`: clears the local session. Use `?federated=true` when
   the caller wants a Keycloak logout URL in the response.
 
 Mutable requests require the `X-CSRF-TOKEN` header to match the `nexo.csrf`
-cookie. The frontend BFF fetch helper adds this header automatically.
+cookie. The frontend BFF fetch helper adds this header automatically. Failed
+CSRF validation returns a Problem Details response with code
+`CsrfValidationFailed`.
 
 ## Scalar Authentication
 

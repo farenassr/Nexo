@@ -486,18 +486,10 @@ public sealed class RestaurantAvailabilityAndReservationServiceTests
             .UseInMemoryDatabase($"nexo-restaurant-phase3-{Guid.NewGuid()}")
             .Options;
 
-        return new NexoDbContext(options, new FixedOrganizationContextProvider(resolvedOrganizationId));
+        return new NexoDbContext(options, new CurrentOrganizationAccessor { OrganizationId = resolvedOrganizationId });
     }
 
     private sealed record TestRestaurantFixture(Guid OrganizationId, Guid BranchId, Guid FloorId, Guid AreaId, Guid TableId);
-
-    private sealed class FixedOrganizationContextProvider(Guid organizationId) : IOrganizationContextProvider
-    {
-        public ValueTask<OrganizationContext> GetCurrentAsync(CancellationToken cancellationToken = default)
-        {
-            return ValueTask.FromResult(new OrganizationContext(organizationId));
-        }
-    }
 
     private sealed class FixedTimeProvider(DateTimeOffset utcNow) : TimeProvider
     {

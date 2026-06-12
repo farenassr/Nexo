@@ -100,12 +100,22 @@ public sealed class RestaurantModelTests
             .UseInMemoryDatabase($"nexo-restaurant-model-{Guid.NewGuid()}")
             .Options;
 
-        await using var dbContext = new NexoDbContext(options, new ThrowingOrganizationContextProvider());
+        await using var dbContext = new NexoDbContext(options, new CurrentOrganizationAccessor());
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => Task.FromResult(dbContext.CurrentOrganizationId));
 
         await Assert.That(exception!.Message).Contains("No organization context was available.");
+    }
+
+    [Test]
+    public async Task NexoDbContext_DoesNotBlockOnAsyncOrganizationContextProvider()
+    {
+        var repoRoot = FindRepositoryRoot();
+        var dbContextSource = await File.ReadAllTextAsync(Path.Combine(repoRoot, "Nexo.Server", "Data", "NexoDbContext.cs"));
+
+        await Assert.That(dbContextSource).DoesNotContain(".GetAwaiter()");
+        await Assert.That(dbContextSource).DoesNotContain(".GetResult()");
     }
 
     private static async Task AssertTable(
@@ -135,7 +145,7 @@ public sealed class RestaurantModelTests
             .UseNpgsql("Host=localhost;Database=nexo_model_tests;Username=nexo;Password=nexo")
             .Options;
 
-        return new NexoDbContext(options, new FixedOrganizationContextProvider(organizationId));
+        return new NexoDbContext(options, new CurrentOrganizationAccessor { OrganizationId = organizationId });
     }
 
     private static NexoDbContext CreateInMemoryContext(Guid organizationId)
@@ -144,22 +154,23 @@ public sealed class RestaurantModelTests
             .UseInMemoryDatabase($"nexo-restaurant-model-{Guid.NewGuid()}")
             .Options;
 
-        return new NexoDbContext(options, new FixedOrganizationContextProvider(organizationId));
+        return new NexoDbContext(options, new CurrentOrganizationAccessor { OrganizationId = organizationId });
     }
 
-    private sealed class FixedOrganizationContextProvider(Guid organizationId) : IOrganizationContextProvider
+    private static string FindRepositoryRoot()
     {
-        public ValueTask<OrganizationContext> GetCurrentAsync(CancellationToken cancellationToken = default)
-        {
-            return ValueTask.FromResult(new OrganizationContext(organizationId));
-        }
-    }
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
 
-    private sealed class ThrowingOrganizationContextProvider : IOrganizationContextProvider
-    {
-        public ValueTask<OrganizationContext> GetCurrentAsync(CancellationToken cancellationToken = default)
+        while (directory is not null)
         {
-            throw new InvalidOperationException("No organization context was available.");
+            if (File.Exists(Path.Combine(directory.FullName, "Nexo.slnx")))
+            {
+                return directory.FullName;
+            }
+
+            directory = directory.Parent;
         }
+
+        throw new DirectoryNotFoundException("Could not locate Nexo.slnx from the test output directory.");
     }
 }

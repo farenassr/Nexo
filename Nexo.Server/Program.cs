@@ -1,8 +1,10 @@
 using FastEndpoints;
 using Azure.Identity;
 using Microsoft.AspNetCore.HttpOverrides;
+using Nexo.Server.Errors;
 using Nexo.Server.Modules;
 using Nexo.Server.OpenApi;
+using Nexo.Server.Modules.Core.OrganizationContext;
 using Nexo.Server.Modules.Shared.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,11 +17,11 @@ if (!builder.Environment.IsDevelopment() && !string.IsNullOrWhiteSpace(keyVaultU
 
 // Add service defaults & Aspire client integrations.
 builder.AddServiceDefaults();
-builder.AddRedisClientBuilder("cache")
-    .WithOutputCache();
+// Redis-backed output caching is intentionally disabled until Nexo has a
+// domain cache strategy and Redis is approved for publication again.
 
 // Add services to the container.
-builder.Services.AddProblemDetails();
+builder.Services.AddNexoProblemDetails();
 builder.Services.AddFastEndpoints();
 builder.Services.AddKeycloakAuthentication(builder.Configuration);
 builder.Services.AddKeycloakAuthorization();
@@ -35,6 +37,7 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseExceptionHandler();
+app.UseStatusCodePages();
 app.Use(async (context, next) =>
 {
     try
@@ -61,8 +64,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseOutputCache();
 app.UseAuthentication();
+app.UseNexoOrganizationContext();
 app.UseNexoCsrfProtection();
 app.UseAuthorization();
 app.UseFastEndpoints(config =>

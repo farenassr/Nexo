@@ -1,4 +1,3 @@
-export type { AuthClaimResponse } from "./AuthClaimResponse.ts";
 export type { AuthSessionResponse } from "./AuthSessionResponse.ts";
 export type { CancelRestaurantReservationEndpointRequest } from "./CancelRestaurantReservationEndpointRequest.ts";
 export type { CreateRestaurantAreaRequest } from "./CreateRestaurantAreaRequest.ts";

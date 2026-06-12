@@ -11,7 +11,6 @@ describe('authSessionStore', () => {
       email: 'ada@example.com',
       organizationId: 'organization-1',
       roles: ['admin'],
-      claims: [],
     };
     const store = createAuthSessionStore({
       getCurrentSession: vi.fn().mockResolvedValue(session),

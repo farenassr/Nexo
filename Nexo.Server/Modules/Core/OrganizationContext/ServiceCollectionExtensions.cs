@@ -7,6 +7,7 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration)
     {
         services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentOrganizationAccessor, CurrentOrganizationAccessor>();
         services.AddScoped<AuthenticatedOrganizationContextProvider>();
         services.AddScoped<IOrganizationContextProvider>(provider =>
             provider.GetRequiredService<AuthenticatedOrganizationContextProvider>());

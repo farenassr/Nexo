@@ -5,8 +5,7 @@
     "name",
     "email",
     "organizationId",
-    "roles",
-    "claims"
+    "roles"
   ],
   "type": "object",
   "properties": {
@@ -15,19 +14,7 @@
     "name": { "type": ["null", "string"] },
     "email": { "type": ["null", "string"] },
     "organizationId": { "type": ["null", "string"] },
-    "roles": { "type": "array", "items": { "type": "string" } },
-    "claims": {
-      "type": "array",
-      "items": {
-        "required": ["type", "value"],
-        "type": "object",
-        "properties": {
-          "type": { "type": "string" },
-          "value": { "type": "string" }
-        },
-        "x-readme-ref-name": "AuthClaimResponse"
-      }
-    }
+    "roles": { "type": "array", "items": { "type": "string" } }
   },
   "x-readme-ref-name": "AuthSessionResponse"
 }

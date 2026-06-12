@@ -7,7 +7,7 @@ describe('authApi', () => {
   });
 
   it('loads the current user using only backend cookies', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ isAuthenticated: true, claims: [], roles: [] }));
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ isAuthenticated: true, roles: [] }));
     vi.stubGlobal('fetch', fetchMock);
 
     await getCurrentSession();

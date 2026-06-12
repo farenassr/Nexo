@@ -100,6 +100,6 @@ public sealed class AuthenticatedOrganizationContextProviderTests
             };
         }
 
-        return new AuthenticatedOrganizationContextProvider(httpContextAccessor);
+        return new AuthenticatedOrganizationContextProvider(httpContextAccessor, new CurrentOrganizationAccessor());
     }
 }

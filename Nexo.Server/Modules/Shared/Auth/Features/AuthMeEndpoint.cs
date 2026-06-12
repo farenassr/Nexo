@@ -27,12 +27,6 @@ public sealed class AuthMeEndpoint : EndpointWithoutRequest<AuthSessionResponse>
 
     public static AuthSessionResponse BuildResponse(ClaimsPrincipal user)
     {
-        var claims = user.Claims
-            .Select(claim => new AuthClaimResponse(claim.Type, claim.Value))
-            .OrderBy(claim => claim.Type, StringComparer.Ordinal)
-            .ThenBy(claim => claim.Value, StringComparer.Ordinal)
-            .ToArray();
-
         var roles = user.Claims
             .Where(claim => claim.Type is ClaimTypes.Role or "role" or "roles")
             .Select(claim => claim.Value)
@@ -48,7 +42,6 @@ public sealed class AuthMeEndpoint : EndpointWithoutRequest<AuthSessionResponse>
             KeycloakOrganizationClaimParser.TryGetOrganizationId(user, out var organizationId)
                 ? organizationId.ToString()
                 : null,
-            roles,
-            claims);
+            roles);
     }
 }
