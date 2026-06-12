@@ -9,11 +9,11 @@ namespace Nexo.Server.Data;
 
 public sealed class NexoDbContext(
     DbContextOptions<NexoDbContext> options,
-    IOrganizationContextProvider organizationContextProvider) : DbContext(options)
+    ICurrentOrganizationAccessor currentOrganizationAccessor) : DbContext(options)
 {
-    private readonly IOrganizationContextProvider organizationContextProvider = organizationContextProvider;
+    private readonly ICurrentOrganizationAccessor currentOrganizationAccessor = currentOrganizationAccessor;
 
-    public Guid CurrentOrganizationId => ResolveOrganizationId(organizationContextProvider);
+    public Guid CurrentOrganizationId => currentOrganizationAccessor.GetRequiredOrganizationId();
 
     public DbSet<CoreBranch> CoreBranches => Set<CoreBranch>();
     public DbSet<RestaurantFloor> RestaurantFloors => Set<RestaurantFloor>();
@@ -66,14 +66,4 @@ public sealed class NexoDbContext(
         modelBuilder.Entity<RestaurantTableSeatLayout>().HasQueryFilter(entity => entity.OrganizationId == CurrentOrganizationId);
     }
 
-    private static Guid ResolveOrganizationId(IOrganizationContextProvider organizationContextProvider)
-    {
-        return organizationContextProvider
-            .GetCurrentAsync()
-            .AsTask()
-            .ConfigureAwait(false)
-            .GetAwaiter()
-            .GetResult()
-            .OrganizationId;
-    }
 }

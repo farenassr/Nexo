@@ -106,6 +106,7 @@ public sealed class DevelopmentDatabaseInitializer(
     private static bool IsMissingOrganizationContext(InvalidOperationException exception)
     {
         return exception.Message.Contains("valid organization id", StringComparison.Ordinal)
-            || exception.Message.Contains("authenticated session", StringComparison.Ordinal);
+            || exception.Message.Contains("authenticated session", StringComparison.Ordinal)
+            || exception.Message.Contains("No organization context was available", StringComparison.Ordinal);
     }
 }

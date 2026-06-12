@@ -3,14 +3,10 @@ import {
   nexoServerModulesSharedAuthFeaturesLogoutEndpoint,
   nexoServerModulesSharedAuthFeaturesRefreshEndpoint,
 } from "../../../lib/api/generated/clients";
-import type {
-  AuthClaimResponse,
-  AuthSessionResponse,
-} from "../../../lib/api/generated/types";
+import type { AuthSessionResponse } from "../../../lib/api/generated/types";
 import { getApiBaseUrl } from "../../../lib/api/bffFetch";
 import { ApiClientError } from "../../../lib/api/generatedClient";
 
-export type AuthClaim = AuthClaimResponse;
 export type AuthSession = AuthSessionResponse;
 
 export const anonymousSession: AuthSession = {
@@ -20,7 +16,6 @@ export const anonymousSession: AuthSession = {
   email: null,
   organizationId: null,
   roles: [],
-  claims: [],
 };
 
 export async function getCurrentSession(): Promise<AuthSession> {

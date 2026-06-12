@@ -3,8 +3,6 @@
  * Do not edit manually.
  */
 
-import type { AuthClaimResponse } from "./AuthClaimResponse.ts";
-
 export interface AuthSessionResponse {
   /**
    * @type boolean
@@ -30,8 +28,4 @@ export interface AuthSessionResponse {
    * @type array
    */
   roles: string[];
-  /**
-   * @type array
-   */
-  claims: AuthClaimResponse[];
 }

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nexo.Server.Modules.Shared.Auth;
 using Nexo.Server.Modules.Shared.Auth.Features;
+using Nexo.Shared.Auth;
 using TUnit.Assertions;
 using TUnit.Core;
 
@@ -62,6 +63,39 @@ public sealed class LoginEndpointTests
 
         await Assert.That(endpoint).Contains("AllowAnonymous();");
         await Assert.That(endpoint).Contains("Send.UnauthorizedAsync");
+    }
+
+    [Test]
+    public async Task AuthMe_ResponseDoesNotExposeRawIdentityProviderClaims()
+    {
+        var user = new ClaimsPrincipal(new ClaimsIdentity(
+            [
+                new Claim("sub", "user-1"),
+                new Claim("preferred_username", "ada"),
+                new Claim("email", "ada@example.com"),
+                new Claim("groups", "internal-provider-group"),
+                new Claim(
+                    "organization",
+                    """
+                    {
+                      "la-terraza-org": {
+                        "id": "b36cfb51-83bd-4376-b7d7-0502141ff6ae"
+                      }
+                    }
+                    """),
+                new Claim("roles", "restaurant-admin")
+            ],
+            "test"));
+
+        var response = AuthMeEndpoint.BuildResponse(user);
+
+        await Assert.That(response.IsAuthenticated).IsTrue();
+        await Assert.That(response.UserId).IsEqualTo("user-1");
+        await Assert.That(response.Name).IsEqualTo("ada");
+        await Assert.That(response.Email).IsEqualTo("ada@example.com");
+        await Assert.That(response.OrganizationId).IsEqualTo("b36cfb51-83bd-4376-b7d7-0502141ff6ae");
+        await Assert.That(response.Roles).IsEquivalentTo(["restaurant-admin"]);
+        await Assert.That(typeof(AuthSessionResponse).GetProperty("Claims")).IsNull();
     }
 
     private static async Task<WebApplication> BuildLoginTestAppAsync(bool useForwardedHeaders)

@@ -18,6 +18,7 @@ public sealed class DevelopmentDatabaseInitializerTests
     {
         var services = new ServiceCollection();
         services.AddDbContext<NexoDbContext>();
+        services.AddScoped<ICurrentOrganizationAccessor, CurrentOrganizationAccessor>();
         services.AddSingleton<IOrganizationContextProvider>(new FixedOrganizationContextProvider());
 
         await using var serviceProvider = services.BuildServiceProvider();
@@ -35,6 +36,7 @@ public sealed class DevelopmentDatabaseInitializerTests
         var services = new ServiceCollection();
         services.AddDbContext<NexoDbContext>(options =>
             options.UseInMemoryDatabase($"nexo-development-init-{Guid.NewGuid()}"));
+        services.AddScoped<ICurrentOrganizationAccessor, CurrentOrganizationAccessor>();
         services.AddSingleton<IOrganizationContextProvider>(new MissingOrganizationContextProvider());
         services.AddSingleton(TimeProvider.System);
         services.AddScoped<RestaurantSetupService>();
@@ -54,6 +56,7 @@ public sealed class DevelopmentDatabaseInitializerTests
         var services = new ServiceCollection();
         services.AddDbContext<NexoDbContext>(options =>
             options.UseInMemoryDatabase($"nexo-development-init-{Guid.NewGuid()}"));
+        services.AddScoped<ICurrentOrganizationAccessor, CurrentOrganizationAccessor>();
         var organizationContextProvider = new OptionalMissingOrganizationContextProvider();
         services.AddSingleton<IOrganizationContextProvider>(organizationContextProvider);
         services.AddSingleton<IOptionalOrganizationContextProvider>(organizationContextProvider);

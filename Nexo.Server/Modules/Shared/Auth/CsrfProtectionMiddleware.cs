@@ -1,11 +1,12 @@
 using System.Security.Cryptography;
 using System.Text;
+using Nexo.Server.Errors;
 
 namespace Nexo.Server.Modules.Shared.Auth;
 
 public sealed class CsrfProtectionMiddleware(RequestDelegate next)
 {
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context, IProblemDetailsService problemDetailsService)
     {
         if (RequiresCsrfValidation(context))
         {
@@ -15,10 +16,17 @@ public sealed class CsrfProtectionMiddleware(RequestDelegate next)
             if (!ConstantTimeEquals(cookieToken, headerToken))
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsJsonAsync(new
+                await problemDetailsService.WriteAsync(new ProblemDetailsContext
                 {
-                    code = "CsrfValidationFailed",
-                    message = "A valid CSRF token header is required for this request."
+                    HttpContext = context,
+                    ProblemDetails = NexoProblemDetails.Create(
+                        StatusCodes.Status400BadRequest,
+                        "CsrfValidationFailed",
+                        "CSRF validation failed.",
+                        "A valid CSRF token header is required for this request.",
+                        module: "auth",
+                        feature: "csrf",
+                        reason: "MissingOrInvalidToken")
                 });
                 return;
             }

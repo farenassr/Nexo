@@ -6,7 +6,4 @@ public sealed record AuthSessionResponse(
     string? Name,
     string? Email,
     string? OrganizationId,
-    IReadOnlyCollection<string> Roles,
-    IReadOnlyCollection<AuthClaimResponse> Claims);
-
-public sealed record AuthClaimResponse(string Type, string Value);
+    IReadOnlyCollection<string> Roles);

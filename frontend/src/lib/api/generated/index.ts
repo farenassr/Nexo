@@ -36,7 +36,6 @@ export type { NexoServerModulesSharedAuthFeaturesAuthMeEndpointQueryKey } from "
 export type { NexoServerModulesSharedAuthFeaturesLoginEndpointQueryKey } from "./hooks/useNexoServerModulesSharedAuthFeaturesLoginEndpoint.ts";
 export type { NexoServerModulesSharedAuthFeaturesLogoutEndpointMutationKey } from "./hooks/useNexoServerModulesSharedAuthFeaturesLogoutEndpoint.ts";
 export type { NexoServerModulesSharedAuthFeaturesRefreshEndpointMutationKey } from "./hooks/useNexoServerModulesSharedAuthFeaturesRefreshEndpoint.ts";
-export type { AuthClaimResponse } from "./types/AuthClaimResponse.ts";
 export type { AuthSessionResponse } from "./types/AuthSessionResponse.ts";
 export type { CancelRestaurantReservationEndpointRequest } from "./types/CancelRestaurantReservationEndpointRequest.ts";
 export type { CreateRestaurantAreaRequest } from "./types/CreateRestaurantAreaRequest.ts";

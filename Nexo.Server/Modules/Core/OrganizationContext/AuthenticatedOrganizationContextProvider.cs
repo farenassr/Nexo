@@ -3,7 +3,8 @@ using Nexo.Server.Modules.Shared.Auth;
 namespace Nexo.Server.Modules.Core.OrganizationContext;
 
 public sealed class AuthenticatedOrganizationContextProvider(
-    IHttpContextAccessor httpContextAccessor) :
+    IHttpContextAccessor httpContextAccessor,
+    ICurrentOrganizationAccessor currentOrganizationAccessor) :
     IOrganizationContextProvider,
     IOptionalOrganizationContextProvider
 {
@@ -32,8 +33,13 @@ public sealed class AuthenticatedOrganizationContextProvider(
             return ValueTask.FromResult<OrganizationContext?>(null);
         }
 
-        return KeycloakOrganizationClaimParser.TryGetOrganizationId(user, out var organizationId)
-            ? ValueTask.FromResult<OrganizationContext?>(new OrganizationContext(organizationId))
-            : ValueTask.FromResult<OrganizationContext?>(null);
+        if (!KeycloakOrganizationClaimParser.TryGetOrganizationId(user, out var organizationId))
+        {
+            currentOrganizationAccessor.OrganizationId = null;
+            return ValueTask.FromResult<OrganizationContext?>(null);
+        }
+
+        currentOrganizationAccessor.OrganizationId = organizationId;
+        return ValueTask.FromResult<OrganizationContext?>(new OrganizationContext(organizationId));
     }
 }

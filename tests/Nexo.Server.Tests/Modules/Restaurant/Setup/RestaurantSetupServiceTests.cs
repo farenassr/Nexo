@@ -315,15 +315,7 @@ public sealed class RestaurantSetupServiceTests
             .UseInMemoryDatabase($"nexo-restaurant-setup-{Guid.NewGuid()}")
             .Options;
 
-        return new NexoDbContext(options, new FixedOrganizationContextProvider(OrganizationId));
-    }
-
-    private sealed class FixedOrganizationContextProvider(Guid organizationId) : IOrganizationContextProvider
-    {
-        public ValueTask<OrganizationContext> GetCurrentAsync(CancellationToken cancellationToken = default)
-        {
-            return ValueTask.FromResult(new OrganizationContext(organizationId));
-        }
+        return new NexoDbContext(options, new CurrentOrganizationAccessor { OrganizationId = OrganizationId });
     }
 
     private sealed class FixedTimeProvider(DateTimeOffset utcNow) : TimeProvider
