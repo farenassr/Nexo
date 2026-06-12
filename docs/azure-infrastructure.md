@@ -10,23 +10,23 @@ module.
 - Aspire resource references and `.WithReference(...)` supply local runtime
   connection strings.
 - Local user-secrets or Aspire parameters may hold development-only values such
-  as design-time EF credentials or Keycloak test configuration.
-- Keycloak is currently external to AppHost. Configure local Keycloak values as
-  Aspire parameters or `Nexo.AppHost` user-secrets with `KEYCLOAK_ISSUER`,
-  `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID`, `KEYCLOAK_CLIENT_SECRET`, and
-  `KEYCLOAK_REDIRECT_URI`. Add a local identity resource only with an explicit
-  runtime decision and matching bootstrap docs.
+  as design-time EF credentials or Keycloak client ids.
+- Keycloak is currently external to AppHost. Store non-sensitive realm metadata
+  in `Nexo.Server/appsettings.json`, local `Keycloak:ClientId` in
+  `Nexo.Server` user-secrets or an equivalent configuration source. Add a local
+  identity resource only with an explicit runtime decision and matching
+  bootstrap docs.
 - Agents must not run `dotnet ef database update`.
 
 ## Shared Or Deployed Environments
 
-- Store provider credentials, webhook secrets, Keycloak client secrets, and API
-  keys in a managed secret store once the deployment target is selected.
+- Store provider credentials, webhook secrets, confidential Keycloak client
+  secrets if introduced, and API keys in a managed secret store once the
+  deployment target is selected.
 - Database rows store credential references such as `kv://...`, never raw
   secret values.
 - Do not move local PostgreSQL or Redis connection strings into a secret store
-  when Aspire already supplies them. Keycloak secrets remain in user-secrets,
-  Aspire parameters, environment variables, or deployed secret stores.
+  when Aspire already supplies them.
 - For deployed environments, prefer the hosting platform's service bindings or
   managed identity patterns where available.
 

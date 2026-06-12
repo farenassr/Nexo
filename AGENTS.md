@@ -181,8 +181,10 @@ src/
 - Put provider-specific runtime code in `Integrations/<ProviderName>/`.
 - Provider-neutral request/result models stay near the port.
 - Aspire `.WithReference(...)` supplies local runtime connection strings for
-  PostgreSQL and Redis. Keep Keycloak values in AppHost user-secrets, Aspire
-  parameters, environment variables, or deployed secret stores.
+  PostgreSQL and Redis. Keep non-sensitive Keycloak realm metadata in
+  `Nexo.Server/appsettings.json`; keep `Keycloak:ClientId` in
+  `Nexo.Server` user-secrets or an equivalent environment-specific
+  configuration source.
 
 ## Database And Migrations
 

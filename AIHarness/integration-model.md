@@ -49,9 +49,9 @@ on a specific API.
 - Local development uses Aspire parameters or user-secrets for credentials not
   supplied by Aspire resource references.
 - Do not move local PostgreSQL or Redis connection strings into a secret store
-  when Aspire already supplies them. Keep Keycloak values in AppHost
-  user-secrets, Aspire parameters, environment variables, or deployed secret
-  stores.
+  when Aspire already supplies them. Keep non-sensitive Keycloak realm metadata
+  in appsettings and `Keycloak:ClientId` in `Nexo.Server` user-secrets or an
+  equivalent environment-specific configuration source.
 
 ## Contract Test Checklist
 

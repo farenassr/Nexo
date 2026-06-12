@@ -10,11 +10,16 @@ public sealed class ScalarConfigurationTests
     {
         var repoRoot = FindRepositoryRoot();
         var program = await File.ReadAllTextAsync(Path.Combine(repoRoot, "Nexo.Server", "Program.cs"));
+        var scalarExtensions = await File.ReadAllTextAsync(
+            Path.Combine(repoRoot, "Nexo.Server", "OpenApi", "ScalarEndpointRouteBuilderExtensions.cs"));
         var project = await File.ReadAllTextAsync(Path.Combine(repoRoot, "Nexo.Server", "Nexo.Server.csproj"));
 
         await Assert.That(project).Contains("Scalar.AspNetCore");
-        await Assert.That(program).Contains("using Scalar.AspNetCore;");
-        await Assert.That(program).Contains("app.MapScalarApiReference();");
+        await Assert.That(program).Contains("app.MapNexoScalarApiReference();");
+        await Assert.That(scalarExtensions).Contains("using Scalar.AspNetCore;");
+        await Assert.That(scalarExtensions).Contains("MapScalarApiReference");
+        await Assert.That(scalarExtensions).Contains("AddPreferredSecuritySchemes");
+        await Assert.That(scalarExtensions).Contains("AddAuthorizationCodeFlow");
     }
 
     [Test]

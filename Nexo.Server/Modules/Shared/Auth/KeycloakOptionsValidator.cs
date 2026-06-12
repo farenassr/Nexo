@@ -37,11 +37,6 @@ public sealed class KeycloakOptionsValidator : IValidateOptions<KeycloakOptions>
             failures.Add("Keycloak:ClientId is required.");
         }
 
-        if (string.IsNullOrWhiteSpace(options.ClientSecret))
-        {
-            failures.Add("Keycloak:ClientSecret is required.");
-        }
-
         if (string.IsNullOrWhiteSpace(options.CallbackPath) || !options.CallbackPath.StartsWith('/'))
         {
             failures.Add("Keycloak:CallbackPath must be an absolute application path.");

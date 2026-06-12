@@ -8,23 +8,21 @@ namespace Nexo.Server.Tests.Modules.Shared.Auth;
 public sealed class KeycloakOptionsValidatorTests
 {
     [Test]
-    public async Task Validate_RejectsMissingClientSecret()
+    public async Task Validate_AcceptsPublicClientConfigurationWithoutClientSecret()
     {
         var options = new KeycloakOptions
         {
             Authority = "https://identity.example.test/realms/nexo",
             Realm = "nexo",
             ClientId = "nexo-web-bff",
-            ClientSecret = "",
             CallbackPath = "/auth/callback",
             LogoutRedirectUri = "https://app.example.test/login",
-            Scopes = ["openid", "profile", "email"]
+            Scopes = ["openid", "profile", "email", "organization"]
         };
 
         var result = new KeycloakOptionsValidator().Validate(Options.DefaultName, options);
 
-        await Assert.That(result.Failed).IsTrue();
-        await Assert.That(result.Failures).Contains("Keycloak:ClientSecret is required.");
+        await Assert.That(result.Succeeded).IsTrue();
     }
 
     [Test]
