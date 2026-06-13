@@ -11,7 +11,12 @@ public sealed class UpdateRestaurantFloorEndpoint(
     public override void Configure()
     {
         Put("/v1/restaurant/setup/floors/{FloorId}");
-        Summary(summary => summary.Summary = "Updates a restaurant floor.");
+        Description(description => description.WithTags("⚙️ Restaurant Setup"));
+        Summary(summary =>
+        {
+            summary.Summary = "Update Restaurant Floor";
+            summary.Description = "Updates a restaurant floor name or display order in setup.";
+        });
     }
 
     public override async Task HandleAsync(UpdateRestaurantFloorRequest request, CancellationToken cancellationToken)

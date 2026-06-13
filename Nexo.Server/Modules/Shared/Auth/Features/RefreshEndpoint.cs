@@ -8,7 +8,12 @@ public sealed class RefreshEndpoint(IKeycloakTokenRefreshService refreshService)
     public override void Configure()
     {
         Post("/auth/refresh");
-        Summary(summary => summary.Summary = "Refreshes the server-side BFF session tokens.");
+        Description(description => description.WithTags("🔐 Authentication"));
+        Summary(summary =>
+        {
+            summary.Summary = "Refresh Session Tokens";
+            summary.Description = "Refreshes the server-side Keycloak tokens stored in the BFF session cookie.";
+        });
     }
 
     public override async Task HandleAsync(CancellationToken cancellationToken)

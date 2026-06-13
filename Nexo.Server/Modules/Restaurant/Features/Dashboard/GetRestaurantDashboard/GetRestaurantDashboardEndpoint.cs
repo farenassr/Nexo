@@ -11,9 +11,10 @@ public sealed class GetRestaurantDashboardEndpoint(
     public override void Configure()
     {
         Get("/v1/restaurant/dashboard");
+        Description(description => description.WithTags("🍽️ Restaurant Reservations"));
         Summary(summary =>
         {
-            summary.Summary = "Gets restaurant dashboard metrics.";
+            summary.Summary = "Get Restaurant Dashboard";
             summary.Description = "Returns daily operational metrics, occupancy by hour, and upcoming reservations for a branch.";
         });
     }

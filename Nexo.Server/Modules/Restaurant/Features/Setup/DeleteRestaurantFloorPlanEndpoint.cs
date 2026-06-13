@@ -10,7 +10,12 @@ public sealed class DeleteRestaurantFloorPlanEndpoint(
     public override void Configure()
     {
         Delete("/v1/restaurant/setup/floor-plans/{FloorPlanId}");
-        Summary(summary => summary.Summary = "Deletes a restaurant floor plan.");
+        Description(description => description.WithTags("🪑 Restaurant Floor Plans"));
+        Summary(summary =>
+        {
+            summary.Summary = "Delete Restaurant Floor Plan";
+            summary.Description = "Deletes a restaurant floor plan when it is no longer needed for setup or operations.";
+        });
     }
 
     public override async Task HandleAsync(CancellationToken cancellationToken)

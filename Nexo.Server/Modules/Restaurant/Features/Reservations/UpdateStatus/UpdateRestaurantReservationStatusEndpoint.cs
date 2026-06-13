@@ -12,9 +12,10 @@ public sealed class UpdateRestaurantReservationStatusEndpoint(
     public override void Configure()
     {
         Put("/v1/restaurant/reservations/{ReservationId}/status");
+        Description(description => description.WithTags("🍽️ Restaurant Reservations"));
         Summary(summary =>
         {
-            summary.Summary = "Updates restaurant reservation status.";
+            summary.Summary = "Update Restaurant Reservation Status";
             summary.Description = "Applies a valid status transition and records status history.";
         });
     }

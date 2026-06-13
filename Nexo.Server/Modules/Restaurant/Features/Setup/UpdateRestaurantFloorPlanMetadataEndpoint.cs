@@ -11,7 +11,12 @@ public sealed class UpdateRestaurantFloorPlanMetadataEndpoint(
     public override void Configure()
     {
         Put("/v1/restaurant/setup/floor-plans/{FloorPlanId}/metadata");
-        Summary(summary => summary.Summary = "Updates restaurant floor plan metadata from setup.");
+        Description(description => description.WithTags("🪑 Restaurant Floor Plans"));
+        Summary(summary =>
+        {
+            summary.Summary = "Update Floor Plan Metadata";
+            summary.Description = "Updates floor plan setup metadata without replacing the layout editor canvas contents.";
+        });
     }
 
     public override async Task HandleAsync(UpdateRestaurantFloorPlanMetadataRequest request, CancellationToken cancellationToken)

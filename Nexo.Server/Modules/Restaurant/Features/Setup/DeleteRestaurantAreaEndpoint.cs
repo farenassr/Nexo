@@ -10,7 +10,12 @@ public sealed class DeleteRestaurantAreaEndpoint(
     public override void Configure()
     {
         Delete("/v1/restaurant/setup/areas/{AreaId}");
-        Summary(summary => summary.Summary = "Deletes a restaurant area.");
+        Description(description => description.WithTags("⚙️ Restaurant Setup"));
+        Summary(summary =>
+        {
+            summary.Summary = "Delete Restaurant Area";
+            summary.Description = "Deletes a restaurant area when no protected setup or reservation data blocks removal.";
+        });
     }
 
     public override async Task HandleAsync(CancellationToken cancellationToken)

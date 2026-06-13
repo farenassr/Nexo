@@ -46,14 +46,6 @@ public sealed class KeycloakOpenApiSecurityTransformerTests
             .IsEqualTo("https://ceo-agent-keycloak.example.test/realms/ceo-agent/protocol/openid-connect/token");
         await Assert.That(authorizationCode?.Scopes?.ContainsKey("organization")).IsTrue();
 
-        await Assert.That(document.Security?.Count).IsEqualTo(2);
-        await Assert.That(HasSecurityRequirement(document, "Bearer")).IsTrue();
-        await Assert.That(HasSecurityRequirement(document, "Keycloak")).IsTrue();
-    }
-
-    private static bool HasSecurityRequirement(OpenApiDocument document, string schemeName)
-    {
-        return document.Security?.Any(requirement =>
-            requirement.Keys.Any(reference => reference.Reference.Id == schemeName)) is true;
+        await Assert.That(document.Security?.Count ?? 0).IsEqualTo(0);
     }
 }

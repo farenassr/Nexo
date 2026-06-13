@@ -11,7 +11,12 @@ public sealed class UpdateRestaurantTableEndpoint(
     public override void Configure()
     {
         Put("/v1/restaurant/setup/tables/{TableId}");
-        Summary(summary => summary.Summary = "Updates a restaurant table.");
+        Description(description => description.WithTags("⚙️ Restaurant Setup"));
+        Summary(summary =>
+        {
+            summary.Summary = "Update Restaurant Table";
+            summary.Description = "Updates table setup details such as label, capacity, turn time, or shape.";
+        });
     }
 
     public override async Task HandleAsync(UpdateRestaurantTableRequest request, CancellationToken cancellationToken)

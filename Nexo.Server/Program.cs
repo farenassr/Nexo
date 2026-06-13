@@ -31,6 +31,7 @@ builder.Services.AddNexoModules(builder.Configuration);
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<KeycloakOpenApiSecurityTransformer>();
+    options.AddOperationTransformer<NexoOpenApiSecurityOperationTransformer>();
 });
 
 var app = builder.Build();

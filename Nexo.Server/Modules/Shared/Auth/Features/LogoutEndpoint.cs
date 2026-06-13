@@ -9,7 +9,12 @@ public sealed class LogoutEndpoint(IOptions<KeycloakOptions> options) : Endpoint
     public override void Configure()
     {
         Post("/auth/logout");
-        Summary(summary => summary.Summary = "Clears the local BFF session and returns an optional Keycloak logout URL.");
+        Description(description => description.WithTags("🔐 Authentication"));
+        Summary(summary =>
+        {
+            summary.Summary = "Sign Out";
+            summary.Description = "Clears the local BFF session and optionally returns a Keycloak federated logout URL.";
+        });
     }
 
     public override async Task HandleAsync(CancellationToken cancellationToken)

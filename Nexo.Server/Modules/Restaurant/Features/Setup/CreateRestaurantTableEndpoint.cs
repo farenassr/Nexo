@@ -11,7 +11,12 @@ public sealed class CreateRestaurantTableEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/setup/tables");
-        Summary(summary => summary.Summary = "Creates a restaurant table.");
+        Description(description => description.WithTags("⚙️ Restaurant Setup"));
+        Summary(summary =>
+        {
+            summary.Summary = "Create Restaurant Table";
+            summary.Description = "Creates a table with capacity and shape information for restaurant setup.";
+        });
     }
 
     public override async Task HandleAsync(CreateRestaurantTableRequest request, CancellationToken cancellationToken)

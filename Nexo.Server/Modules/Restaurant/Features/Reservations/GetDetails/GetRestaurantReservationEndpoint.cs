@@ -12,9 +12,10 @@ public sealed class GetRestaurantReservationEndpoint(
     public override void Configure()
     {
         Get("/v1/restaurant/reservations/{ReservationId}");
+        Description(description => description.WithTags("🍽️ Restaurant Reservations"));
         Summary(summary =>
         {
-            summary.Summary = "Gets restaurant reservation details.";
+            summary.Summary = "Get Restaurant Reservation";
             summary.Description = "Returns reservation details including customer, tables, and status history.";
         });
     }

@@ -10,7 +10,12 @@ public sealed class DeleteRestaurantTableEndpoint(
     public override void Configure()
     {
         Delete("/v1/restaurant/setup/tables/{TableId}");
-        Summary(summary => summary.Summary = "Deletes a restaurant table.");
+        Description(description => description.WithTags("⚙️ Restaurant Setup"));
+        Summary(summary =>
+        {
+            summary.Summary = "Delete Restaurant Table";
+            summary.Description = "Deletes a restaurant table when it is not required by active setup or reservation data.";
+        });
     }
 
     public override async Task HandleAsync(CancellationToken cancellationToken)

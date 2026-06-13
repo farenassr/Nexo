@@ -10,7 +10,12 @@ public sealed class DeleteRestaurantBranchEndpoint(
     public override void Configure()
     {
         Delete("/v1/restaurant/setup/branches/{BranchId}");
-        Summary(summary => summary.Summary = "Deletes a restaurant branch and its setup tree.");
+        Description(description => description.WithTags("🏢 Branches"));
+        Summary(summary =>
+        {
+            summary.Summary = "Delete Branch";
+            summary.Description = "Deletes a restaurant branch and its setup tree when no protected data blocks removal.";
+        });
     }
 
     public override async Task HandleAsync(CancellationToken cancellationToken)

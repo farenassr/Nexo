@@ -7,7 +7,17 @@ var server = builder.AddProject<Projects.Nexo_Server>("server")
     .WithReference(database)
     .WaitFor(database)
     .WithHttpHealthCheck("/health")
-    .WithExternalHttpEndpoints();
+    .WithExternalHttpEndpoints()
+    .WithUrlForEndpoint("http", url =>
+    {
+        url.Url = $"{url.Url.TrimEnd('/')}/scalar";
+        url.DisplayText = "Scalar API Reference";
+    })
+    .WithUrlForEndpoint("https", url =>
+    {
+        url.Url = $"{url.Url.TrimEnd('/')}/scalar";
+        url.DisplayText = "Scalar API Reference";
+    });
 
 var webfrontend = builder.AddViteApp("webfrontend", "../frontend")
     .WithReference(server)

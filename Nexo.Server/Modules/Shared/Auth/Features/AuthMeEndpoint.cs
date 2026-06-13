@@ -10,7 +10,12 @@ public sealed class AuthMeEndpoint : EndpointWithoutRequest<AuthSessionResponse>
     {
         Get("/auth/me");
         AllowAnonymous();
-        Summary(summary => summary.Summary = "Returns the current BFF cookie session.");
+        Description(description => description.WithTags("🔐 Authentication"));
+        Summary(summary =>
+        {
+            summary.Summary = "Get Authenticated User";
+            summary.Description = "Returns the current browser session for the BFF cookie and the normalized user identity used by the frontend.";
+        });
     }
 
     public override async Task HandleAsync(CancellationToken cancellationToken)

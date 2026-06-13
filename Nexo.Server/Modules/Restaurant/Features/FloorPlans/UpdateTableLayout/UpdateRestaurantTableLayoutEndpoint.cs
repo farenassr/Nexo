@@ -11,9 +11,10 @@ public sealed class UpdateRestaurantTableLayoutEndpoint(
     public override void Configure()
     {
         Put("/v1/restaurant/floor-plans/{FloorPlanId}/tables/{TableId}/layout");
+        Description(description => description.WithTags("🪑 Restaurant Floor Plans"));
         Summary(summary =>
         {
-            summary.Summary = "Updates a restaurant table layout.";
+            summary.Summary = "Update Table Layout";
             summary.Description = "Moves or upserts one table layout inside a floor plan.";
         });
     }

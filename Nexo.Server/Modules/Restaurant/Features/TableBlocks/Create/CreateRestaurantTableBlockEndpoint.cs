@@ -11,9 +11,10 @@ public sealed class CreateRestaurantTableBlockEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/table-blocks");
+        Description(description => description.WithTags("🍽️ Restaurant Reservations"));
         Summary(summary =>
         {
-            summary.Summary = "Creates a restaurant table block.";
+            summary.Summary = "Create Restaurant Table Block";
             summary.Description = "Creates a scoped operational block for a table, area, or floor.";
         });
     }

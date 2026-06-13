@@ -10,7 +10,12 @@ public sealed class DeleteRestaurantSpecialDayEndpoint(
     public override void Configure()
     {
         Delete("/v1/restaurant/setup/special-days/{SpecialDayId}");
-        Summary(summary => summary.Summary = "Deletes a restaurant holiday or special day.");
+        Description(description => description.WithTags("⚙️ Restaurant Setup"));
+        Summary(summary =>
+        {
+            summary.Summary = "Delete Special Day";
+            summary.Description = "Deletes a restaurant holiday or special day override from setup.";
+        });
     }
 
     public override async Task HandleAsync(CancellationToken cancellationToken)
