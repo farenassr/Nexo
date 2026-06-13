@@ -22,10 +22,6 @@ public sealed class KeycloakOpenApiSecurityTransformer(IOptions<KeycloakOptions>
         document.Components.SecuritySchemes[BearerSchemeName] = CreateBearerScheme();
         document.Components.SecuritySchemes[KeycloakSchemeName] = CreateKeycloakScheme();
 
-        document.Security ??= [];
-        AddSecurityRequirement(document, BearerSchemeName);
-        AddSecurityRequirement(document, KeycloakSchemeName, GetOAuthScopes().Keys);
-
         return Task.CompletedTask;
     }
 
@@ -79,20 +75,4 @@ public sealed class KeycloakOpenApiSecurityTransformer(IOptions<KeycloakOptions>
         };
     }
 
-    private static void AddSecurityRequirement(
-        OpenApiDocument document,
-        string schemeName,
-        IEnumerable<string>? scopes = null)
-    {
-        if (document.Security?.Any(requirement =>
-                requirement.Keys.Any(reference => reference.Reference.Id == schemeName)) is true)
-        {
-            return;
-        }
-
-        document.Security!.Add(new OpenApiSecurityRequirement
-        {
-            [new OpenApiSecuritySchemeReference(schemeName, document)] = scopes?.ToList() ?? []
-        });
-    }
 }

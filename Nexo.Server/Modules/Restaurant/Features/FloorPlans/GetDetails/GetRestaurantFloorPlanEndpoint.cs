@@ -11,9 +11,10 @@ public sealed class GetRestaurantFloorPlanEndpoint(
     public override void Configure()
     {
         Get("/v1/restaurant/floor-plans/{FloorPlanId}");
+        Description(description => description.WithTags("🪑 Restaurant Floor Plans"));
         Summary(summary =>
         {
-            summary.Summary = "Gets restaurant floor plan details.";
+            summary.Summary = "Get Restaurant Floor Plan";
             summary.Description = "Returns plan metadata plus area, table, and seat layouts.";
         });
     }

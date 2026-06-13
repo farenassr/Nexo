@@ -11,7 +11,12 @@ public sealed class UpsertRestaurantSpecialDayEndpoint(
     public override void Configure()
     {
         Put("/v1/restaurant/setup/special-days");
-        Summary(summary => summary.Summary = "Creates or updates a restaurant holiday or special day.");
+        Description(description => description.WithTags("⚙️ Restaurant Setup"));
+        Summary(summary =>
+        {
+            summary.Summary = "Save Special Day";
+            summary.Description = "Creates or updates a holiday or special day override for restaurant availability.";
+        });
     }
 
     public override async Task HandleAsync(UpsertRestaurantSpecialDayRequest request, CancellationToken cancellationToken)

@@ -11,7 +11,12 @@ public sealed class UpdateRestaurantBranchEndpoint(
     public override void Configure()
     {
         Put("/v1/restaurant/setup/branches/{BranchId}");
-        Summary(summary => summary.Summary = "Updates a restaurant branch.");
+        Description(description => description.WithTags("🏢 Branches"));
+        Summary(summary =>
+        {
+            summary.Summary = "Update Branch";
+            summary.Description = "Updates restaurant branch setup details such as name, description, and time zone.";
+        });
     }
 
     public override async Task HandleAsync(UpdateRestaurantBranchRequest request, CancellationToken cancellationToken)

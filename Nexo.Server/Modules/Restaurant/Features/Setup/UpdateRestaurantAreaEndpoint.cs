@@ -11,7 +11,12 @@ public sealed class UpdateRestaurantAreaEndpoint(
     public override void Configure()
     {
         Put("/v1/restaurant/setup/areas/{AreaId}");
-        Summary(summary => summary.Summary = "Updates a restaurant area.");
+        Description(description => description.WithTags("⚙️ Restaurant Setup"));
+        Summary(summary =>
+        {
+            summary.Summary = "Update Restaurant Area";
+            summary.Description = "Updates an area name, type, or display order inside restaurant setup.";
+        });
     }
 
     public override async Task HandleAsync(UpdateRestaurantAreaRequest request, CancellationToken cancellationToken)

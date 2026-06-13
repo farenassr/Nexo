@@ -18,6 +18,9 @@ public sealed class ScalarConfigurationTests
         await Assert.That(program).Contains("app.MapNexoScalarApiReference();");
         await Assert.That(scalarExtensions).Contains("using Scalar.AspNetCore;");
         await Assert.That(scalarExtensions).Contains("MapScalarApiReference");
+        await Assert.That(scalarExtensions).Contains("Layout = ScalarLayout.Modern");
+        await Assert.That(scalarExtensions).Contains("ShowSidebar = true");
+        await Assert.That(scalarExtensions).Contains("DefaultOpenAllTags = false");
         await Assert.That(scalarExtensions).Contains("AddPreferredSecuritySchemes");
         await Assert.That(scalarExtensions).Contains("AddAuthorizationCodeFlow");
     }

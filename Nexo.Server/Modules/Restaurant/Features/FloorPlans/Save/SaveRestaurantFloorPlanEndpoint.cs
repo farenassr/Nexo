@@ -11,10 +11,11 @@ public sealed class SaveRestaurantFloorPlanEndpoint(
     public override void Configure()
     {
         Put("/v1/restaurant/floor-plans/{FloorPlanId}");
+        Description(description => description.WithTags("🪑 Restaurant Floor Plans"));
         Summary(summary =>
         {
-            summary.Summary = "Saves restaurant floor plan layouts.";
-            summary.Description = "Updates floor plan metadata and replaces area, table, and seat layouts.";
+            summary.Summary = "Save Restaurant Floor Plan";
+            summary.Description = "Saves the layout editor state by updating floor plan metadata and replacing area, table, and seat layouts.";
         });
     }
 

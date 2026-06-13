@@ -12,9 +12,10 @@ public sealed class ListRestaurantTableReservationsEndpoint(
     public override void Configure()
     {
         Get("/v1/restaurant/tables/{TableId}/reservations");
+        Description(description => description.WithTags("🍽️ Restaurant Reservations"));
         Summary(summary =>
         {
-            summary.Summary = "Lists daily reservations for one restaurant table.";
+            summary.Summary = "List Table Reservations";
             summary.Description = "Returns reservations attached to the selected table for a UTC date.";
         });
     }

@@ -10,7 +10,12 @@ public sealed class LoginEndpoint : EndpointWithoutRequest
         Get("/auth/login");
         AllowAnonymous();
         DontAutoSendResponse();
-        Summary(summary => summary.Summary = "Starts the Keycloak authorization-code login flow.");
+        Description(description => description.WithTags("🔐 Authentication"));
+        Summary(summary =>
+        {
+            summary.Summary = "Start Keycloak Login";
+            summary.Description = "Starts the Keycloak authorization-code flow and redirects back to the requested local return URL.";
+        });
     }
 
     public override async Task HandleAsync(CancellationToken cancellationToken)

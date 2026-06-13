@@ -12,10 +12,11 @@ public sealed class SearchRestaurantAvailabilityEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/availability/search");
+        Description(description => description.WithTags("🍽️ Restaurant Reservations"));
         Summary(summary =>
         {
-            summary.Summary = "Searches available restaurant tables.";
-            summary.Description = "Returns table options for a branch, party size, start time, and optional duration.";
+            summary.Summary = "List Restaurant Availability";
+            summary.Description = "Returns table options for a branch, party size, start time, and optional duration before creating a reservation.";
         });
     }
 

@@ -12,9 +12,10 @@ public sealed class CancelRestaurantReservationEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/reservations/{ReservationId}/cancel");
+        Description(description => description.WithTags("🍽️ Restaurant Reservations"));
         Summary(summary =>
         {
-            summary.Summary = "Cancels a restaurant reservation.";
+            summary.Summary = "Cancel Restaurant Reservation";
             summary.Description = "Cancels a reservation, stores the reason, and records status history.";
         });
     }

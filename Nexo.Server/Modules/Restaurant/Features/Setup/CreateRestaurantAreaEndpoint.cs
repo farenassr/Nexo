@@ -11,7 +11,12 @@ public sealed class CreateRestaurantAreaEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/setup/areas");
-        Summary(summary => summary.Summary = "Creates a restaurant area.");
+        Description(description => description.WithTags("⚙️ Restaurant Setup"));
+        Summary(summary =>
+        {
+            summary.Summary = "Create Restaurant Area";
+            summary.Description = "Creates an area inside a restaurant floor for grouping tables and layouts.";
+        });
     }
 
     public override async Task HandleAsync(CreateRestaurantAreaRequest request, CancellationToken cancellationToken)

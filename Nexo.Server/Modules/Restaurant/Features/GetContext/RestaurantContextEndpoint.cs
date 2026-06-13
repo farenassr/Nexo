@@ -11,9 +11,10 @@ public sealed class RestaurantContextEndpoint(
     public override void Configure()
     {
         Get("/v1/restaurant/context");
+        Description(description => description.WithTags("⚙️ Restaurant Setup"));
         Summary(summary =>
         {
-            summary.Summary = "Returns the server-resolved Restaurant module context.";
+            summary.Summary = "Get Restaurant Context";
             summary.Description = "Development-only context check for organization scope, module gating, and permission contracts.";
         });
     }

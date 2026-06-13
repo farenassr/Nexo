@@ -18,8 +18,17 @@ public static class ScalarEndpointRouteBuilderExtensions
     private static void ConfigureAuthentication(ScalarOptions options, KeycloakOptions keycloakOptions)
     {
         var authority = keycloakOptions.Authority.TrimEnd('/');
+        options.Layout = ScalarLayout.Modern;
+        options.ShowSidebar = true;
+        options.DefaultOpenAllTags = false;
 
         options
+            .WithTitle("Nexo API Reference")
+            .WithTheme(ScalarTheme.Default)
+            .ForceLightMode()
+            .HideDarkModeToggle()
+            .WithOperationTitleSource(OperationTitleSource.Summary)
+            .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
             .AddPreferredSecuritySchemes(
                 [KeycloakOpenApiSecurityTransformer.BearerSchemeName, KeycloakOpenApiSecurityTransformer.KeycloakSchemeName])
             .AddHttpAuthentication(KeycloakOpenApiSecurityTransformer.BearerSchemeName, _ => { })

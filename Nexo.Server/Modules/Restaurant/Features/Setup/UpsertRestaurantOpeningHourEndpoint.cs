@@ -11,7 +11,12 @@ public sealed class UpsertRestaurantOpeningHourEndpoint(
     public override void Configure()
     {
         Put("/v1/restaurant/setup/opening-hours");
-        Summary(summary => summary.Summary = "Creates or updates branch opening hours for a day.");
+        Description(description => description.WithTags("⚙️ Restaurant Setup"));
+        Summary(summary =>
+        {
+            summary.Summary = "Save Opening Hours";
+            summary.Description = "Creates or updates the normal weekly opening hours for one restaurant branch day.";
+        });
     }
 
     public override async Task HandleAsync(UpsertRestaurantOpeningHourRequest request, CancellationToken cancellationToken)

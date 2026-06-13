@@ -11,7 +11,12 @@ public sealed class CreateRestaurantFloorPlanEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/setup/floor-plans");
-        Summary(summary => summary.Summary = "Creates a restaurant floor plan with initial layouts.");
+        Description(description => description.WithTags("🪑 Restaurant Floor Plans"));
+        Summary(summary =>
+        {
+            summary.Summary = "Create Restaurant Floor Plan";
+            summary.Description = "Creates a floor plan for a branch and floor with initial canvas layout settings.";
+        });
     }
 
     public override async Task HandleAsync(CreateRestaurantFloorPlanRequest request, CancellationToken cancellationToken)

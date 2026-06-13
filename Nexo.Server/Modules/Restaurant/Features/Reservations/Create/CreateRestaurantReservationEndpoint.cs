@@ -12,9 +12,10 @@ public sealed class CreateRestaurantReservationEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/reservations");
+        Description(description => description.WithTags("🍽️ Restaurant Reservations"));
         Summary(summary =>
         {
-            summary.Summary = "Creates a restaurant reservation.";
+            summary.Summary = "Create Restaurant Reservation";
             summary.Description = "Creates a customer, reservation, table assignment, and creation status history after availability validation.";
         });
     }

@@ -11,10 +11,11 @@ public sealed class GetRestaurantSetupEndpoint(
     public override void Configure()
     {
         Get("/v1/restaurant/setup");
+        Description(description => description.WithTags("⚙️ Restaurant Setup"));
         Summary(summary =>
         {
-            summary.Summary = "Gets restaurant setup state.";
-            summary.Description = "Returns branches, floors, areas, tables, and floor plans for the active development company.";
+            summary.Summary = "Get Restaurant Setup";
+            summary.Description = "Returns the setup snapshot with branches, floors, areas, tables, opening rules, special days, and floor plans.";
         });
     }
 

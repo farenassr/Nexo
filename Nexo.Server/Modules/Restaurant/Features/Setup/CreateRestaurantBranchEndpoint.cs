@@ -11,7 +11,12 @@ public sealed class CreateRestaurantBranchEndpoint(
     public override void Configure()
     {
         Post("/v1/restaurant/setup/branches");
-        Summary(summary => summary.Summary = "Creates a restaurant branch.");
+        Description(description => description.WithTags("🏢 Branches"));
+        Summary(summary =>
+        {
+            summary.Summary = "Create Branch";
+            summary.Description = "Creates a restaurant branch setup record for the current organization.";
+        });
     }
 
     public override async Task HandleAsync(CreateRestaurantBranchRequest request, CancellationToken cancellationToken)
