@@ -12,20 +12,22 @@ frontend (React + Vite)
   -> Nexo.Server (FastEndpoints API)
        resolves active organization context, validates membership, permissions, and
        active modules, then executes the feature slice
-  -> PostgreSQL + external Keycloak + external providers
+  -> PostgreSQL + local Keycloak in AppHost + external providers
 ```
 
 `Nexo.AppHost` orchestrates PostgreSQL, `Nexo.Server`, and the frontend for the
 local runtime. Redis-backed caching is deferred until a domain cache strategy is
-approved. Keycloak is configured as an external identity provider until a local
-identity resource is added. `Nexo.Server` hosts all modules behind one API
-surface. There is no worker or queue tier in the current shape.
+approved. Keycloak runs as a local AppHost development resource with a versioned
+realm import and is excluded from deployment manifests; shared and deployed
+environments must configure their identity provider externally. `Nexo.Server`
+hosts all modules behind one API surface. There is no worker or queue tier in
+the current shape.
 
 ## Project Responsibilities
 
 | Project | Responsibility |
 | --- | --- |
-| `Nexo.AppHost` | Aspire orchestration for PostgreSQL, `Nexo.Server`, and `frontend`; Keycloak configuration is external today, and Redis is intentionally disabled. |
+| `Nexo.AppHost` | Aspire orchestration for PostgreSQL, local-only Keycloak, `Nexo.Server`, and `frontend`; Keycloak is excluded from publish, and Redis is intentionally disabled. |
 | `Nexo.Server` | FastEndpoints API, vertical-slice modules, `NexoDbContext`, tenant/module/permission resolution, DI, health checks, and telemetry wiring. |
 | `frontend` | React + Vite + TypeScript SPA served through `frontend.esproj`; consumes `/v1/...` endpoints and mirrors module/permission gating for UX. |
 | `Nexo.Shared` | Contract-only DTO and enum project shared across server and generated client surfaces; it must not contain EF, ASP.NET, provider SDK, or business workflow logic. |

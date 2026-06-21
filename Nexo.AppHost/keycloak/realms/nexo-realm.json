@@ -1,0 +1,335 @@
+{
+  "realm": "nexo",
+  "enabled": true,
+  "displayName": "Nexo Local",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "sslRequired": "external",
+  "roles": {
+    "realm": [
+      {
+        "name": "nexo-admin",
+        "description": "Local Nexo administrator role."
+      },
+      {
+        "name": "nexo-manager",
+        "description": "Local Nexo manager role."
+      }
+    ]
+  },
+  "groups": [
+    {
+      "name": "local-admins",
+      "realmRoles": [
+        "nexo-admin"
+      ]
+    },
+    {
+      "name": "local-managers",
+      "realmRoles": [
+        "nexo-manager"
+      ]
+    }
+  ],
+  "clientScopes": [
+    {
+      "name": "web-origins",
+      "description": "Allows local browser origins for development clients.",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "false",
+        "display.on.consent.screen": "false"
+      }
+    },
+    {
+      "name": "acr",
+      "description": "Authentication context class reference scope.",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "false",
+        "display.on.consent.screen": "false"
+      }
+    },
+    {
+      "name": "profile",
+      "description": "Standard OpenID Connect profile claims for local development.",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "preferred_username",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "username",
+            "claim.name": "preferred_username",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "given_name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "firstName",
+            "claim.name": "given_name",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "family_name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "lastName",
+            "claim.name": "family_name",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "name": "email",
+      "description": "Standard OpenID Connect email claims for local development.",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "email",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "email",
+            "claim.name": "email",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "name": "roles",
+      "description": "Local role scope placeholder for development clients.",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "false",
+        "display.on.consent.screen": "false"
+      }
+    },
+    {
+      "name": "organization",
+      "description": "Adds the Nexo organization id claim for local development.",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "organization_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "organization_id",
+            "claim.name": "organization_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "name": "address",
+      "description": "Standard OpenID Connect address optional scope placeholder.",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      }
+    },
+    {
+      "name": "phone",
+      "description": "Standard OpenID Connect phone optional scope placeholder.",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      }
+    },
+    {
+      "name": "microprofile-jwt",
+      "description": "MicroProfile JWT optional scope placeholder for local development.",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "false",
+        "display.on.consent.screen": "false"
+      }
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "nexo-web-bff",
+      "name": "Nexo Web BFF",
+      "description": "Local public client for the Nexo backend-for-frontend login flow.",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": true,
+      "redirectUris": [
+        "http://localhost:*",
+        "https://localhost:*",
+        "http://webfrontend-nexo.dev.localhost:*",
+        "https://webfrontend-nexo.dev.localhost:*"
+      ],
+      "webOrigins": [
+        "http://localhost:*",
+        "https://localhost:*",
+        "http://webfrontend-nexo.dev.localhost:*",
+        "https://webfrontend-nexo.dev.localhost:*"
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "email",
+        "roles",
+        "organization"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:*##https://localhost:*##http://webfrontend-nexo.dev.localhost:*##https://webfrontend-nexo.dev.localhost:*"
+      }
+    },
+    {
+      "clientId": "nexo-scalar",
+      "name": "Nexo Scalar",
+      "description": "Local public client for Scalar authorization-code testing.",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:*",
+        "https://localhost:*",
+        "http://webfrontend-nexo.dev.localhost:*",
+        "https://webfrontend-nexo.dev.localhost:*",
+        "http://server-nexo.dev.localhost:*",
+        "https://server-nexo.dev.localhost:*"
+      ],
+      "webOrigins": [
+        "http://localhost:*",
+        "https://localhost:*",
+        "http://webfrontend-nexo.dev.localhost:*",
+        "https://webfrontend-nexo.dev.localhost:*",
+        "http://server-nexo.dev.localhost:*",
+        "https://server-nexo.dev.localhost:*"
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "email",
+        "roles",
+        "organization"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "admin@nexo.local",
+      "email": "admin@nexo.local",
+      "firstName": "Nexo",
+      "lastName": "Admin",
+      "enabled": true,
+      "emailVerified": true,
+      "groups": [
+        "local-admins"
+      ],
+      "attributes": {
+        "organization_id": [
+          "11111111-1111-7111-8111-111111111111"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${NEXO_LOCAL_ADMIN_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "manager@nexo.local",
+      "email": "manager@nexo.local",
+      "firstName": "Nexo",
+      "lastName": "Manager",
+      "enabled": true,
+      "emailVerified": true,
+      "groups": [
+        "local-managers"
+      ],
+      "attributes": {
+        "organization_id": [
+          "11111111-1111-7111-8111-111111111111"
+        ]
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${NEXO_LOCAL_MANAGER_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}
