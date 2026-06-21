@@ -26,6 +26,20 @@ public sealed class ScalarConfigurationTests
     }
 
     [Test]
+    public async Task ScalarAuthorization_UsesDedicatedScalarClientWhenConfigured()
+    {
+        var repoRoot = FindRepositoryRoot();
+        var scalarExtensions = await File.ReadAllTextAsync(
+            Path.Combine(repoRoot, "Nexo.Server", "OpenApi", "ScalarEndpointRouteBuilderExtensions.cs"));
+        var keycloakOptions = await File.ReadAllTextAsync(
+            Path.Combine(repoRoot, "Nexo.Server", "Modules", "Shared", "Auth", "KeycloakOptions.cs"));
+
+        await Assert.That(keycloakOptions).Contains("ScalarClientId");
+        await Assert.That(scalarExtensions).Contains("GetScalarClientId");
+        await Assert.That(scalarExtensions).Contains("flow.ClientId = GetScalarClientId(keycloakOptions);");
+    }
+
+    [Test]
     public async Task ServerPipeline_SuppressesRequestAbortCancellations()
     {
         var repoRoot = FindRepositoryRoot();

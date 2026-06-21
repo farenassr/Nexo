@@ -34,11 +34,18 @@ public static class ScalarEndpointRouteBuilderExtensions
             .AddHttpAuthentication(KeycloakOpenApiSecurityTransformer.BearerSchemeName, _ => { })
             .AddAuthorizationCodeFlow(KeycloakOpenApiSecurityTransformer.KeycloakSchemeName, flow =>
             {
-                flow.ClientId = keycloakOptions.ClientId;
+                flow.ClientId = GetScalarClientId(keycloakOptions);
                 flow.AuthorizationUrl = $"{authority}/protocol/openid-connect/auth";
                 flow.TokenUrl = $"{authority}/protocol/openid-connect/token";
                 flow.Pkce = Pkce.Sha256;
                 flow.SelectedScopes = keycloakOptions.Scopes;
             });
+    }
+
+    private static string GetScalarClientId(KeycloakOptions keycloakOptions)
+    {
+        return string.IsNullOrWhiteSpace(keycloakOptions.ScalarClientId)
+            ? keycloakOptions.ClientId
+            : keycloakOptions.ScalarClientId;
     }
 }

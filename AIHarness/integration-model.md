@@ -50,10 +50,10 @@ on a specific API.
   supplied by Aspire resource references.
 - Do not move local PostgreSQL connection strings into a secret store when
   Aspire already supplies them. Redis is not part of the current AppHost
-  runtime and should only be reintroduced with an approved cache strategy. Keep
-  non-sensitive Keycloak realm metadata in appsettings and `Keycloak:ClientId`
-  in `Nexo.Server` user-secrets or an equivalent environment-specific
-  configuration source.
+  runtime and should only be reintroduced with an approved cache strategy.
+  Local Keycloak is supplied by AppHost and excluded from publish; deployed
+  identity provider settings come from environment-specific configuration or a
+  managed configuration source.
 
 ## Contract Test Checklist
 

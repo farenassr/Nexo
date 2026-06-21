@@ -33,8 +33,8 @@ Non-sensitive defaults live in `Nexo.Server/appsettings.json`:
 ```json
 {
   "Keycloak": {
-    "Authority": "https://ceo-agent-keycloak.icybush-34e28ac8.westus2.azurecontainerapps.io/realms/ceo-agent",
-    "Realm": "ceo-agent",
+    "Authority": "https://identity.example.invalid/realms/nexo",
+    "Realm": "nexo",
     "CallbackPath": "/auth/callback",
     "LogoutRedirectUri": "http://localhost:5173/login",
     "Scopes": [ "openid", "profile", "email", "organization" ]
@@ -42,20 +42,48 @@ Non-sensitive defaults live in `Nexo.Server/appsettings.json`:
 }
 ```
 
-Keep the local `ClientId` in `Nexo.Server` user-secrets. The current Keycloak
-client is a public client named `ceo-agent-web`, so no `ClientSecret` is
-required.
+The placeholder authority intentionally fails closed unless a local AppHost or
+environment-specific configuration overrides it. `Nexo.AppHost` starts a local
+Keycloak container on port `18080`, imports the versioned `nexo` realm, and
+injects these runtime values into `Nexo.Server`:
 
-Set local values with user secrets:
+- `Keycloak:Authority`: `https://localhost:18080/realms/nexo`
+- `Keycloak:Realm`: `nexo`
+- `Keycloak:ClientId`: `nexo-web-bff`
+- `Keycloak:ScalarClientId`: `nexo-scalar`
+- `Keycloak:RequireHttpsMetadata`: `false`
+
+The local Keycloak clients are public clients, so no `ClientSecret` is required.
+Use `https://localhost:18080/admin` for the local Keycloak admin console.
+Avoid the generated `keycloak-nexo.dev.localhost` URL if the browser cannot
+resolve it consistently on a developer machine.
+
+For production, provide the external OIDC provider values through environment
+configuration or a managed configuration store. `Nexo.Server` can load Azure
+Key Vault in non-development environments using `DefaultAzureCredential` when
+`KeyVault:Uri` is configured.
+
+## Local Keycloak Realm
+
+`Nexo.AppHost/keycloak/realms/nexo-realm.json` defines the local `nexo` realm,
+the `nexo-web-bff` client for app login, the `nexo-scalar` client for Scalar,
+and two local users:
+
+- `admin@nexo.local`
+- `manager@nexo.local`
+
+User passwords are not committed. Set them in the AppHost secret store:
 
 ```powershell
-dotnet user-secrets set --project .\Nexo.Server "Keycloak:ClientId" "ceo-agent-web"
+dotnet user-secrets set --project .\Nexo.AppHost "Parameters:nexo-local-admin-password" "<local-admin-password>"
+dotnet user-secrets set --project .\Nexo.AppHost "Parameters:nexo-local-manager-password" "<local-manager-password>"
 ```
 
-For production, provide `Keycloak:ClientId` through environment configuration
-or a managed configuration store. `Nexo.Server` can load Azure Key Vault in
-non-development environments using `DefaultAzureCredential` when `KeyVault:Uri`
-is configured, but the public client does not require a Keycloak client secret.
+The Keycloak admin password is also an AppHost secret parameter:
+
+```powershell
+dotnet user-secrets set --project .\Nexo.AppHost "Parameters:keycloak-admin-password" "<local-keycloak-admin-password>"
+```
 
 ## Keycloak Client
 
@@ -106,7 +134,8 @@ Scalar supports two local API testing paths:
   sends `Authorization: Bearer <token>`.
 - `Keycloak`: use Scalar's OAuth2 authorization-code popup against the
   configured Keycloak realm. The Scalar configuration preselects the
-  `Keycloak:ClientId` value and uses PKCE SHA-256.
+  `Keycloak:ScalarClientId` value when configured, otherwise it falls back to
+  `Keycloak:ClientId`, and uses PKCE SHA-256.
 
 For the Keycloak popup flow, the Keycloak client must allow Scalar's callback
 origin and be configured to support authorization code with PKCE without
@@ -146,10 +175,12 @@ frontend and backend are on different origins.
 
 ## Testing The Flow
 
-1. Configure the local client id:
+1. Configure the local Keycloak user and admin passwords:
 
    ```powershell
-   dotnet user-secrets set --project .\Nexo.Server "Keycloak:ClientId" "ceo-agent-web"
+   dotnet user-secrets set --project .\Nexo.AppHost "Parameters:keycloak-admin-password" "<local-keycloak-admin-password>"
+   dotnet user-secrets set --project .\Nexo.AppHost "Parameters:nexo-local-admin-password" "<local-admin-password>"
+   dotnet user-secrets set --project .\Nexo.AppHost "Parameters:nexo-local-manager-password" "<local-manager-password>"
    ```
 
 2. Start Aspire:
@@ -166,11 +197,11 @@ frontend and backend are on different origins.
 
 ## Troubleshooting
 
-- `Keycloak:ClientId is required`: set the `Keycloak:ClientId` user secret on
-  `Nexo.Server`.
+- `Keycloak:ClientId is required`: start through `Nexo.AppHost` or configure
+  `Keycloak:ClientId` in the target environment.
 - `Keycloak:Authority must be configured for this environment`: set
-  `Keycloak:Authority` in `Nexo.Server/appsettings.json` or environment
-  configuration to a reachable realm issuer URL.
+  `Keycloak:Authority` through AppHost, environment configuration, or Key
+  Vault to a reachable realm issuer URL.
 - `OperationCanceledException` during `/auth/login`: the backend could not
   load OpenID Connect discovery metadata from the configured
   `Keycloak:Authority`. Verify it points to a reachable realm issuer URL.
